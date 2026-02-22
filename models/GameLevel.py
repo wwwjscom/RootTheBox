@@ -45,6 +45,8 @@ class GameLevel(DatabaseObject):
     _buyout = Column(Integer, nullable=False)
     _type = Column(Unicode(16), nullable=False, default=str("none"))
     _reward = Column(Integer, nullable=False, default=0)
+    # Per-user submission window length for this level; 0 means unlimited time.
+    _flag_submission_timer_minutes = Column(Integer, nullable=False, default=0)
     _name = Column(Unicode(32), nullable=True)
     _description = Column(Unicode(512))
     _locked = Column(Boolean, default=False, nullable=False)
@@ -130,6 +132,29 @@ class GameLevel(DatabaseObject):
             raise ValidationError("Reward value must be an integer")
 
     @property
+    def flag_submission_timer_minutes(self):
+        # Preserve backward compatibility for rows created before this column existed.
+        if self._flag_submission_timer_minutes is None:
+            return 0
+        return self._flag_submission_timer_minutes
+
+    @flag_submission_timer_minutes.setter
+    def flag_submission_timer_minutes(self, value):
+        # Treat missing form data as "no timer" instead of raising validation errors.
+        if value is None or value == "":
+            self._flag_submission_timer_minutes = 0
+            return
+        try:
+            self._flag_submission_timer_minutes = abs(int(value))
+        except ValueError:
+            raise ValidationError("Flag submission timer must be an integer")
+
+    @property
+    def flag_submission_timer_seconds(self):
+        # Consumers use seconds for countdown calculations and expiration checks.
+        return self.flag_submission_timer_minutes * 60
+
+    @property
     def name(self):
         if self._name:
             return str(self._name)
@@ -213,6 +238,10 @@ class GameLevel(DatabaseObject):
         else:
             ET.SubElement(level_elem, "buyout").text = str(self.buyout)
         ET.SubElement(level_elem, "reward").text = str(self._reward)
+        # Export timer configuration so level XML round-trips correctly.
+        ET.SubElement(level_elem, "flag_submission_timer_minutes").text = str(
+            self.flag_submission_timer_minutes
+        )
         ET.SubElement(level_elem, "name").text = str(self._name)
         ET.SubElement(level_elem, "description").text = str(self._description)
         ET.SubElement(level_elem, "locked").text = str(self.locked)
@@ -231,6 +260,8 @@ class GameLevel(DatabaseObject):
             "buyout": self.buyout,
             "type": self.type,
             "reward": self.reward,
+            # Expose timer in API payloads used by admin edit/view flows.
+            "flag_submission_timer_minutes": self.flag_submission_timer_minutes,
             "description": self.description,
             "last_level": last_level,
         }

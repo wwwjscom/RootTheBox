@@ -47,6 +47,13 @@
                         <input id="game_level-reward" name="reward" pattern="[0-9]+" placeholder="{{ _('Reward') }}" type="number" min=0 />
                     </div>
                 </div>
+                {# Editable per-user timer value for this level. #}
+                <div class="control-group">
+                    <label class="control-label" for="game_level-flag_submission_timer_minutes">{{ _("Submission Time Limit (Minutes)") }}</label>
+                    <div class="controls">
+                        <input id="game_level-flag_submission_timer_minutes" name="flag_submission_timer_minutes" pattern="[0-9]+" placeholder="{{ _('No Limit') }}" type="number" min=0 />
+                    </div>
+                </div>
                 <div id="gametype" class="control-group">
                     <label class="control-label" for="game_level-type">{{ _("Unlock Level") }}</label>
                     <div class="controls">
@@ -273,7 +280,13 @@
                         {% set last = GameLevel.last_level(level.id) %}
                         <i class="fa fa-lock"></i> {{ _("Unlocks after") }} {{ level.buyout }}% {{ _("completion of Level") }} {% if last %}{{ last.number }}{% end %}
                     {% end %}
-                    <span style="float: right; padding-right: 15px;"><strong>{{ _("Reward") }}: {{ level._reward }}</strong></span>
+                    <span style="float: right; padding-right: 15px;">
+                        <strong>{{ _("Reward") }}: {{ level._reward }}</strong>
+                        {% if level.flag_submission_timer_minutes > 0 %}
+                            {# Show the configured timer at a glance in admin level list. #}
+                            &nbsp;|&nbsp;<strong>{{ _("Timer") }}: {{ level.flag_submission_timer_minutes }} {{ _("min") }}</strong>
+                        {% end %}
+                    </span>
                 </div>
                 <hr />
                 {% if len(level.boxes) != 0 %}

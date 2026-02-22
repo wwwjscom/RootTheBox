@@ -60,6 +60,7 @@ from models.Swat import Swat
 from models.Team import Team
 from models.Theme import Theme
 from models.User import ADMIN_PERMISSION
+from models.UserLevelTimer import UserLevelTimer
 from setup.xmlsetup import import_xml
 
 
@@ -723,6 +724,8 @@ class AdminResetHandler(BaseHandler):
             dbsession.flush()
             Penalty.clear()
             Notification.clear()
+            # Clear per-user level timers so players receive fresh windows after reset.
+            dbsession.query(UserLevelTimer).delete()
             swats = Swat.all()
             for swat in swats:
                 dbsession.delete(swat)
@@ -787,6 +790,8 @@ class AdminResetDeleteHandler(BaseHandler):
             dbsession.flush()
             Penalty.clear()
             Notification.clear()
+            # Remove timer records when wiping teams/users to avoid stale level state.
+            dbsession.query(UserLevelTimer).delete()
             swats = Swat.all()
             for swat in swats:
                 dbsession.delete(swat)

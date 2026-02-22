@@ -5,6 +5,7 @@ Unit tests for everything in models/
 
 
 import unittest
+from datetime import datetime, timedelta
 
 from libs.StringCoding import encode
 from libs.ValidationError import ValidationError
@@ -22,6 +23,7 @@ from models.Flag import (
 from models.GameLevel import GameLevel
 from models.Team import Team
 from models.User import User
+from models.UserLevelTimer import UserLevelTimer
 from tests.Helpers import *
 
 
@@ -103,6 +105,15 @@ class TestGameLevel(unittest.TestCase):
         assert self.game_level.buyout == 1000
         with self.assertRaises(ValidationError):
             self.game_level.buyout = "A"
+
+    def test_flag_submission_timer_minutes(self):
+        # Level timer defaults to disabled and accepts numeric form strings.
+        assert self.game_level.flag_submission_timer_minutes == 0
+        self.game_level.flag_submission_timer_minutes = "15"
+        assert self.game_level.flag_submission_timer_minutes == 15
+        assert self.game_level.flag_submission_timer_seconds == 900
+        with self.assertRaises(ValidationError):
+            self.game_level.flag_submission_timer_minutes = "A"
 
 
 class TestCorporation(unittest.TestCase):
@@ -218,3 +229,30 @@ class TestFlag(unittest.TestCase):
     def test_datetime_capture(self):
         assert self.datetime_flag.capture("2018-06-22 18:00:00")
         assert not self.datetime_flag.capture("2018-06-21 16:00:00")
+
+
+class TestUserLevelTimer(unittest.TestCase):
+    def setUp(self):
+        self.user = create_user()
+        self.level = GameLevel.all()[0]
+        # Seed a short timer record for expiry/remaining calculations.
+        self.timer = UserLevelTimer.create_timer(self.user.id, self.level.id, 120)
+        dbsession.add(self.timer)
+        dbsession.commit()
+
+    def tearDown(self):
+        dbsession.query(UserLevelTimer).delete()
+        dbsession.delete(self.user)
+        dbsession.commit()
+
+    def test_seconds_remaining(self):
+        # Remaining time should never exceed the original configured duration.
+        remaining = self.timer.seconds_remaining(datetime.now())
+        assert 0 < remaining <= 120
+
+    def test_expired_timer(self):
+        # Expired timers clamp to zero remaining seconds.
+        self.timer.expires_at = datetime.now() - timedelta(seconds=1)
+        dbsession.add(self.timer)
+        dbsession.commit()
+        assert self.timer.seconds_remaining(datetime.now()) == 0

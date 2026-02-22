@@ -286,6 +286,10 @@ class AdminCreateHandler(BaseHandler):
             new_level.description = self.get_argument("description", "")
             new_level._type = self.get_argument("type", "buyout")
             new_level._reward = self.get_argument("reward", 0)
+            # Per-user timer length (in minutes) for all boxes in this level.
+            new_level.flag_submission_timer_minutes = self.get_argument(
+                "flag_submission_timer_minutes", 0
+            )
             if new_level._type == "progress":
                 new_level.buyout = min(new_level.buyout, 100)
             elif new_level._type == "none":
@@ -913,6 +917,10 @@ class AdminEditHandler(BaseHandler):
             lvlbuyout = self.get_argument("buyoutlvl", 1)
             level._type = self.get_argument("type", "buyout")
             level._reward = self.get_argument("reward", 0)
+            # Persist admin changes to the per-level submission timer.
+            level.flag_submission_timer_minutes = self.get_argument(
+                "flag_submission_timer_minutes", 0
+            )
             level.name = self.get_argument("name", None)
             level.description = self.get_argument("description", "")
             if level._type == "progress":

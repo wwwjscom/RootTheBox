@@ -4,6 +4,8 @@ $(document).ready(function () {
    $("#level-number").popover({ placement: 'right', trigger: 'focus' });
    $("#buyout").popover({ placement: 'right', trigger: 'focus' });
    $("#game_level-reward").popover({ placement: 'right', trigger: 'focus' });
+   // Explain how the per-user level submission timer works for admins.
+   $("#game_level-flag_submission_timer_minutes").popover({ placement: 'right', trigger: 'focus' });
    $("#game_level-type").popover({ placement: 'right', trigger: 'focus' });
    $("#game_level-name").popover({ placement: 'right', trigger: 'focus' });
 

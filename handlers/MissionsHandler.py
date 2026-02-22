@@ -27,8 +27,10 @@ This file contains the code for displaying flags / recv flag submissions
 import json
 import logging
 from builtins import next, str
+from datetime import datetime
 
 from past.utils import old_div
+from sqlalchemy.exc import IntegrityError
 from tornado.options import options
 
 from handlers.BaseHandlers import BaseHandler
@@ -41,6 +43,111 @@ from models.GameLevel import GameLevel
 from models.Hint import Hint
 from models.Penalty import Penalty
 from models.Team import Team
+from models.UserLevelTimer import UserLevelTimer
+
+
+def level_submission_timer_context(dbsession, user, level, start_if_missing=True):
+    # Default payload keeps templates/JS logic simple even when timer is disabled.
+    context = {
+        "level_submission_timer_enabled": False,
+        "level_submission_timer_started": False,
+        "level_submission_timer_total_seconds": 0,
+        "level_submission_timer_remaining_seconds": 0,
+        "level_submission_timer_expired": False,
+    }
+    # Admins and invalid contexts are never timer-restricted.
+    if user is None or level is None or user.is_admin():
+        return context
+    total_seconds = level.flag_submission_timer_seconds
+    if total_seconds <= 0:
+        return context
+    context["level_submission_timer_enabled"] = True
+    context["level_submission_timer_total_seconds"] = total_seconds
+
+    timer = UserLevelTimer.by_user_and_level_id(user.id, level.id)
+    if timer is None and start_if_missing:
+        # First access starts an immutable timer for this user/level pair.
+        timer = UserLevelTimer.create_timer(user.id, level.id, total_seconds)
+        dbsession.add(timer)
+        try:
+            dbsession.commit()
+        except IntegrityError:
+            # Another request may have created it concurrently; re-read canonical row.
+            dbsession.rollback()
+            timer = UserLevelTimer.by_user_and_level_id(user.id, level.id)
+
+    if timer is None:
+        # Timer is configured but intentionally not started yet.
+        context["level_submission_timer_remaining_seconds"] = total_seconds
+        return context
+
+    context["level_submission_timer_started"] = True
+    remaining = timer.seconds_remaining(datetime.now())
+    context["level_submission_timer_remaining_seconds"] = remaining
+    context["level_submission_timer_expired"] = remaining <= 0
+    return context
+
+
+def format_timer_display(total_seconds):
+    # Keep display format aligned across missions list and box detail pages.
+    total_seconds = max(0, int(total_seconds))
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    if hours > 0:
+        return "%02d:%02d:%02d" % (hours, minutes, seconds)
+    return "%02d:%02d" % (minutes, seconds)
+
+
+def missions_level_timer_map(dbsession, user):
+    # Build timer state for every level so missions page can show countdown status.
+    timers = {}
+    if user is None or user.is_admin():
+        return timers
+    now = datetime.now()
+    # Prefetch current user's timers to avoid repeated queries in the loop.
+    existing_timers = {
+        timer.game_level_id: timer
+        for timer in dbsession.query(UserLevelTimer).filter_by(user_id=user.id).all()
+    }
+    for level in GameLevel.all():
+        total_seconds = level.flag_submission_timer_seconds
+        if total_seconds <= 0:
+            continue
+        timer = existing_timers.get(level.id)
+        started = timer is not None
+        remaining_seconds = (
+            timer.seconds_remaining(now) if started else max(0, int(total_seconds))
+        )
+        timers[level.uuid] = {
+            "enabled": True,
+            "started": started,
+            "total_seconds": max(0, int(total_seconds)),
+            "remaining_seconds": remaining_seconds,
+            "expired": started and remaining_seconds <= 0,
+            "minutes": level.flag_submission_timer_minutes,
+            "display": format_timer_display(remaining_seconds),
+        }
+    return timers
+
+
+def render_level_timer_confirmation(handler, box, timer_context, errors=None, info=None):
+    # Shared renderer for the one-time "starting timer" confirmation screen.
+    if errors is None:
+        errors = []
+    if info is None:
+        info = []
+    user = handler.get_current_user()
+    handler.render(
+        "missions/timer_start.html",
+        box=box,
+        user=user,
+        team=user.team,
+        timer_minutes=box.game_level.flag_submission_timer_minutes,
+        errors=errors,
+        info=info,
+        **timer_context,
+    )
 
 
 class FirstLoginHandler(BaseHandler):
@@ -130,6 +237,16 @@ class BoxHandler(BaseHandler):
                     info=["This level is currently locked by the Admin."],
                 )
             else:
+                # Never auto-start from a GET; require explicit user confirmation first.
+                timer_context = level_submission_timer_context(
+                    self.dbsession, user, level, start_if_missing=False
+                )
+                if (
+                    timer_context["level_submission_timer_enabled"]
+                    and not timer_context["level_submission_timer_started"]
+                ):
+                    render_level_timer_confirmation(self, box, timer_context)
+                    return
                 self.render(
                     "missions/box.html",
                     box=box,
@@ -138,6 +255,7 @@ class BoxHandler(BaseHandler):
                     errors=[],
                     success=[],
                     info=[],
+                    **timer_context,
                 )
         else:
             self.render("public/404.html")
@@ -146,28 +264,76 @@ class BoxHandler(BaseHandler):
     @game_started
     def post(self, *args, **kwargs):
         """Check validity of flag submissions"""
+        # Dedicated confirm action that starts the timer before redirecting to box view.
+        if self.get_argument("start_level_timer", "") == "1":
+            self.start_level_timer()
+            return
+
         box_id = self.get_argument("box_id", None)
         uuid = self.get_argument("uuid", "")
         token = self.get_argument("token", "")
         user = self.get_current_user()
-        if (box_id and Box.by_id(box_id).locked) or (
-            box_id is None and uuid and Flag.by_uuid(uuid).box.locked
+        box = Box.by_id(box_id) if box_id else None
+        flag = Flag.by_uuid(uuid) if uuid else None
+        if box is None and flag is not None:
+            box = flag.box
+
+        if (
+            box is not None
+            and box_id is not None
+            and box.flag_submission_type == FlagsSubmissionType.SINGLE_SUBMISSION_BOX
         ):
+            # Single-submission boxes validate with the box context, not a flag context.
+            submission_box = box
+        else:
+            submission_box = flag.box if flag is not None else box
+
+        if submission_box is not None and submission_box.locked:
             self.render(
                 "missions/status.html",
                 errors=None,
                 info=["This box is currently locked by the Admin."],
             )
             return
+
+        if submission_box is not None:
+            # Enforce timer state on submission endpoint (cannot rely on client checks).
+            timer_context = level_submission_timer_context(
+                self.dbsession, user, submission_box.game_level, start_if_missing=False
+            )
+            if (
+                timer_context["level_submission_timer_enabled"]
+                and not timer_context["level_submission_timer_started"]
+            ):
+                # Require acknowledgment before first submission can start the timer.
+                render_level_timer_confirmation(
+                    self,
+                    submission_box,
+                    timer_context,
+                    info=[
+                        "You must confirm that you are ready before this timer starts."
+                    ],
+                )
+                return
+            if timer_context["level_submission_timer_expired"]:
+                self.render_page_by_box(
+                    submission_box,
+                    info=[
+                        "Time has expired for this level - you can no longer submit flags."
+                    ],
+                    timer_context=timer_context,
+                )
+                return
         if (
             token is not None
             and box_id is not None
-            and Box.by_id(box_id).flag_submission_type
-            == FlagsSubmissionType.SINGLE_SUBMISSION_BOX
+            and box is not None
+            and box.flag_submission_type == FlagsSubmissionType.SINGLE_SUBMISSION_BOX
         ):
             flag = Flag.by_token_and_box_id(token, box_id)
         else:
-            flag = Flag.by_uuid(uuid)
+            if flag is None:
+                flag = Flag.by_uuid(uuid)
             if (
                 flag is not None
                 and Penalty.by_count(flag, user.team) >= options.max_flag_attempts
@@ -436,16 +602,31 @@ class BoxHandler(BaseHandler):
                 return True
         return False
 
-    def render_page_by_flag(self, flag, errors=[], success=[], info=[]):
-        self.render_page_by_box_id(flag.box_id, errors, success, info)
+    def render_page_by_flag(
+        self, flag, errors=[], success=[], info=[], timer_context=None
+    ):
+        self.render_page_by_box_id(flag.box_id, errors, success, info, timer_context)
 
-    def render_page_by_box_id(self, box_id, errors=[], success=[], info=[]):
+    def render_page_by_box_id(
+        self, box_id, errors=[], success=[], info=[], timer_context=None
+    ):
         box = Box.by_id(box_id)
-        self.render_page_by_box(box, errors, success, info)
+        self.render_page_by_box(box, errors, success, info, timer_context)
 
-    def render_page_by_box(self, box, errors=[], success=[], info=[]):
+    def render_page_by_box(self, box, errors=[], success=[], info=[], timer_context=None):
         """Wrapper to .render() to avoid duplicate code"""
         user = self.get_current_user()
+        if timer_context is None:
+            timer_context = level_submission_timer_context(
+                self.dbsession, user, box.game_level, start_if_missing=False
+            )
+        if (
+            timer_context["level_submission_timer_enabled"]
+            and not timer_context["level_submission_timer_started"]
+        ):
+            # Reuse confirmation gate for any render path that reaches this helper.
+            render_level_timer_confirmation(self, box, timer_context, errors, info)
+            return
         self.render(
             "missions/box.html",
             box=box,
@@ -454,7 +635,48 @@ class BoxHandler(BaseHandler):
             errors=errors,
             success=success,
             info=info,
+            **timer_context,
         )
+
+    def start_level_timer(self):
+        # Accept both fields so this action can be called from different form contexts.
+        box = Box.by_uuid(self.get_argument("box_uuid", ""))
+        if box is None:
+            box = Box.by_uuid(self.get_argument("uuid", ""))
+        if box is None:
+            self.render("public/404.html")
+            return
+
+        user = self.get_current_user()
+        level = GameLevel.by_id(box.game_level_id)
+        if user.team and level.type != "none" and level not in user.team.game_levels:
+            self.redirect("/403")
+            return
+        if box.locked:
+            self.render(
+                "missions/status.html",
+                errors=None,
+                info=["This box is currently locked by the Admin."],
+            )
+            return
+        if level.type == "locked":
+            self.render(
+                "missions/status.html",
+                errors=None,
+                info=["This level is currently locked by the Admin."],
+            )
+            return
+
+        timer_context = level_submission_timer_context(
+            self.dbsession, user, level, start_if_missing=False
+        )
+        if timer_context["level_submission_timer_enabled"]:
+            if not timer_context["level_submission_timer_started"]:
+                # Confirmation accepted: create the timer record now.
+                level_submission_timer_context(
+                    self.dbsession, user, level, start_if_missing=True
+                )
+        self.redirect("/user/missions/boxes?uuid=%s" % box.uuid)
 
 
 class FlagCaptureMessageHandler(BaseHandler):
@@ -532,6 +754,15 @@ class PurchaseHintHandler(BaseHandler):
     def render_page(self, box, errors=[], success=[], info=[]):
         """Wrapper to .render() to avoid duplicate code"""
         user = self.get_current_user()
+        timer_context = level_submission_timer_context(
+            self.dbsession, user, box.game_level, start_if_missing=False
+        )
+        if (
+            timer_context["level_submission_timer_enabled"]
+            and not timer_context["level_submission_timer_started"]
+        ):
+            render_level_timer_confirmation(self, box, timer_context, errors, info)
+            return
         self.render(
             "missions/box.html",
             box=box,
@@ -540,6 +771,7 @@ class PurchaseHintHandler(BaseHandler):
             errors=errors,
             success=success,
             info=info,
+            **timer_context,
         )
 
 
@@ -551,7 +783,13 @@ class MissionsHandler(BaseHandler):
     def get(self, *args, **kwargs):
         """Render missions view"""
         user = self.get_current_user()
-        self.render("missions/view.html", team=user.team, errors=None, success=None)
+        self.render(
+            "missions/view.html",
+            team=user.team,
+            errors=None,
+            success=None,
+            level_submission_timers=missions_level_timer_map(self.dbsession, user),
+        )
 
     @authenticated
     @game_started
@@ -586,6 +824,9 @@ class MissionsHandler(BaseHandler):
                     team=user.team,
                     errors=["You do not have enough money to unlock this level"],
                     success=None,
+                    level_submission_timers=missions_level_timer_map(
+                        self.dbsession, user
+                    ),
                 )
         else:
             self.render(
@@ -593,4 +834,5 @@ class MissionsHandler(BaseHandler):
                 team=user.team,
                 errors=["Level does not exist"],
                 success=None,
+                level_submission_timers=missions_level_timer_map(self.dbsession, user),
             )

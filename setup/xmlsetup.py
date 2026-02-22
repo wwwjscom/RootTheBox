@@ -96,6 +96,10 @@ def create_levels(levels):
                 game_level.description = get_child_text(level_elem, "description")
                 game_level.type = get_child_text(level_elem, "type")
                 game_level.reward = get_child_text(level_elem, "reward", 0)
+                # Optional level timer field; missing values default to no timer.
+                game_level.flag_submission_timer_minutes = get_child_text(
+                    level_elem, "flag_submission_timer_minutes", 0
+                )
                 game_level.buyout = get_child_text(level_elem, "buyout", 0)
                 if game_level.type == "level":
                     buyoutlevel = GameLevel.by_number(game_level.buyout)

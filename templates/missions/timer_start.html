@@ -1,0 +1,51 @@
+{% extends "../main.html" %}
+
+{% block title %}{{ _("Missions") }}{% end %}
+
+{% block content %}
+    <div class="container">
+        <h1>{{ _("Missions") }}</h1>
+        <br />
+        {% if errors is not None and len(errors) != 0 %}
+            {% for error in errors %}
+            <div class="alert alert-error">
+                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                    <h4 class="alert-heading">{{ _("ERROR") }}</h4>
+                    {{ error }}
+            </div>
+            {% end %}
+        {% end %}
+         {% if info is not None and len(info) != 0 %}
+            {% for msg in info %}
+            <div class="alert alert-info">
+                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                    <h4 class="alert-heading">{{ _("INFO") }}</h4>
+                    {{ msg }}
+            </div>
+            {% end %}
+        {% end %}
+        <div class="alert alert-warning">
+            <h4 class="alert-heading">{{ _("Timer Confirmation Required") }}</h4>
+            <p>
+                {{ _("You are about to start the timer for this level.") }}
+            </p>
+            <p>
+                <strong>{{ _("Time Limit") }}:</strong> {{ timer_minutes }} {{ _("minute(s)") }}
+            </p>
+            <p>
+                {{ _("Once started, this timer cannot be paused or reset.") }}
+            </p>
+            <p>
+                {{ _("Are you ready to start the timer and view this mission?") }}
+            </p>
+            {# This post endpoint starts the immutable per-user timer for the level. #}
+            <form method="post" action="/user/missions/boxes">
+                {% raw xsrf_form_html() %}
+                <input name="start_level_timer" type="hidden" value="1" />
+                <input name="box_uuid" type="hidden" value="{{ box.uuid }}" />
+                <button class="btn btn-danger" type="submit">{{ _("Start Timer and Continue") }}</button>
+                <a class="btn" href="/user/missions">{{ _("Not Yet") }}</a>
+            </form>
+        </div>
+    </div>
+{% end %}

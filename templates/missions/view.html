@@ -66,6 +66,8 @@
                 {% end %}
 
             {% set has_level = (not team or level.type == 'none' or level in team.game_levels) and level.type != 'locked'  %}
+            {# Server-provided timer state for this level on the missions overview page. #}
+            {% set level_timer = level_submission_timers.get(level.uuid, {}) %}
             {% if not (level.type == 'hidden' and not has_level) %}
             <div class="well">
                 {% if len(GameLevel.all()) > 1 %}
@@ -78,6 +80,28 @@
                         {{ level.name }}&nbsp;
                     </h3>
                     {% if level.description %}<h4 class="levelheader">({{ level.description }})</h4>{% end %}
+                    {% if team and has_level and level_timer.get("enabled") %}
+                        {# Visible countdown per level; actual enforcement remains server-side. #}
+                        <div class="alert {% if level_timer.get('expired') %}alert-error{% else %}alert-info{% end %}"
+                             style="margin: 10px 0;"
+                             data-level-submission-timer="1"
+                             data-level-submission-timer-started="{{ str(level_timer.get('started')).lower() }}"
+                             data-level-submission-timer-remaining="{{ level_timer.get('remaining_seconds', 0) }}">
+                            <strong>{{ _("Submission Timer") }}:</strong>
+                            <span class="level-submission-timer-value">
+                                {% if level_timer.get("started") %}
+                                    {{ level_timer.get("display") }}
+                                {% else %}
+                                    {{ _("Not started") }}
+                                {% end %}
+                            </span>
+                            {% if not level_timer.get("started") %}
+                                <span> - {{ _("Starts when you enter a mission in this level.") }}</span>
+                            {% elif level_timer.get("expired") %}
+                                <span class="level-submission-timer-expired-msg"> - {{ _("Expired. You can still view mission details but cannot submit flags.") }}</span>
+                            {% end %}
+                        </div>
+                    {% end %}
                     {% if team and has_level %}
                         <div class="progress" style="height: 10px; background-color: #424242;">
                         {% if len(level.flags) == 0 %}
