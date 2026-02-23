@@ -285,8 +285,23 @@ class Flag(DatabaseObject):
 
     @property
     def order(self):
-        if not self._order:
-            self._order = self.box.flags.index(self) + 1
+        if self._order:
+            return self._order
+        box = self.box
+        if box is None:
+            self._order = self.id if self.id else 0
+            return self._order
+        # Preserve legacy behavior (unlocked-only ordering), but gracefully
+        # fall back to all flags for imports where locked flags have no order.
+        for flags in (box.flags, box.flags_all):
+            try:
+                self._order = flags.index(self) + 1
+                return self._order
+            except ValueError:
+                continue
+        # As a last resort, return a stable value instead of crashing template
+        # rendering/sorting.
+        self._order = self.id if self.id else 0
         return self._order
 
     @order.setter
@@ -462,6 +477,7 @@ class Flag(DatabaseObject):
         ET.SubElement(flag_elem, "description").text = self.description
         ET.SubElement(flag_elem, "capture_message").text = self.capture_message
         ET.SubElement(flag_elem, "value").text = str(self.value)
+        ET.SubElement(flag_elem, "order").text = str(self.order)
         ET.SubElement(flag_elem, "plain_answer").text = str(self._plain_answer)
         ET.SubElement(flag_elem, "locked").text = str(self.locked)
         if self.lock_id:

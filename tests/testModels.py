@@ -5,6 +5,7 @@ Unit tests for everything in models/
 
 
 import unittest
+import xml.etree.cElementTree as ET
 from datetime import datetime, timedelta
 
 from libs.StringCoding import encode
@@ -229,6 +230,24 @@ class TestFlag(unittest.TestCase):
     def test_datetime_capture(self):
         assert self.datetime_flag.capture("2018-06-22 18:00:00")
         assert not self.datetime_flag.capture("2018-06-21 16:00:00")
+
+    def test_order_fallback_for_locked_flag_without_explicit_order(self):
+        # Legacy imports may omit order while still marking flags as locked.
+        self.static_flag._order = None
+        self.static_flag.locked = True
+        dbsession.add(self.static_flag)
+        dbsession.commit()
+        assert self.static_flag not in self.box.flags
+        assert self.static_flag in self.box.flags_all
+        assert self.static_flag.order >= 1
+        sorted(self.box.flags_all)
+
+    def test_to_xml_includes_order(self):
+        parent = ET.Element("flags")
+        self.static_flag.to_xml(parent)
+        order_elem = parent.find("flag/order")
+        assert order_elem is not None
+        assert order_elem.text == str(self.static_flag.order)
 
 
 class TestUserLevelTimer(unittest.TestCase):

@@ -166,7 +166,12 @@ def create_flags(parent, box):
                 flag.description = get_child_text(flag_elem, "description")
                 flag.capture_message = get_child_text(flag_elem, "capture_message")
                 flag.type = flag_elem.get("type", "static")
-                flag.order = get_child_text(flag_elem, "order", None)
+                flag_order = get_child_text(flag_elem, "order", None)
+                if flag_order is None or str(flag_order).strip() == "":
+                    # Legacy exports can omit flag order; preserve XML sequence.
+                    flag.order = index + 1
+                else:
+                    flag.order = flag_order
                 flag.locked = get_child_text(flag_elem, "locked", 0)
                 if flag.type == "file":
                     add_attachments(
