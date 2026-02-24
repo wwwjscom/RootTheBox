@@ -49,6 +49,7 @@ from models.Theme import Theme
 from models.User import User
 
 from .BaseHandlers import BaseHandler
+from .MissionsHandler import missions_level_timer_map
 
 
 class HomeHandler(BaseHandler):
@@ -96,6 +97,9 @@ class HomeHandler(BaseHandler):
                 if team == user.team.name:
                     rank = i + 1
                     break
+            level_submission_timers = (
+                missions_level_timer_map(self.dbsession, user) if not visitor else {}
+            )
             self.render(
                 "user/home.html",
                 user=user,
@@ -103,6 +107,7 @@ class HomeHandler(BaseHandler):
                 visitor=visitor,
                 rank=rank,
                 scoreboard_visible=options.scoreboard_visibility != "admins",
+                level_submission_timers=level_submission_timers,
             )
 
 

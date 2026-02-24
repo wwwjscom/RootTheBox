@@ -262,9 +262,12 @@
             {% for index, level in enumerate(GameLevel.all()) %}
                 {% set show_level = level.type != "hidden" or (level.type == "hidden" and level in team.game_levels) %}
                 {% if len(level.unlocked_boxes()) > 0 and team and show_level %}
+                    {% set has_level = level.type == 'none' or level in team.game_levels %}
+                    {% set level_timer = level_submission_timers.get(level.uuid, {}) %}
+                    {% set show_started_level_timer = has_level and level_timer.get("enabled") and level_timer.get("started") %}
                     {% if len(GameLevel.all()) > 1 %}
                     <h3 class="levelheader">
-                        {% if level.type == 'none' or level in team.game_levels %}
+                        {% if has_level %}
                             <i class="fa fa-unlock-alt"></i>
                         {% else %}
                             <i class="fa fa-lock"></i>
@@ -278,7 +281,20 @@
                             </div>
                         </div>
                     {% end %}
-                    {% if level.type == 'none' or level in team.game_levels %}
+                    {% if show_started_level_timer and not options.teams %}
+                        <div class="alert {% if level_timer.get('expired') %}alert-error{% else %}alert-info{% end %}"
+                             style="margin: 10px 0;"
+                             data-level-submission-timer="1"
+                             data-level-submission-timer-started="true"
+                             data-level-submission-timer-remaining="{{ level_timer.get('remaining_seconds', 0) }}">
+                            <strong>{{ _("Submission Timer") }}:</strong>
+                            <span class="level-submission-timer-value">{{ level_timer.get("display") }}</span>
+                            {% if level_timer.get("expired") %}
+                                <span class="level-submission-timer-expired-msg"> - {{ _("Expired. You can still view mission details but cannot submit flags.") }}</span>
+                            {% end %}
+                        </div>
+                    {% end %}
+                    {% if has_level %}
                         <hr style="margin: 5px 0;">
                         {% for box in sorted(level.unlocked_boxes()) %}
                             {% if not box.locked and len(box.flags) > 0 %}
@@ -349,9 +365,12 @@
                 {% for index, level in enumerate(GameLevel.all()) %}
                     {% set show_level = level.type != "hidden" or (level.type == "hidden" and level in team.game_levels) %}
                     {% if len(level.unlocked_boxes()) > 0 and team and show_level %}
+                        {% set has_level = level.type == 'none' or level in team.game_levels %}
+                        {% set level_timer = level_submission_timers.get(level.uuid, {}) %}
+                        {% set show_started_level_timer = has_level and level_timer.get("enabled") and level_timer.get("started") %}
                         {% if len(GameLevel.all()) > 1 %}
                         <h3 class="levelheader">
-                            {% if level.type == 'none' or level in team.game_levels %}
+                            {% if has_level %}
                                 <i class="fa fa-unlock-alt"></i>
                             {% else %}
                                 <i class="fa fa-lock"></i>
@@ -365,7 +384,20 @@
                                 </div>
                             </div>
                         {% end %}
-                        {% if level.type == 'none' or level in team.game_levels %}
+                        {% if show_started_level_timer %}
+                            <div class="alert {% if level_timer.get('expired') %}alert-error{% else %}alert-info{% end %}"
+                                 style="margin: 10px 0;"
+                                 data-level-submission-timer="1"
+                                 data-level-submission-timer-started="true"
+                                 data-level-submission-timer-remaining="{{ level_timer.get('remaining_seconds', 0) }}">
+                                <strong>{{ _("Submission Timer") }}:</strong>
+                                <span class="level-submission-timer-value">{{ level_timer.get("display") }}</span>
+                                {% if level_timer.get("expired") %}
+                                    <span class="level-submission-timer-expired-msg"> - {{ _("Expired. You can still view mission details but cannot submit flags.") }}</span>
+                                {% end %}
+                            </div>
+                        {% end %}
+                        {% if has_level %}
                             <hr style="margin: 5px 0;">
                             {% for box in sorted(level.unlocked_boxes()) %}
                                 {% if not box.locked and len(box.flags) > 0 %}
