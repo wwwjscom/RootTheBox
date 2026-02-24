@@ -131,6 +131,13 @@ def missions_level_timer_map(dbsession, user):
     return timers
 
 
+def impacted_level_boxes(level):
+    # Timer applies at level scope, so include each level box with at least one flag.
+    if level is None:
+        return []
+    return [box for box in sorted(level.boxes) if len(box.flags) > 0]
+
+
 def render_level_timer_confirmation(handler, box, timer_context, errors=None, info=None):
     # Shared renderer for the one-time "starting timer" confirmation screen.
     if errors is None:
@@ -138,12 +145,15 @@ def render_level_timer_confirmation(handler, box, timer_context, errors=None, in
     if info is None:
         info = []
     user = handler.get_current_user()
+    impacted_boxes = impacted_level_boxes(box.game_level)
     handler.render(
         "missions/timer_start.html",
         box=box,
         user=user,
         team=user.team,
         timer_minutes=box.game_level.flag_submission_timer_minutes,
+        impacted_level_boxes=impacted_boxes,
+        impacted_level_box_count=len(impacted_boxes),
         errors=errors,
         info=info,
         **timer_context,

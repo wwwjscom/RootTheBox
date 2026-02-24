@@ -2,10 +2,60 @@
 
 {% block title %}{{ _("Missions") }}{% end %}
 
+{% block header %}
+<style>
+    .timer-confirm-alert {
+        border: 1px solid #f0d188;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 16px 18px;
+    }
+    .timer-confirm-alert .alert-heading {
+        margin-bottom: 10px;
+    }
+    .timer-confirm-alert .alert-heading i {
+        margin-right: 6px;
+    }
+    .timer-confirm-details {
+        margin: 14px 0;
+        padding: 10px 12px;
+        border: 1px solid #efd9a8;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.45);
+    }
+    .timer-confirm-details table {
+        margin: 0;
+        width: 100%;
+    }
+    .timer-confirm-details td {
+        padding: 3px 0;
+    }
+    .timer-confirm-details td:first-child {
+        width: 120px;
+        color: #8a6d3b;
+        font-weight: bold;
+        vertical-align: top;
+    }
+    .timer-confirm-mission-list {
+        margin: 0;
+        padding-left: 18px;
+    }
+    .timer-confirm-mission-list li {
+        margin-bottom: 2px;
+    }
+    .timer-confirm-warning {
+        margin-top: 0;
+    }
+    .timer-confirm-actions {
+        margin-top: 14px;
+    }
+    .timer-confirm-actions .btn {
+        margin-right: 6px;
+    }
+</style>
+{% end %}
+
 {% block content %}
     <div class="container">
-        <h1>{{ _("Missions") }}</h1>
-        <br />
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
             <div class="alert alert-error">
@@ -15,25 +65,50 @@
             </div>
             {% end %}
         {% end %}
-         {% if info is not None and len(info) != 0 %}
+        {% if info is not None and len(info) != 0 %}
             {% for msg in info %}
             <div class="alert alert-info">
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
-                    <h4 class="alert-heading">{{ _("INFO") }}</h4>
-                    {{ msg }}
+                <a class="close" data-dismiss="alert" href="#">&times;</a>
+                <h4 class="alert-heading">{{ _("INFO") }}</h4>
+                {{ msg }}
             </div>
             {% end %}
         {% end %}
-        <div class="alert alert-warning">
-            <h4 class="alert-heading">{{ _("Timer Confirmation Required") }}</h4>
+        <div class="alert alert-warning timer-confirm-alert">
+            <h2 class="alert-heading">
+                <i class="fa fa-clock-o"></i> {{ _("Timer Confirmation") }}
+            </h2>
             <p>
                 {{ _("You are about to start the timer for this level.") }}
             </p>
-            <p>
-                <strong>{{ _("Time Limit") }}:</strong> {{ timer_minutes }} {{ _("minute(s)") }}
-            </p>
-            <p>
-                {{ _("Once started, this timer cannot be paused or reset.") }}
+            <div class="timer-confirm-details">
+                <table>
+                    <tr>
+                        <td>{{ _("Level") }}</td>
+                        <td><strong>{{ box.game_level.name }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>{{ _("Mission Count") }}</td>
+                        <td><strong>{{ impacted_level_box_count }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>{{ _("Missions") }}</td>
+                        <td>
+                            <ul class="timer-confirm-mission-list">
+                                {% for impacted_box in impacted_level_boxes %}
+                                    <li>{{ impacted_box.name }}</li>
+                                {% end %}
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>{{ _("Time Limit") }}</td>
+                        <td><strong>{{ timer_minutes }} {{ _("minute(s)") }}</strong></td>
+                    </tr>
+                </table>
+            </div>
+            <p class="timer-confirm-warning">
+                {{ _("Once started, this timer cannot be paused or reset. This timer will apply to all missions in this level.") }}
             </p>
             <p>
                 {{ _("Are you ready to start the timer and view this mission?") }}
@@ -43,8 +118,10 @@
                 {% raw xsrf_form_html() %}
                 <input name="start_level_timer" type="hidden" value="1" />
                 <input name="box_uuid" type="hidden" value="{{ box.uuid }}" />
-                <button class="btn btn-danger" type="submit">{{ _("Start Timer and Continue") }}</button>
-                <a class="btn" href="/user/missions">{{ _("Not Yet") }}</a>
+                <div class="timer-confirm-actions">
+                    <button class="btn btn-danger" type="submit">{{ _("Start Timer and Continue") }}</button>
+                    <a class="btn" href="/user/missions">{{ _("Not Yet") }}</a>
+                </div>
             </form>
         </div>
     </div>
