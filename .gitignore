@@ -76,5 +76,8 @@ __pycache__
 # Backups
 *.bak
 
+# Vim swap files
+*.swp
+
 # Readme
 !*README.md
