@@ -11,11 +11,13 @@ Root the Box is a real-time CTF (Capture the Flag) scoring engine built on Pytho
 The recommended dev environment is Docker Compose, which handles memcached (required for sessions) automatically:
 
 ```bash
-# First run — builds image, runs migrations, bootstraps DB
+# Production (default)
 docker compose up --build
-
-# Subsequent runs
 docker compose up
+
+# Development — mounts source, enables autoreload and debug mode
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 # Run tests inside the container (correct SQLAlchemy version)
 docker compose exec webapp python3 /opt/rtb/rootthebox.py --tests
@@ -26,7 +28,7 @@ docker compose exec webapp python3 -m nose tests/testModels.py:TestReviewMode
 
 Default admin credentials (created by bootstrap): `admin` / `rootthebox`
 
-The `docker-compose.yml` volume-mounts `handlers/`, `models/`, `templates/`, `static/`, and `tests/` so edits on the host are reflected immediately. `DEBUG=True` is set in the compose env, which disables Tornado's template cache and uses a fixed cookie secret — do not use in production.
+`docker-compose.dev.yml` overlays source volume mounts and sets `DEBUG=True` (fixed cookie secret, no template cache) and `AUTORELOAD_SOURCE=True`. Never use the dev overlay in production.
 
 **Do not run tests with the host Python** — SQLAlchemy 2.x is installed there but the app requires 1.x. Always run tests inside the container.
 

@@ -2,8 +2,7 @@ version: "3"
 services:
   memcached:
     image: memcached:latest
-    ports:
-      - "11211:11211"
+    restart: unless-stopped
   webapp:
     build: .
     ports:
@@ -12,3 +11,6 @@ services:
       - ./files:/opt/rtb/files:rw
     environment:
       - COMPOSE_CONVERT_WINDOWS_PATHS=1
+    restart: unless-stopped
+    depends_on:
+      - memcached

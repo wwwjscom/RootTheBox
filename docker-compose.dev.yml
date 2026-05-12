@@ -1,0 +1,17 @@
+version: "3"
+services:
+  memcached:
+    ports:
+      - "11211:11211"
+  webapp:
+    volumes:
+      - ./files:/opt/rtb/files:rw
+      - ./handlers:/opt/rtb/handlers:ro
+      - ./models:/opt/rtb/models:ro
+      - ./templates:/opt/rtb/templates:ro
+      - ./static:/opt/rtb/static:ro
+      - ./tests:/opt/rtb/tests:ro
+    environment:
+      - COMPOSE_CONVERT_WINDOWS_PATHS=1
+      - DEBUG=True
+      - AUTORELOAD_SOURCE=True
