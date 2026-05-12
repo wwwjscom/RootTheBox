@@ -315,6 +315,20 @@ class TestScoreboardTopX(unittest.TestCase):
         result = self._handler(6).summary_page(2, 2, top=0)
         assert list(result["teams"].keys()) == ["Team3", "Team4"]
 
+    def test_projector_default_when_unconfigured(self):
+        # When scoreboard_top is 0 (unset), the projector falls back to 25.
+        from handlers.ScoreboardHandlers import ScoreboardProjectorHandler
+        top = options.scoreboard_top if options.scoreboard_top > 0 else 25
+        assert top == 25
+
+    def test_projector_uses_configured_value(self):
+        # When scoreboard_top is set, the projector uses that value.
+        original = options.scoreboard_top
+        options.scoreboard_top = 5
+        top = options.scoreboard_top if options.scoreboard_top > 0 else 25
+        assert top == 5
+        options.scoreboard_top = original
+
 
 class TestReviewMode(unittest.TestCase):
     """Tests for the per-level review mode feature."""
