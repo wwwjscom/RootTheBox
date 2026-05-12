@@ -177,6 +177,16 @@
                 </div>
             </div>
             <div class="control-group">
+                <label class="control-label" for="scoreboard_top">{{ _("Scoreboard Top N") }}</label>
+                <div class="controls">
+                    <input id="scoreboard-top" min="0" type="number" name="scoreboard_top"
+                        value="{{ config.scoreboard_top }}"
+                        rel="popover" pattern="\d*"
+                        data-original-title="{{ _('Scoreboard Top N') }}"
+                        data-content="{{ _('Only show the top N players on the scoreboard. Admins always see all players. Set to 0 to show all teams.') }}" />
+                </div>
+            </div>
+            <div class="control-group">
                 <label class="control-label" for="hints-taken">
                     <i class="fa fa-medkit"></i>
                     {{ _("Display Hints Taken") }}

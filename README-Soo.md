@@ -64,3 +64,21 @@ This is useful for testing a level's flags and difficulty before a competition w
 Toggle it from **Admin → Game Levels** using the **Enable/Disable Review Mode** button on any level. When active:
 - A yellow **Review Mode** badge appears on the level in the admin Game Levels and Game Objects views, with a tooltip explaining the behaviour.
 - An orange border and alert banner are shown to players on the box page.
+
+### Top-X Public Scoreboard
+
+Admins can limit the public scoreboard to show only the top N teams, hiding lower-ranked players from view. This is useful during competitions to avoid demoralizing struggling teams.
+
+Configure it from **Admin → Configuration → Scoreboard Top N**. Set to `0` (default) to show all teams.
+
+When active:
+- Non-admin players visiting `/scoreboard` see only the top N teams and the heading reads **Top N Scoreboard**.
+- Admins visiting `/scoreboard` always see the full scoreboard regardless of this setting.
+
+### Projector Scoreboard
+
+A clean, nav-free scoreboard designed for display on a projector or second screen. It shows only the top-N teams (using the **Scoreboard Top N** setting; defaults to 10 if not configured), with a dark background and no navigation chrome.
+
+Access it from **Scoreboard → Projector** in the admin nav (opens in a new tab), or navigate directly to `/scoreboard/projector`. Admin login required.
+
+The projector view uses the same live WebSocket updates and rank-change animations as the main scoreboard.

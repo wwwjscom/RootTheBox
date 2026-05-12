@@ -6,6 +6,7 @@ services:
   webapp:
     volumes:
       - ./files:/opt/rtb/files:rw
+      - ./rootthebox.py:/opt/rtb/rootthebox.py:ro
       - ./handlers:/opt/rtb/handlers:ro
       - ./models:/opt/rtb/models:ro
       - ./templates:/opt/rtb/templates:ro

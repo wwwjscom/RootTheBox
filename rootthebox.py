@@ -757,6 +757,14 @@ define(
 define("mvp_max", default=10, group="game", help="display the top N players", type=int)
 
 define(
+    "scoreboard_top",
+    default=0,
+    group="game",
+    help="limit public scoreboard to top N teams (0=no limit)",
+    type=int,
+)
+
+define(
     "scoreboard_right_image",
     default="",
     group="game",

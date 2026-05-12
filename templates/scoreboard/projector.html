@@ -6,54 +6,35 @@
 <script src="/static/js/pages/scoreboard/summary.js"></script>
 <script src="/static/js/pages/missions/view.js"></script>
 <link href="/static/css/pages/public/summary.css" rel="stylesheet" />
+<style>
+  .navbar-fixed-top, footer { display: none !important; }
+  body { padding-top: 20px !important; background: #111 !important; color: #eee !important; }
+  .container-fluid { background: #111 !important; }
+  .well { background: #1a1a1a !important; border-color: #333 !important; }
+  .well .table-striped tbody tr:nth-child(odd) td { background-color: #222; }
+  .well .table-striped tbody tr:nth-child(even) td { background-color: #1a1a1a; }
+  #summary_table th, #summary_table td { color: #eee !important; border-color: #333 !important; }
+  #summary_table thead th { border-bottom-color: #555 !important; }
+  #summary_loading { color: #eee; }
+  .bar.minibar { background-color: #f89406 !important; }
+  .progress { background-color: #333 !important; box-shadow: none !important; }
+  #summary_table th:last-child, #summary_table td:last-child { display: none !important; }
+</style>
 {% end %}
 
 {% block title %}{{ _("Scoreboard") }}{% end %}
 
 {% block content %}
     {% from tornado.options import options %}
-    {% from math import ceil %}
     {% if not hide_scoreboard %}
     <div class="row-fluid">
-        <div style="float:right; margin-top: -15px; margin-right: 4.75%;">
-            {% set pcount = ceil(teamcount / display) %}
-            <div id="parameters" data-count="{{display}}" data-page="{{page}}" style="visibility: hidden;"></div>
-            <div class="pagination" style="padding: 5px; margin-right: 110px">
-                <ul>
-                    {% if pcount > 1 %}
-                    <li {%if page==1 %}class="disabled" {%end%}><a {%if page !=1 %}href="?count={{display}}&page={{page-1}}"
-                            {%end%}>Prev</a></li>
-                    {% for x in range(max(1,page-4), min(pcount+1, max(page+5, 10))) %}
-                    <li {%if page==x %}class="active" {%end%}><a {%if page !=x %}href="?count={{display}}&page={{x}}"
-                            {%end%}>{{x}}</a></li>
-                    {% end %}
-                    <li {%if page==pcount %}class="disabled" {%end%}><a {%if page !=pcount
-                            %}href="?count={{display}}&page={{page+1}}" {%end%}>Next</a></li>
-                    {% end %}
-                    <li class="disabled">
-                        <a>&nbsp;{% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %} {{ _("per page") }}</a>
-                    </li>
-                    <li>
-                        <select id="page_count" style="width: 80px;">
-                            {% if display!= 10 and display!=25 and display!=50 and display!=100 and display!=250 %}
-                                <option value={{display}} selected>{{display}}</option>
-                            {%end%}
-                            <option value=10{% if display==10 %} selected{%end%}>10</option>
-                            <option value=25{% if display==25 %} selected{%end%}>25</option>
-                            <option value=50{% if display==50 %} selected{%end%}>50</option>
-                            <option value=100{% if display==100 %} selected{%end%}>100</option>
-                            <option value=250{% if display==250 %} selected{%end%}>250</option>
-                        </select>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        <div id="parameters" data-count="{{ top }}" data-page="1" style="visibility: hidden;"></div>
         {% if timer %}
         <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-right: 100px;"></h3>
         {% end %}
         <h1 class="offset1">
             <i class="fa fa-bar-chart-o"></i>
-            {% if scoreboard_top > 0 %}{{ _("Top") }} {{ scoreboard_top }} {% end %}{{ _("Scoreboard") }}
+            {{ _("Top") }} {{ top }} {{ _("Scoreboard") }}
         </h1>
     </div>
     <br />
@@ -91,7 +72,7 @@
                         <th class="anim:update"><!-- Details --></th>
                     </tr>
                 </thead>
-                <tbody id="summary_tbody" >
+                <tbody id="summary_tbody">
                     <!-- AJAX -->
                 </tbody>
             </table>

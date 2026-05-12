@@ -38,12 +38,12 @@ from tornado.websocket import WebSocketHandler
 
 from handlers.BaseHandlers import BaseHandler
 from libs.Scoreboard import Scoreboard
-from libs.SecurityDecorators import item_allowed, use_black_market
+from libs.SecurityDecorators import authenticated, authorized, item_allowed, use_black_market
 from models import dbsession
 from models.Box import Box
 from models.Category import Category
 from models.Team import Team
-from models.User import User
+from models.User import ADMIN_PERMISSION, User
 from models.WallOfSheep import WallOfSheep
 
 
@@ -92,6 +92,9 @@ class ScoreboardHandler(BaseHandler):
                 Scoreboard.update_gamestate(self)
             settings = self.application.settings
             teamcount = len(settings["scoreboard_state"].get("teams"))
+            is_admin = user and user.is_admin()
+            if options.scoreboard_top > 0 and not is_admin:
+                teamcount = min(teamcount, options.scoreboard_top)
             if page == 0:
                 page = 1
                 if teamcount > display and user and user.team:
@@ -110,6 +113,7 @@ class ScoreboardHandler(BaseHandler):
                 page=page,
                 display=display,
                 teamcount=teamcount,
+                scoreboard_top=options.scoreboard_top if (options.scoreboard_top > 0 and not is_admin) else 0,
             )
         elif not user:
             self.redirect("/login")
@@ -158,16 +162,21 @@ class ScoreboardAjaxHandler(BaseHandler):
         except ValueError:
             page = 1
             display = 50
+        user = self.get_current_user()
+        is_admin = user and user.is_admin()
+        top = options.scoreboard_top if (options.scoreboard_top > 0 and not is_admin) else 0
         self.render(
             "scoreboard/summary_table.html",
-            game_state=self.summary_page(page, display),
+            game_state=self.summary_page(page, display, top=top),
             page=page,
             display=display,
         )
 
-    def summary_page(self, page, display):
+    def summary_page(self, page, display, top=0):
         """Prepare the pagination for the leaderboard"""
         teams = self.settings["scoreboard_state"].get("teams")
+        if top > 0:
+            teams = OrderedDict(list(teams.items())[:top])
         teamcount = len(teams)
         if teamcount > display:
             scoreboard = self.settings["scoreboard_state"].copy()
@@ -179,6 +188,10 @@ class ScoreboardAjaxHandler(BaseHandler):
                     scoreboard["teams"][team] = teams[team]
                 elif i >= end_count:
                     break
+            return scoreboard
+        elif top > 0:
+            scoreboard = self.settings["scoreboard_state"].copy()
+            scoreboard["teams"] = teams
             return scoreboard
         else:
             return self.settings["scoreboard_state"]
@@ -417,6 +430,23 @@ class TeamsHandler(BaseHandler):
             self.redirect("/login")
         else:
             self.render("public/404.html")
+
+
+class ScoreboardProjectorHandler(BaseHandler):
+    """Clean full-screen scoreboard for projector display — admin only"""
+
+    @authenticated
+    @authorized(ADMIN_PERMISSION)
+    def get(self, *args, **kwargs):
+        top = options.scoreboard_top if options.scoreboard_top > 0 else 10
+        if not options.scoreboard_lazy_update:
+            Scoreboard.update_gamestate(self)
+        self.render(
+            "scoreboard/projector.html",
+            top=top,
+            timer=self.timer(),
+            hide_scoreboard=self.application.settings["hide_scoreboard"],
+        )
 
 
 def scoreboard_visible(user):

@@ -5,6 +5,7 @@ Unit tests for everything in models/
 
 
 import unittest
+from collections import OrderedDict
 from datetime import datetime, timedelta
 
 from libs.StringCoding import encode
@@ -257,6 +258,62 @@ class TestUserLevelTimer(unittest.TestCase):
         dbsession.add(self.timer)
         dbsession.commit()
         assert self.timer.seconds_remaining(datetime.now()) == 0
+
+
+class TestScoreboardTopX(unittest.TestCase):
+    """Tests for the top-X scoreboard filtering logic in summary_page()."""
+
+    def _make_state(self, n):
+        teams = OrderedDict()
+        for i in range(n):
+            teams["Team%d" % (i + 1)] = {"uuid": "uuid-%d" % i, "money": 1000 - i * 100}
+        return {"teams": teams, "users": {}, "levels": {}, "boxes": {},
+                "hint_count": 0, "flag_count": 0, "box_count": 0, "level_count": 0}
+
+    def _handler(self, n):
+        from handlers.ScoreboardHandlers import ScoreboardAjaxHandler
+        state = self._make_state(n)
+
+        class Stub:
+            settings = {"scoreboard_state": state}
+
+        stub = Stub()
+        stub.summary_page = lambda *a, **kw: ScoreboardAjaxHandler.summary_page(stub, *a, **kw)
+        return stub
+
+    def test_no_limit_returns_all(self):
+        result = self._handler(5).summary_page(1, 50, top=0)
+        assert len(result["teams"]) == 5
+
+    def test_top_filters_to_n(self):
+        result = self._handler(5).summary_page(1, 50, top=3)
+        assert len(result["teams"]) == 3
+
+    def test_top_preserves_rank_order(self):
+        result = self._handler(5).summary_page(1, 50, top=3)
+        assert list(result["teams"].keys()) == ["Team1", "Team2", "Team3"]
+
+    def test_top_larger_than_total_returns_all(self):
+        result = self._handler(3).summary_page(1, 50, top=10)
+        assert len(result["teams"]) == 3
+
+    def test_top_with_pagination_page1(self):
+        result = self._handler(6).summary_page(1, 2, top=4)
+        assert list(result["teams"].keys()) == ["Team1", "Team2"]
+
+    def test_top_with_pagination_page2(self):
+        result = self._handler(6).summary_page(2, 2, top=4)
+        assert list(result["teams"].keys()) == ["Team3", "Team4"]
+
+    def test_top_pagination_excludes_beyond_cap(self):
+        # page 3 with display=2 and top=4: only 4 teams exist after cap, none on page 3
+        result = self._handler(6).summary_page(3, 2, top=4)
+        assert len(result["teams"]) == 0
+
+    def test_zero_top_with_pagination(self):
+        # top=0 still paginates normally when teamcount > display
+        result = self._handler(6).summary_page(2, 2, top=0)
+        assert list(result["teams"].keys()) == ["Team3", "Team4"]
 
 
 class TestReviewMode(unittest.TestCase):

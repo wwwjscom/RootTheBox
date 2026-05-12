@@ -99,6 +99,7 @@ urls = [
     (r"/scoreboard/wsocket/game_data", ScoreboardDataSocketHandler),
     (r"/scoreboard/wsocket/game_history", ScoreboardHistorySocketHandler),
     (r"/scoreboard/wsocket/pause_score", ScoreboardPauseHandler),
+    (r"/scoreboard/projector", ScoreboardProjectorHandler),
     (r"/teams", TeamsHandler),
     # FileUploadHandlers - FileUploadHandlers.py
     (r"/user/shares/delete", FileDeleteHandler),
