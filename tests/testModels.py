@@ -8,6 +8,7 @@ import unittest
 from datetime import datetime, timedelta
 
 from libs.StringCoding import encode
+from models.Penalty import Penalty
 from libs.ValidationError import ValidationError
 from models import dbsession
 from models.Box import Box
@@ -256,3 +257,126 @@ class TestUserLevelTimer(unittest.TestCase):
         dbsession.add(self.timer)
         dbsession.commit()
         assert self.timer.seconds_remaining(datetime.now()) == 0
+
+
+class TestReviewMode(unittest.TestCase):
+    """Tests for the per-level review mode feature."""
+
+    def setUp(self):
+        self.box, self.corp = create_box()
+        self.level = self.box.game_level
+        self.team = create_team()
+        self.user = create_user()
+        self.user.team = self.team
+        options.banking = True
+        options.dynamic_flag_value = False
+        self.flag = Flag.create_flag(
+            _type=FLAG_STATIC,
+            box=self.box,
+            name="Review Flag",
+            raw_token="reviewtoken",
+            description="Test flag",
+            value=100,
+        )
+        dbsession.add(self.flag)
+        dbsession.add(self.user)
+        dbsession.commit()
+
+    def tearDown(self):
+        self.level.review_mode = False
+        dbsession.query(Penalty).filter_by(flag_id=self.flag.id).delete()
+        dbsession.add(self.level)
+        dbsession.commit()
+        dbsession.delete(self.user)
+        dbsession.delete(self.team)
+        dbsession.delete(self.corp)
+        dbsession.commit()
+
+    # --- Model property tests ---
+
+    def test_default_is_false(self):
+        assert self.level.review_mode == False
+
+    def test_toggle(self):
+        self.level.review_mode = True
+        dbsession.add(self.level)
+        dbsession.commit()
+        assert GameLevel.by_id(self.level.id).review_mode == True
+
+    def test_type_coercion_int(self):
+        self.level.review_mode = 1
+        assert self.level.review_mode == True
+        self.level.review_mode = 0
+        assert self.level.review_mode == False
+
+    def test_type_coercion_str(self):
+        self.level.review_mode = "true"
+        assert self.level.review_mode == True
+        self.level.review_mode = "1"
+        assert self.level.review_mode == True
+        self.level.review_mode = "false"
+        assert self.level.review_mode == False
+
+    def test_in_to_dict(self):
+        d = self.level.to_dict()
+        assert "review_mode" in d
+        assert d["review_mode"] == False
+        self.level.review_mode = True
+        assert self.level.to_dict()["review_mode"] == True
+
+    # --- Scoring behaviour tests ---
+
+    def test_flag_captured_in_review_mode(self):
+        """Flag should be marked captured even when review mode is active."""
+        self.level.review_mode = True
+        dbsession.add(self.level)
+        dbsession.commit()
+        self.team.add_flag(self.flag)
+        dbsession.add(self.team)
+        dbsession.commit()
+        assert self.flag in self.team.flags
+
+    def test_no_points_awarded_in_review_mode(self):
+        """Team score must not change when a flag is captured in review mode."""
+        self.level.review_mode = True
+        dbsession.add(self.level)
+        dbsession.commit()
+        initial_money = self.team.money
+        if not self.level.review_mode:
+            self.team.set_score("flag", self.flag.value + self.team.money)
+        self.team.add_flag(self.flag)
+        dbsession.add(self.team)
+        dbsession.commit()
+        assert self.team.money == initial_money
+
+    def test_points_awarded_outside_review_mode(self):
+        """Team score must increase when a flag is captured outside review mode."""
+        self.level.review_mode = False
+        initial_money = self.team.money
+        flag_value = self.flag.dynamic_value(self.team)
+        if not self.level.review_mode:
+            self.team.set_score("flag", flag_value + self.team.money)
+        self.team.add_flag(self.flag)
+        dbsession.add(self.team)
+        dbsession.commit()
+        assert self.team.money == initial_money + flag_value
+
+    # --- Penalty suppression tests ---
+
+    def test_penalty_suppressed_in_review_mode(self):
+        """Wrong submissions must not create penalties in review mode."""
+        self.level.review_mode = True
+        dbsession.add(self.level)
+        dbsession.commit()
+        level = GameLevel.by_id(self.flag.box.game_level_id)
+        if not level.review_mode:
+            Penalty.create_attempt(user=self.user, flag=self.flag, submission="wrong")
+        assert Penalty.by_count(self.flag, self.team) == 0
+
+    def test_penalty_created_outside_review_mode(self):
+        """Wrong submissions must create penalties outside review mode."""
+        self.level.review_mode = False
+        level = GameLevel.by_id(self.flag.box.game_level_id)
+        if not level.review_mode:
+            Penalty.create_attempt(user=self.user, flag=self.flag, submission="wrong")
+        assert Penalty.by_count(self.flag, self.team) == 1
