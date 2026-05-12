@@ -12,6 +12,28 @@
 {% end %}
 
 {% block modals %}
+{% if level.review_mode %}
+<style>
+  #review-mode-border {
+    position: fixed;
+    top: 60px;
+    left: 0; right: 0; bottom: 0;
+    border: 5px solid #f89406;
+    pointer-events: none;
+    z-index: 9998;
+  }
+</style>
+<div id="review-mode-border"></div>
+<script>
+  $(function() {
+    var footernav = document.querySelector('.navbar-inner.footernav');
+    if (footernav) {
+      var visible = window.innerHeight - footernav.getBoundingClientRect().top;
+      document.getElementById('review-mode-border').style.bottom = Math.max(0, visible) + 'px';
+    }
+  });
+</script>
+{% end %}
 {% import os %}
 {% from models.Penalty import Penalty %}
 {% from models.Flag import Flag %}
@@ -135,6 +157,11 @@
 {% block content %}
     <!-- Visible -->
     <div class="container">
+        {% if level.review_mode %}
+        <div class="alert alert-warning">
+            <i class="fa fa-eye"></i>&nbsp;<strong>{{ _("Review Mode") }}</strong> &mdash; {{ _("Flag submissions are accepted but no points are awarded") }}
+        </div>
+        {% end %}
         <h1>
             {% if box.operating_system.lower() == 'windows' %}
                 <i class="fa fa-windows"></i>

@@ -78,6 +78,7 @@
                             <i class="fa fa-lock"></i>
                         {% end %}
                         {{ level.name }}&nbsp;
+                        {% if level.review_mode %}<span class="label label-warning">{{_("Review Mode — No Points")}}</span>{% end %}
                     </h3>
                     {% if level.description %}<h4 class="levelheader">({{ level.description }})</h4>{% end %}
                     {% if team and has_level and level_timer.get("enabled") %}

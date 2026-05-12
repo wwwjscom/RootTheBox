@@ -10,6 +10,15 @@
 <script src="/static/js/pages/admin/view/game_objects.js"></script>
 <script src="/static/js/pages/admin/view/statistics.js"></script>
 <script src="/static/js/pages/anchor.js"></script>
+<script>$(function() { $('[data-toggle="tooltip"]').tooltip(); });</script>
+<style>
+  .tooltip-inner { font-size: 13px; max-width: 320px; background-color: #2c3e50 !important; border: 1px solid #f89406 !important; }
+  .tooltip.in { opacity: 1 !important; filter: alpha(opacity=100) !important; }
+  .tooltip.top .tooltip-arrow { border-top-color: #2c3e50 !important; }
+  .tooltip.bottom .tooltip-arrow { border-bottom-color: #2c3e50 !important; }
+  .tooltip.left .tooltip-arrow { border-left-color: #2c3e50 !important; }
+  .tooltip.right .tooltip-arrow { border-right-color: #2c3e50 !important; }
+</style>
 {% end %}
 
 {% block modals %}
@@ -793,6 +802,7 @@
                                             <i class="fa fa-th"></i>
                                         {% end %}
                                         {{ box.name }}&nbsp;&nbsp;
+                                        {% if box.game_level.review_mode %}<span class="label label-warning" data-toggle="tooltip" title="{{_('Flags can be captured, but no points are awarded. To enable or disable, visit the Game Levels page.')}}" style="font-size: 0.8em; padding: 4px 7px; vertical-align: middle;"><i class="fa fa-eye"></i> {{_("Review Mode")}}</span>{% end %}
                                     </h3>
                                         {% if box.locked %}
                                             <a id="lock-box-button-{{ box.uuid }}" class="btn btn-small btn-warning" data-uuid="{{ box.uuid }}">

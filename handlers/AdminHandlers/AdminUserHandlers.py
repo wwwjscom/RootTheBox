@@ -360,6 +360,7 @@ class AdminLockHandler(BaseHandler):
             "flag": self.lock_flag,
             "corp": self.lock_corp,
             "level": self.lock_level,
+            "review_mode": self.review_mode_level,
         }
         if len(args) and args[0] in uri:
             uri[args[0]]()
@@ -394,6 +395,17 @@ class AdminLockHandler(BaseHandler):
         level = GameLevel.by_uuid(uuid)
         if level is not None:
             level.locked = False if level.locked else True
+            self.dbsession.add(level)
+            self.dbsession.commit()
+            self.redirect("/admin/view/game_levels")
+        else:
+            self.render("public/404.html")
+
+    def review_mode_level(self):
+        uuid = self.get_argument("uuid", "")
+        level = GameLevel.by_uuid(uuid)
+        if level is not None:
+            level.review_mode = not level.review_mode
             self.dbsession.add(level)
             self.dbsession.commit()
             self.redirect("/admin/view/game_levels")

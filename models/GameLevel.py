@@ -50,6 +50,7 @@ class GameLevel(DatabaseObject):
     _name = Column(Unicode(32), nullable=True)
     _description = Column(Unicode(512))
     _locked = Column(Boolean, default=False, nullable=False)
+    _review_mode = Column(Boolean, default=False, nullable=False)
 
     boxes = relationship(
         "Box",
@@ -220,6 +221,25 @@ class GameLevel(DatabaseObject):
         assert isinstance(value, bool)
         self._locked = value
 
+    @property
+    def review_mode(self):
+        """Determines if an admin has enabled review mode for a level."""
+        if self._review_mode is None:
+            return False
+        return self._review_mode
+
+    @review_mode.setter
+    def review_mode(self, value):
+        """Setter method for _review_mode"""
+        if value is None:
+            value = False
+        elif isinstance(value, int):
+            value = value == 1
+        elif isinstance(value, str):
+            value = value.lower() in ["true", "1"]
+        assert isinstance(value, bool)
+        self._review_mode = value
+
     def unlocked_boxes(self):
         if self._locked:
             return []
@@ -264,6 +284,7 @@ class GameLevel(DatabaseObject):
             "flag_submission_timer_minutes": self.flag_submission_timer_minutes,
             "description": self.description,
             "last_level": last_level,
+            "review_mode": self.review_mode,
         }
 
     def __next__(self):

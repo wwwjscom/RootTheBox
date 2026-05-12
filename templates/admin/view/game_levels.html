@@ -15,6 +15,11 @@
         {% raw xsrf_form_html() %}
         <input id="lock-level-uuid" name="uuid" type="hidden" />
     </form>
+    <!-- Review Mode Form -->
+    <form id="review-mode-level-form" action="/admin/lock/review_mode" method="post">
+        {% raw xsrf_form_html() %}
+        <input id="review-mode-level-uuid" name="uuid" type="hidden" />
+    </form>
     <!-- Edit Level -->
     <div id="edit-game-level-modal" class="modal hide fade" style="display: none; ">
         <div class="modal-header">
@@ -233,6 +238,7 @@
             <div class="well{% if level.locked %} locked{% end %}">
                 <h2 class="levelheader">
                     {{ level.name }}&nbsp;
+                    {% if level.review_mode %}<span class="label label-warning">{{_("Review Mode")}}</span>{% end %}
                 </h2>
                 {% if level.description %}<h4 class="levelheader">({{ level.description }})</h4>{% end %}
                 <a id="delete-game-level-button{{ index }}" style="float: right; margin-top: 5px; margin-right: 10px;" class="btn btn-small btn-danger" data-toggle="modal" href="#delete-game-level-modal" data-uuid="{{ level.uuid }}">
@@ -256,6 +262,17 @@
                     <a id="lock-level-button-{{ level.uuid }}" class="btn btn-small btn-success" data-uuid="{{ level.uuid }}" style="float: right; margin-top: 5px; margin-right: 10px;">
                         <i class="fa fa-fw fa-unlock"></i>
                         {{_("Lock")}}&nbsp;
+                    </a>
+                {% end %}
+                {% if level.review_mode %}
+                    <a id="review-mode-level-button-{{ level.uuid }}" class="btn btn-small btn-warning" data-uuid="{{ level.uuid }}" style="float: right; margin-top: 5px; margin-right: 10px;">
+                        <i class="fa fa-fw fa-eye-slash"></i>
+                        {{_("Disable Review Mode")}}&nbsp;
+                    </a>
+                {% else %}
+                    <a id="review-mode-level-button-{{ level.uuid }}" class="btn btn-small btn-info" data-uuid="{{ level.uuid }}" style="float: right; margin-top: 5px; margin-right: 10px;">
+                        <i class="fa fa-fw fa-eye"></i>
+                        {{_("Enable Review Mode")}}&nbsp;
                     </a>
                 {% end %}
                 <div style="padding-left: 3px; margin-bottom: -10px;">

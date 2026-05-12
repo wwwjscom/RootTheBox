@@ -250,6 +250,7 @@ class BoxHandler(BaseHandler):
                 self.render(
                     "missions/box.html",
                     box=box,
+                    level=level,
                     user=user,
                     team=user.team,
                     errors=[],
@@ -442,7 +443,12 @@ class BoxHandler(BaseHandler):
             teamval = "team's "
         else:
             teamval = ""
-        old_reward = flag.dynamic_value(user.team) if old_reward is None else old_reward
+        box = flag.box
+        level = GameLevel.by_id(box.game_level_id)
+        if level.review_mode:
+            old_reward = 0
+        else:
+            old_reward = flag.dynamic_value(user.team) if old_reward is None else old_reward
         reward_dialog = flag.name + " answered correctly. "
         if options.banking:
             reward_added_str_template = (
@@ -457,9 +463,8 @@ class BoxHandler(BaseHandler):
         send_capture_webhook(user, flag, old_reward)
 
         # Check for Box Completion
-        box = flag.box
         if box.is_complete(user):
-            if box.value > 0:
+            if box.value > 0 and not level.review_mode:
                 user.team.set_score("box", box.value + user.team.money)
                 self.dbsession.add(user.team)
                 self.dbsession.flush()
@@ -476,13 +481,12 @@ class BoxHandler(BaseHandler):
                 success.append("Congratulations! You have completed " + box.name + ".")
 
         # Check for Level Completion
-        level = GameLevel.by_id(box.game_level_id)
         level_progress = old_div(
             len(user.team.level_flags(level.number)), float(len(level.flags))
         )
         if level_progress == 1.0 and level not in user.team.game_levels:
             reward_dialog = ""
-            if level._reward > 0:
+            if level._reward > 0 and not level.review_mode:
                 user.team.set_score("level", level._reward + user.team.money)
                 self.dbsession.add(user.team)
                 self.dbsession.flush()
@@ -547,6 +551,9 @@ class BoxHandler(BaseHandler):
             if flag.is_file:
                 submission = Flag.digest(submission)
             Penalty.create_attempt(user=user, flag=flag, submission=submission)
+            level = GameLevel.by_id(flag.box.game_level_id)
+            if level.review_mode:
+                return False
             if not options.penalize_flag_value:
                 return False
             attempts = Penalty.by_count(flag, user.team)
@@ -581,18 +588,20 @@ class BoxHandler(BaseHandler):
         if submission is not None and flag not in team.flags:
             if flag.capture(submission):
                 flag_value = flag.dynamic_value(team)
-                if (
-                    options.dynamic_flag_value
-                    and options.dynamic_flag_type == "decay_all"
-                ):
-                    for item in Flag.team_captures(flag.id):
-                        tm = Team.by_id(item[0])
-                        deduction = flag.dynamic_value(tm) - flag_value
-                        tm.set_score("decay", int(tm.money - deduction))
-                        self.dbsession.add(tm)
-                        self.event_manager.flag_decayed(tm, flag)
-                team.set_score("flag", flag_value + team.money)
-                user.money += flag_value
+                level = GameLevel.by_id(flag.box.game_level_id)
+                if not level.review_mode:
+                    if (
+                        options.dynamic_flag_value
+                        and options.dynamic_flag_type == "decay_all"
+                    ):
+                        for item in Flag.team_captures(flag.id):
+                            tm = Team.by_id(item[0])
+                            deduction = flag.dynamic_value(tm) - flag_value
+                            tm.set_score("decay", int(tm.money - deduction))
+                            self.dbsession.add(tm)
+                            self.event_manager.flag_decayed(tm, flag)
+                    team.set_score("flag", flag_value + team.money)
+                    user.money += flag_value
                 team.add_flag(flag)
                 user.flags.append(flag)
                 self.dbsession.add(user)
@@ -630,6 +639,7 @@ class BoxHandler(BaseHandler):
         self.render(
             "missions/box.html",
             box=box,
+            level=GameLevel.by_id(box.game_level_id),
             user=user,
             team=user.team,
             errors=errors,
