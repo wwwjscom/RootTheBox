@@ -438,7 +438,7 @@ class ScoreboardProjectorHandler(BaseHandler):
     @authenticated
     @authorized(ADMIN_PERMISSION)
     def get(self, *args, **kwargs):
-        top = options.scoreboard_top if options.scoreboard_top > 0 else 10
+        top = options.scoreboard_top if options.scoreboard_top > 0 else 25
         if not options.scoreboard_lazy_update:
             Scoreboard.update_gamestate(self)
         self.render(
