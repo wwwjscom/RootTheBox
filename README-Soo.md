@@ -65,6 +65,20 @@ Toggle it from **Admin → Game Levels** using the **Enable/Disable Review Mode*
 - A yellow **Review Mode** badge appears on the level in the admin Game Levels and Game Objects views, with a tooltip explaining the behaviour.
 - An orange border and alert banner are shown to players on the box page.
 
+### App Version Display
+
+The running app version is shown on the admin dashboard (`/user`) in the **Game Metrics** section alongside the open sessions, user, team, and box counts. It is read directly from `setup/__init__.py` at startup — no configuration required.
+
+To bump the version before a release, edit the single line in `setup/__init__.py`:
+
+```python
+__version__ = "3.13.1"
+```
+
+Change it to the new version string, commit, and deploy. The updated value will appear on the admin dashboard immediately after the server restarts.
+
+---
+
 ### Top-X Public Scoreboard
 
 Admins can limit the public scoreboard to show only the top N teams, hiding lower-ranked players from view. This is useful during competitions to avoid demoralizing struggling teams.
@@ -79,6 +93,6 @@ When active:
 
 A clean, nav-free scoreboard designed for display on a projector or second screen. It shows only the top-N teams (using the **Scoreboard Top N** setting; defaults to 10 if not configured), with a dark background and no navigation chrome.
 
-Access it from **Scoreboard → Projector** in the admin nav (opens in a new tab), or navigate directly to `/scoreboard/projector`. Admin login required.
+Access it from **Scoreboard → Projector** in the admin nav (opens in a new tab), or navigate directly to `/scoreboard/projector`. Admin login required. If **Scoreboard Top N** is not configured, the projector defaults to showing the top 25.
 
 The projector view uses the same live WebSocket updates and rank-change animations as the main scoreboard.
