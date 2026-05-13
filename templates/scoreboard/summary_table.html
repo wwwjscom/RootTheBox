@@ -16,7 +16,7 @@
         <td class="summarycolumn anim:hold">
             <div style="width: 100%; display: table;">
                 <div style="display: table-row;">
-                    <div class="summarycolumn" style="display: table-cell; font-size: large;">{{ team_name }}{% if is_admin and team.get('player_name') %} <span style="font-size: small; color: #888;">({{ team.get('player_name') }})</span>{% end %}</div>
+                    <div class="summarycolumn" style="display: table-cell; font-size: large;">{{ team_name }}{% if is_admin and team.get('player_name') %} <span class="admin-player-name" style="font-size: small; color: #888;">({{ team.get('player_name') }})</span>{% end %}</div>
                     <div class="summarycolumn shortcolumn" style="display: table-cell; vertical-align: bottom; font-size: small;">
                         {% if options.hints_taken and hint_count_all > 0 %}<span class="hintcol">{{ team.get('hints_count') }} {{ _("Hints Taken") }}</span>{% end %}<span id="last-{{team.get('uuid')}}" {% if options.hints_taken and hint_count_all > 0 %}class="lastflagcol" style="display: none;"{% end %}></span>
                     </div>
