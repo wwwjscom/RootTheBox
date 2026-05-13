@@ -170,6 +170,7 @@ class ScoreboardAjaxHandler(BaseHandler):
             game_state=self.summary_page(page, display, top=top),
             page=page,
             display=display,
+            is_admin=is_admin,
         )
 
     def summary_page(self, page, display, top=0):

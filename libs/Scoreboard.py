@@ -78,6 +78,7 @@ class Scoreboard(object):
                 "bot_count": bots[team.uuid],
                 "money": team.money,
                 "users": [user.uuid for user in team.members],
+                "player_name": team.members[0].name if len(team.members) == 1 else "",
             }
 
             highlights = {"money": 0, "flag": 0, "bot": 0, "hint": 0}
