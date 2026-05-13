@@ -717,12 +717,12 @@
                     {% end %}
                 <br/>
                 {% end %}
-                <center>
-                    <strong>
-                        <i class="fa fa-th"></i>
-                        {{_("Boxes")}}
-                    </strong>
-                </center>
+                <li id="boxes-header" style="list-style:none; padding: 2px 4px;">
+                    <button id="sidebar-toggle" class="btn btn-mini" title="Toggle sidebar">
+                        <i id="sidebar-toggle-icon" class="fa fa-chevron-up"></i>
+                    </button>
+                    &nbsp;<strong><i class="fa fa-th"></i> {{_("Boxes")}}</strong>
+                </li>
                 <br />
                 {% for box in sorted(Box.all()) %}
                     <li>

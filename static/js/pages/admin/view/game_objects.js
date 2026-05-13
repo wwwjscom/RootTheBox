@@ -416,3 +416,25 @@ $(document).ready(function() {
         stop: updateIndex
     }).disableSelection();
 });
+
+$(document).ready(function () {
+    var collapsed = localStorage.getItem("gameObjectsSidebarCollapsed") === "true";
+
+    function applyState() {
+        if (collapsed) {
+            $("#navWrapper").children().not("#boxes-header").hide();
+            $("#sidebar-toggle-icon").removeClass("fa-chevron-up").addClass("fa-chevron-down");
+        } else {
+            $("#navWrapper").children().not("#boxes-header").show();
+            $("#sidebar-toggle-icon").removeClass("fa-chevron-down").addClass("fa-chevron-up");
+        }
+    }
+
+    applyState();
+
+    $("#sidebar-toggle").on("click", function () {
+        collapsed = !collapsed;
+        localStorage.setItem("gameObjectsSidebarCollapsed", collapsed);
+        applyState();
+    });
+});
