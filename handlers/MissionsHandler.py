@@ -206,6 +206,24 @@ class StoryAjaxHandler(BaseHandler):
         return dialog
 
 
+class FlagAttemptsHandler(BaseHandler):
+    @authenticated
+    @game_started
+    def get(self):
+        user = self.get_current_user()
+        flag_uuid = self.get_argument("uuid", "")
+        flag = Flag.by_uuid(flag_uuid)
+        if not flag or not user.team:
+            self.write(json.dumps([]))
+            return
+        penalties = Penalty.by_team_flag_id(user.team.id, flag.id)
+        result = [
+            {"token": p.token or "", "created": str(p.created)[:16]}
+            for p in penalties
+        ]
+        self.write(json.dumps(result))
+
+
 class BoxHandler(BaseHandler):
     @authenticated
     @game_started

@@ -113,6 +113,7 @@ urls = [
     # Mission handlers - MissionHandlers.py
     (r"/user/missions", MissionsHandler),
     (r"/user/missions/ajax/(.*)", StoryAjaxHandler),
+    (r"/user/missions/flag/attempts", FlagAttemptsHandler),
     (r"/user/missions/capture(.*)", FlagCaptureMessageHandler),
     (r"/user/missions/(flag|buyout)", MissionsHandler),
     (r"/user/missions/firstlogin", FirstLoginHandler),

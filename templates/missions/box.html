@@ -152,6 +152,34 @@
             </button>
         </div>
     </div>
+
+    <div id="flag-attempts-modal" class="modal hide fade" style="display: none;">
+        <div class="modal-header" style="background: #2a2a2a; border-radius: 6px 6px 0 0;">
+            <button type="button" class="close" data-dismiss="modal" style="color: #aaa; opacity: 0.8;">&times;</button>
+            <h3 style="color: #e0e0e0; margin: 0; font-size: 16px; letter-spacing: 0.5px;">
+                <i class="fa fa-history" style="margin-right: 8px; color: #888;"></i>{{ _("Prior Attempts") }}
+            </h3>
+        </div>
+        <div class="modal-body" style="background: #1e1e1e; padding: 0;">
+            <table id="flag-attempts-table" class="table table-condensed" style="display: none; margin: 0; color: #ccc;">
+                <thead>
+                    <tr style="background: #2e2e2e; border-bottom: 1px solid #444;">
+                        <th style="width: 40px; color: #888; font-weight: normal; padding: 8px 12px;">#</th>
+                        <th style="color: #888; font-weight: normal; padding: 8px 12px;">{{ _("Submitted") }}</th>
+                        <th style="width: 130px; color: #888; font-weight: normal; padding: 8px 12px;">{{ _("When") }}</th>
+                    </tr>
+                </thead>
+                <tbody id="flag-attempts-list"></tbody>
+            </table>
+            <p id="flag-attempts-empty" style="display: none; color: #666; text-align: center; padding: 24px; margin: 0;">
+                <i class="fa fa-inbox" style="font-size: 20px; display: block; margin-bottom: 8px;"></i>
+                {{ _("No prior attempts recorded.") }}
+            </p>
+        </div>
+        <div class="modal-footer" style="background: #2a2a2a; border-top: 1px solid #444; border-radius: 0 0 6px 6px;">
+            <a href="#" class="btn" data-dismiss="modal" style="color: #aaa;">{{ _("Close") }}</a>
+        </div>
+    </div>
 {% end %}
 
 {% block content %}
@@ -379,14 +407,40 @@
                                     </td>
                                 
                                     {% if flag in team.flags %}
-                                        <td class="shortcolumn successtext" style="text-align: right; padding: 5px 10px; vertical-align: middle;"><i class="fa fa-check-circle"></i></td>
+                                        <td class="shortcolumn successtext" style="text-align: right; padding: 5px 10px; vertical-align: middle;">
+                                            {% if penalty > 0 %}
+                                            <a class="btn btn-mini prior-attempts-btn" data-uuid="{{ flag.uuid }}" href="#" title="{{ _('Prior Attempts') }}" style="color: #333;">
+                                                <i class="fa fa-history"></i> {{ _("History") }}
+                                            </a>
+                                            {% end %}
+                                            <i class="fa fa-check-circle"></i>
+                                        </td>
                                     {% elif level_submission_timer_expired %}
                                         {# Keep flag details visible but block submissions after timer expiry. #}
-                                        <td class="shortcolumn disabledtext" style="text-align: right;"><i class="fa fa-clock-o" title="Submission Window Expired"></i></td>
+                                        <td class="shortcolumn disabledtext" style="text-align: right;">
+                                            <i class="fa fa-clock-o" title="Submission Window Expired"></i>
+                                            {% if penalty > 0 %}
+                                            <a class="btn btn-mini prior-attempts-btn" data-uuid="{{ flag.uuid }}" href="#" title="{{ _('Prior Attempts') }}" style="color: #333;">
+                                                <i class="fa fa-history"></i> {{ _("History") }}
+                                            </a>
+                                            {% end %}
+                                        </td>
                                     {% elif box.flag_submission_type != FlagsSubmissionType.SINGLE_SUBMISSION_BOX and penalty >= options.max_flag_attempts %}
-                                        <td class="shortcolumn disabledtext" style="text-align: right;"><i class="fa fa-ban" title="Max Attempts Reached"></i></td>
-                                    {% else %}         
+                                        <td class="shortcolumn disabledtext" style="text-align: right;">
+                                            <i class="fa fa-ban" title="Max Attempts Reached"></i>
+                                            {% if penalty > 0 %}
+                                            <a class="btn btn-mini prior-attempts-btn" data-uuid="{{ flag.uuid }}" href="#" title="{{ _('Prior Attempts') }}" style="color: #333;">
+                                                <i class="fa fa-history"></i> {{ _("History") }}
+                                            </a>
+                                            {% end %}
+                                        </td>
+                                    {% else %}
                                         <td class="shortcolumn">
+                                            {% if penalty > 0 %}
+                                            <a class="btn btn-mini prior-attempts-btn" data-uuid="{{ flag.uuid }}" href="#" title="{{ _('Prior Attempts') }}">
+                                                <i class="fa fa-history"></i> {{ _("History") }}
+                                            </a>
+                                            {% end %}
                                             {% if box.flag_submission_type != FlagsSubmissionType.SINGLE_SUBMISSION_BOX or not flag.is_static %}
                                             <a id="capture-{% if flag.is_file %}file{% elif flag.type == FLAG_CHOICE %}choice{% else %}text{%end%}-flag-button{{ index }}" class="btn btn-mini{% if level_submission_timer_expired %} disabled{% end %}" data-toggle="modal" href="#capture-{% if flag.is_file %}file{% elif flag.type == FLAG_CHOICE %}choice{% else %}text{% end %}-flag-modal"
                                             data-uuid="{{ flag.uuid }}" data-choices='{{ str(flag.choicelist()) }}'>
@@ -523,4 +577,29 @@
             {% end %}
         {% end %}
     </div>
+
+<script>
+$(document).on("click", ".prior-attempts-btn", function(e) {
+    e.preventDefault();
+    var uuid = $(this).data("uuid");
+    var tbody = $("#flag-attempts-list").empty();
+    $("#flag-attempts-table, #flag-attempts-empty").hide();
+    $.getJSON("/user/missions/flag/attempts?uuid=" + uuid, function(data) {
+        if (data.length === 0) {
+            $("#flag-attempts-empty").show();
+        } else {
+            $.each(data, function(i, attempt) {
+                var bg = i % 2 === 0 ? "#1e1e1e" : "#252525";
+                var row = $("<tr>").css("background", bg);
+                row.append($("<td>").css({padding: "7px 12px", color: "#555", fontSize: "12px"}).text(i + 1));
+                row.append($("<td>").css({padding: "7px 12px"}).append($("<code>").css({background: "transparent", color: "#a8d8a8", padding: 0, fontSize: "13px"}).text(attempt.token)));
+                row.append($("<td>").css({padding: "7px 12px", color: "#666", fontSize: "12px", whiteSpace: "nowrap"}).text(attempt.created));
+                tbody.append(row);
+            });
+            $("#flag-attempts-table").show();
+        }
+        $("#flag-attempts-modal").modal("show");
+    });
+});
+</script>
 {% end %}
