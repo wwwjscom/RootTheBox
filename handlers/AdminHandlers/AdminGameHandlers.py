@@ -386,6 +386,7 @@ class AdminConfigurationHandler(BaseHandler):
         """
         errors = None
         self.config.game_name = self.get_argument("game_name", "Root the Box")
+        self.config.origin = self.get_argument("origin", "ws://localhost:8888")
         self.config.restrict_registration = self.get_bool(
             "restrict_registration", False
         )

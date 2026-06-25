@@ -15,8 +15,19 @@ function penalty_cost_update() {
     $("#penalty_description").text($("#penalty_description").data("applytext") + penalty_attempt);
 }
 
+function origin_warning_update() {
+    var val = ($("#origin").val() || "").toLowerCase();
+    if (val.indexOf("localhost") !== -1 || val.indexOf("127.0.0.1") !== -1) {
+        $("#origin-warning").show();
+    } else {
+        $("#origin-warning").hide();
+    }
+}
+
 $(document).ready(function() {
     penalty_cost_update();
+    origin_warning_update();
+    $("#origin").on("input", origin_warning_update);
 
     /* Hide fields if their corresponding features are disabled */
     if ($("#use-bots").val() === "false") {

@@ -44,6 +44,19 @@
                 </div>
             </div>
             <div class="control-group">
+                <label class="control-label" for="origin">{{ _("WebSocket Origin") }}</label>
+                <div class="controls">
+                    <input required id="origin" type="text" name="origin" value="{{ config.origin }}"
+                        rel="popover"
+                        data-original-title="{{ _('WebSocket Origin') }}"
+                        data-content="{{ _('Origin used to validate real-time WebSocket connections, e.g. wss://sub.domain.com') }}" />
+                    <span id="origin-warning" class="help-inline" style="display: none; color: #c09853;">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        {{ _('Update this to be wss://sub.domain.com') }}
+                    </span>
+                </div>
+            </div>
+            <div class="control-group">
                 <label class="control-label" for="min-user-password-length">{{ _("Minimum User Password Length") }}</label>
                 <div class="controls">
                     <input required id="min-user-password-length" type="number" name="min_user_password_length" value="{{ config.min_user_password_length }}"
