@@ -514,7 +514,7 @@ define(
 
 define(
     "disable_hijack_protection",
-    default=False,
+    default=True,
     group="application",
     help="Disable the hijack protection when the session ip doesn't equal the request ip",
     type=bool,
