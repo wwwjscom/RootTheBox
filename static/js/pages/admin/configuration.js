@@ -59,6 +59,14 @@ $(document).ready(function() {
     }
 
     /* Set initial state for buttons */
+    if ($("#disable-hijack").val() === "true") {
+        $("#disable-hijack-enable-icon").removeClass("fa-square-o");
+        $("#disable-hijack-enable-icon").addClass("fa-check-square-o");
+    } else {
+        $("#disable-hijack-disable-icon").removeClass("fa-square-o");
+        $("#disable-hijack-disable-icon").addClass("fa-check-square-o");
+    }
+
     if ($("#require-email").val() === "true") {
         $("#require-email-enable-icon").removeClass("fa-square-o");
         $("#require-email-enable-icon").addClass("fa-check-square-o");
@@ -180,6 +188,20 @@ $(document).ready(function() {
     }
 
     /* Button callbacks */
+    $("#disable-hijack-enable").click(function() {
+        $("#disable-hijack").val("true");
+        $("#disable-hijack-enable-icon").removeClass("fa-square-o");
+        $("#disable-hijack-enable-icon").addClass("fa-check-square-o");
+        $("#disable-hijack-disable-icon").removeClass("fa-check-square-o");
+        $("#disable-hijack-disable-icon").addClass("fa-square-o");
+    });
+    $("#disable-hijack-disable").click(function() {
+        $("#disable-hijack").val("false");
+        $("#disable-hijack-disable-icon").removeClass("fa-square-o");
+        $("#disable-hijack-disable-icon").addClass("fa-check-square-o");
+        $("#disable-hijack-enable-icon").removeClass("fa-check-square-o");
+        $("#disable-hijack-enable-icon").addClass("fa-square-o");
+    });
     $("#require-email-enable").click(function() {
         $("#require-email").val("true");
         $("#require-email-enable-icon").removeClass("fa-square-o");
@@ -434,6 +456,8 @@ $(document).ready(function() {
 
     /* Enable popovers */
     $("#game-name").popover({placement:'right', trigger:'hover'});
+    $("#origin").popover({placement:'right', trigger:'hover'});
+    $("#disable-hijack-button").popover({placement:'right', trigger:'hover'});
     $("#require-email-button").popover({placement:'right', trigger:'hover'});
     $("#validate-email-button").popover({placement:'right', trigger:'hover'});
     $("#restrict-registration-button").popover({placement:'right', trigger:'hover'});
