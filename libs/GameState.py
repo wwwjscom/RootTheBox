@@ -49,6 +49,8 @@ def start_game(app):
             app.settings["score_bots_callback"].start()
         # Fire game start webhook
         send_game_start_webhook()
+        # Anyone parked on /gamestatus should be let back in
+        EventManager.instance().push_game_started()
 
 
 def stop_game(app):

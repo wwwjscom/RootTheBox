@@ -70,7 +70,11 @@ class UnauthorizedHandler(BaseHandler):
 
 class StopHandler(BaseHandler):
     def get(self, *args, **kwargs):
-        """Renders the Game Stopped page"""
+        """Renders the Game Stopped page, or sends them on if it isn't"""
+        if self.application.settings["game_started"]:
+            # Nothing to report - don't tell them the game is stopped
+            self.redirect("/user")
+            return
         self.render(
             "public/stopped.html", errors=None, info=["The game is currently stopped."]
         )

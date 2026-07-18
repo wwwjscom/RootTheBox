@@ -14,6 +14,7 @@ except ImportError:
 from tornado.options import options
 
 from handlers.BaseHandlers import BaseHandler
+from handlers.ErrorHandlers import StopHandler
 from libs import GameState
 from libs.SecurityDecorators import game_started
 from models import dbsession
@@ -236,6 +237,63 @@ class TestStopGamePushes(GameStateTestCase):
         app = self._app(game_started=False)
         GameState.stop_game(app)
         self.assertFalse(self.events.push_game_stopped.called)
+
+
+class TestStartGamePushes(GameStateTestCase):
+    """start_game() releases anyone parked on /gamestatus"""
+
+    def setUp(self):
+        patcher = mock.patch.object(GameState, "EventManager")
+        self.events = patcher.start().instance.return_value
+        self.addCleanup(patcher.stop)
+        webhook = mock.patch.object(GameState, "send_game_start_webhook")
+        webhook.start()
+        self.addCleanup(webhook.stop)
+
+    def test_stopped_game_pushes_once(self):
+        app = self._app(game_started=False)
+        GameState.start_game(app)
+        self.assertTrue(app.settings["game_started"])
+        self.assertEqual(self.events.push_game_started.call_count, 1)
+
+    def test_already_running_game_does_not_push(self):
+        app = self._app(game_started=True)
+        GameState.start_game(app)
+        self.assertFalse(self.events.push_game_started.called)
+
+
+class TestStopHandlerRedirect(unittest.TestCase):
+    """
+    /gamestatus must not claim the game is stopped when it isn't.
+
+    Regression: the page was static and always rendered "The game is
+    currently stopped", so anyone who landed there after a restart was
+    told something false with no way to notice.
+    """
+
+    def _handler(self, started):
+        handler = mock.Mock()
+        handler.application.settings = {"game_started": started}
+        calls = {"redirected": None, "rendered": None}
+        handler.redirect.side_effect = lambda url: calls.__setitem__(
+            "redirected", url
+        )
+        handler.render.side_effect = lambda tmpl, **kw: calls.__setitem__(
+            "rendered", tmpl
+        )
+        return handler, calls
+
+    def test_running_game_redirects_to_dashboard(self):
+        handler, calls = self._handler(started=True)
+        StopHandler.get(handler)
+        self.assertEqual(calls["redirected"], "/user")
+        self.assertIsNone(calls["rendered"])
+
+    def test_stopped_game_still_renders_the_page(self):
+        handler, calls = self._handler(started=False)
+        StopHandler.get(handler)
+        self.assertEqual(calls["rendered"], "public/stopped.html")
+        self.assertIsNone(calls["redirected"])
 
 
 class TestGameStartedDecorator(unittest.TestCase):

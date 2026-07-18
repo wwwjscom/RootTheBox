@@ -140,6 +140,12 @@ class EventManager(object):
         for connection in self.all_connections:
             self.safe_write_message(connection, msg)
 
+    def push_game_started(self):
+        """Tell every open page the game just started"""
+        msg = {"game_started": True}
+        for connection in self.all_connections:
+            self.safe_write_message(connection, msg)
+
     def push_countdown(self, seconds):
         """
         Push a new countdown value to every open page.

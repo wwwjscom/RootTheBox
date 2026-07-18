@@ -114,6 +114,12 @@ $(document).ready(function() {
                 window.location = "/gamestatus";
             }
         }
+        if ('game_started' in notification) {
+            // The stopped page is only true while the game is stopped
+            if (window.location.pathname === "/gamestatus") {
+                window.location = "/user";
+            }
+        }
     };
 
 });
