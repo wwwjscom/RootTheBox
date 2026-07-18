@@ -129,8 +129,7 @@ $(document).ready(function() {
             return $(this).is(":hover");
         });
         if ($('.playstory').length === 0 || isHovered.length === 0) {
-            $(this).next(".flag-collapse").toggle();
-            $(this).next().next(".flag-collapse").toggle();
+            $(this).nextUntil(":not(.flag-collapse)").toggle();
         }
     });
 
