@@ -134,13 +134,16 @@ def send_box_complete_webhook(user, box):
 
 
 def send_hint_taken_webhook(user, hint):
+    # Box hints are not tied to a flag (hint.flag is None), so fall back
+    # to the box name rather than dereferencing a missing flag.
+    flag = hint.flag
     send_webhook(
         {
             "game": options.game_name,
             "game_version": options.game_version,
             "origin": options.origin.replace("wss://", "").replace("ws://", ""),
             "action": "hint_taken",
-            "flag": {"name": hint.flag.name},
+            "flag": {"name": flag.name if flag else hint.box.name},
             "user": get_user_info(user),
             "team": get_team_info(user.team),
             "cost": hint.price,

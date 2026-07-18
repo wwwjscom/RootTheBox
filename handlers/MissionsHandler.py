@@ -794,6 +794,7 @@ class PurchaseHintHandler(BaseHandler):
         self.render(
             "missions/box.html",
             box=box,
+            level=box.game_level,
             user=user,
             team=user.team,
             errors=errors,
