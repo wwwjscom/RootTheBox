@@ -774,7 +774,7 @@ define(
 
 define(
     "show_captured_flag",
-    default=False,
+    default=True,
     group="game",
     help="allow player to see the flag token after capture",
     type=bool,
