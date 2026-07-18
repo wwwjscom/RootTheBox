@@ -108,7 +108,7 @@ class ScoreboardHandler(BaseHandler):
 
             self.render(
                 "scoreboard/summary.html",
-                timer=self.timer(),
+                timer=self.seconds_remaining(),
                 hide_scoreboard=settings["hide_scoreboard"],
                 page=page,
                 display=display,
@@ -203,7 +203,7 @@ class ScoreboardAjaxHandler(BaseHandler):
         self.render("scoreboard/mvp_table.html", users=users)
 
     def timediff(self):
-        timer = self.timer()
+        timer = self.seconds_remaining()
         if timer:
             self.write(timer)
         else:
@@ -307,7 +307,7 @@ class ScoreboardHistoryHandler(BaseHandler):
             self.render(
                 "scoreboard/history.html",
                 hide_scoreboard=self.application.settings["hide_scoreboard"],
-                timer=self.timer(),
+                timer=self.seconds_remaining(),
             )
         elif not user:
             self.redirect("/login")
@@ -420,7 +420,7 @@ class TeamsHandler(BaseHandler):
         if scoreboard_visible(user):
             self.render(
                 "scoreboard/teams.html",
-                timer=self.timer(),
+                timer=self.seconds_remaining(),
                 hide_scoreboard=self.application.settings["hide_scoreboard"],
                 teams=teams,
                 page=page,
@@ -445,7 +445,7 @@ class ScoreboardProjectorHandler(BaseHandler):
         self.render(
             "scoreboard/projector.html",
             top=top,
-            timer=self.timer(),
+            timer=self.seconds_remaining(),
             hide_scoreboard=self.application.settings["hide_scoreboard"],
         )
 

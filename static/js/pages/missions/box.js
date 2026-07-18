@@ -41,18 +41,23 @@ $(document).ready(function() {
     if ($("#level-submission-timer").length > 0) {
         // Start/continue countdown from server-provided remaining seconds.
         var remainingSeconds = parseInt($("#level-submission-timer").data("remaining-seconds"), 10) || 0;
-        $("#level-submission-timer-value").text(formatDuration(remainingSeconds));
         if ($("#level-submission-timer").data("expired") === true || remainingSeconds <= 0) {
+            $("#level-submission-timer-value").text(formatDuration(0));
             setSubmissionsLocked(true);
         } else {
-            var timerInterval = setInterval(function() {
-                remainingSeconds -= 1;
-                $("#level-submission-timer-value").text(formatDuration(remainingSeconds));
-                if (remainingSeconds <= 0) {
+            // Measured against a deadline rather than counted per tick, so a
+            // backgrounded tab cannot show time the player does not have.
+            window.RTB.countdown.start({
+                target: "#level-submission-timer-value",
+                distanceMs: remainingSeconds * 1000,
+                format: function(ms) {
+                    return formatDuration(Math.floor(ms / 1000));
+                },
+                expiredText: formatDuration(0),
+                onExpire: function() {
                     setSubmissionsLocked(true);
-                    clearInterval(timerInterval);
                 }
-            }, 1000);
+            });
         }
     }
 

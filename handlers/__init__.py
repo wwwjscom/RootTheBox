@@ -56,6 +56,7 @@ from handlers.ScoreboardHandlers import *
 from handlers.StaticFileHandler import StaticFileHandler
 from handlers.UpgradeHandlers import *
 from handlers.UserHandlers import *
+from libs import GameState
 from libs.ConsoleColors import *
 from libs.DatabaseConnection import DatabaseConnection
 from libs.Scoreboard import Scoreboard, score_bots
@@ -250,6 +251,7 @@ app = Application(
     game_started=options.autostart_game,
     suspend_registration=options.suspend_registration,
     countdown_timer=False,
+    countdown_expired=False,
     hide_scoreboard=False,
     stop_timer=False,
     temp_global_notifications=None,
@@ -261,6 +263,13 @@ app = Application(
     # Application version
     version=__version__,
     autoreload=options.autoreload_source,
+)
+
+# Ends the countdown on schedule rather than whenever someone happens to
+# load a scoreboard.  Registered after construction since `app` cannot
+# reference itself in the settings above.
+app.settings["countdown_callback"] = PeriodicCallback(
+    lambda: GameState.expire_countdown(app), 1000
 )
 
 
@@ -294,6 +303,8 @@ def start_server():
         app.settings["game_started"] = True
         if options.use_bots:
             app.settings["score_bots_callback"].start()
+    # Always running - an admin can set a countdown at any time
+    app.settings["countdown_callback"].start()
     # Setup server object
     if options.ssl:
         server = HTTPServer(

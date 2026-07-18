@@ -102,6 +102,18 @@ $(document).ready(function() {
         if ('message' in notification) {
             Notifier.notify(notification['message'], notification['title'], notification['icon_url']);
         }
+        if ('countdown' in notification) {
+            // Admin set, extended, or cleared the game countdown
+            if (window.RTB !== undefined && window.RTB.onCountdown !== undefined) {
+                window.RTB.onCountdown(notification['countdown']);
+            }
+        }
+        if ('game_stopped' in notification) {
+            // Only pull players off the pages where they'd be submitting
+            if (window.location.pathname.indexOf("/user/missions") === 0) {
+                window.location = "/gamestatus";
+            }
+        }
     };
 
 });

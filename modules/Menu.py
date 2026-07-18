@@ -23,6 +23,7 @@ Created on Mar 14, 2012
 from tornado.options import options
 from tornado.web import UIModule
 
+from libs import GameState
 from models.User import User
 
 
@@ -42,7 +43,12 @@ class Menu(UIModule):
         if self.handler.session is not None:
             if self.handler.session["menu"] == "user":
                 return self.render_string(
-                    "menu/user.html", user=user, scoreboard_visible=scoreboard_visible
+                    "menu/user.html",
+                    user=user,
+                    scoreboard_visible=scoreboard_visible,
+                    countdown_seconds=GameState.countdown_seconds(
+                        self.handler.application
+                    ),
                 )
             elif self.handler.session["menu"] == "admin":
                 return self.render_string(

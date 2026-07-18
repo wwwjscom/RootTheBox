@@ -32,6 +32,7 @@ import time
 import traceback
 from builtins import str
 
+from libs import GameState
 from libs.EventManager import EventManager
 from libs.SecurityDecorators import *
 from libs.Sessions import MemcachedConnect, MemcachedSession
@@ -238,38 +239,24 @@ class BaseHandler(RequestHandler):
         """Called after a response is sent to the client"""
         self.dbsession.close()
 
-    def timer(self):
-        timer = None
-        if self.application.settings["countdown_timer"]:
-            timerdiff = self.application.settings["countdown_timer"] - time.time()
-            if timerdiff <= 0:
-                timerdiff = 0
-                self.application.settings["hide_scoreboard"] = False
-                if self.application.settings["stop_timer"]:
-                    self.application.settings["stop_timer"] = False
-                    self.stop_game()
-            timer = str(timerdiff)
-        return timer
+    def seconds_remaining(self):
+        """
+        Read-only countdown value for display; no side effects.
+
+        Returned as a string because the scoreboard templates gate on
+        `{% if timer %}` - a float 0.0 would be falsy and hide the timer
+        at exactly the moment it expires.
+        """
+        seconds = GameState.countdown_seconds(self.application)
+        return None if seconds is None else str(seconds)
 
     def start_game(self):
         """Start the game and any related callbacks"""
-        if not self.application.settings["game_started"]:
-            logging.info("The game is about to begin, good hunting!")
-            self.application.settings["game_started"] = True
-            if self.config.use_bots:
-                self.application.settings["score_bots_callback"].start()
-            # Fire game start webhook
-            send_game_start_webhook()
+        GameState.start_game(self.application)
 
     def stop_game(self):
         """Stop the game and all callbacks"""
-        if self.application.settings["game_started"]:
-            logging.info("The game is stopping ...")
-            self.application.settings["game_started"] = False
-            if self.application.settings["score_bots_callback"]._running:
-                self.application.settings["score_bots_callback"].stop()
-            # Fire game stop webhook
-            send_game_stop_webhook()
+        GameState.stop_game(self.application)
 
     def get_user_locale(self):
         """

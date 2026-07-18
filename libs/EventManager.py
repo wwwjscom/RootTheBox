@@ -134,6 +134,23 @@ class EventManager(object):
         for connection in self.all_connections:
             self.safe_write_message(connection, msg)
 
+    def push_game_stopped(self):
+        """Tell every open page the game just stopped"""
+        msg = {"game_stopped": True}
+        for connection in self.all_connections:
+            self.safe_write_message(connection, msg)
+
+    def push_countdown(self, seconds):
+        """
+        Push a new countdown value to every open page.
+
+        `seconds` is None when the countdown has been cleared.  Sent on
+        admin changes so clients never have to poll for the value.
+        """
+        msg = {"countdown": seconds}
+        for connection in self.all_connections:
+            self.safe_write_message(connection, msg)
+
     def push_history(self, *args):
         msg = {"update": ["history"]}
         for connection in self.all_connections:

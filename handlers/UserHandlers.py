@@ -80,7 +80,6 @@ class HomeHandler(BaseHandler):
         except:
             activeconnections = None
         if uuid is None and user.is_admin():
-            self.timer()
             self.render(
                 "admin/home.html",
                 user=user,

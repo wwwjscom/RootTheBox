@@ -137,6 +137,7 @@ class AdminGameHandler(BaseHandler):
         ):
             if set_timer == "false":
                 self.application.settings["countdown_timer"] = False
+                self.application.settings["countdown_expired"] = False
                 self.application.settings["stop_timer"] = False
                 self.application.settings["hide_scoreboard"] = False
                 if self.application.settings["temp_global_notifications"] is not None:
@@ -145,14 +146,17 @@ class AdminGameHandler(BaseHandler):
                     ]
                     self.application.settings["temp_global_notifications"] = None
                 self.event_manager.push_scoreboard()
+                self.event_manager.push_countdown(None)
             elif set_timer:
                 diff = 60 * int(float(set_timer))
                 self.application.settings["countdown_timer"] = time.time() + diff
+                self.application.settings["countdown_expired"] = False
                 self.application.settings[
                     "temp_global_notifications"
                 ] = options.global_notification
                 options.global_notification = False
                 self.event_manager.push_scoreboard()
+                self.event_manager.push_countdown(float(diff))
         return {
             "start_game": self.application.settings["game_started"],
             "suspend_registration": self.application.settings["suspend_registration"],

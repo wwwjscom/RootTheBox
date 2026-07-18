@@ -28,26 +28,30 @@ function levelTimer() {
             return;
         }
 
-        valueEl.text(formatDuration(remaining));
-        if (remaining <= 0) {
+        function markExpired() {
+            valueEl.text(formatDuration(0));
             timerEl.removeClass("alert-info").addClass("alert-error");
             if (timerEl.find(".level-submission-timer-expired-msg").length === 0) {
                 timerEl.append('<span class="level-submission-timer-expired-msg"> - Expired. You can still view mission details but cannot submit flags.</span>');
             }
+        }
+
+        if (remaining <= 0) {
+            markExpired();
             return;
         }
 
-        var timerInterval = setInterval(function() {
-            remaining -= 1;
-            valueEl.text(formatDuration(remaining));
-            if (remaining <= 0) {
-                clearInterval(timerInterval);
-                timerEl.removeClass("alert-info").addClass("alert-error");
-                if (timerEl.find(".level-submission-timer-expired-msg").length === 0) {
-                    timerEl.append('<span class="level-submission-timer-expired-msg"> - Expired. You can still view mission details but cannot submit flags.</span>');
-                }
-            }
-        }, 1000);
+        // Measured against a deadline rather than counted per tick, so a
+        // backgrounded tab cannot show time the player does not have.
+        window.RTB.countdown.start({
+            target: valueEl,
+            distanceMs: remaining * 1000,
+            format: function(ms) {
+                return formatDuration(Math.floor(ms / 1000));
+            },
+            expiredText: formatDuration(0),
+            onExpire: markExpired
+        });
     });
 }
 

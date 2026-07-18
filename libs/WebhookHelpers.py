@@ -205,6 +205,8 @@ def send_webhook(data):
             "Sending webhook for '" + data["action"] + "' to " + options.webhook_url
         )
         try:
-            requests.post(options.webhook_url, json=data)
+            # Timeout matters - stop_game() now runs on the countdown
+            # callback, so a hung endpoint would stall the IOLoop
+            requests.post(options.webhook_url, json=data, timeout=10)
         except requests.exceptions.RequestException:
             logging.exception("error sending webhook")

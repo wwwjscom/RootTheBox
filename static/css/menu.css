@@ -14,3 +14,30 @@
 .navbar .nav>li>.dropdown-alert-menu:after{
     left:221px !important;
 }
+/* Game countdown - .navbar-text's line-height is lost inside .nav>li,
+   so match the 50px navbar height explicitly to centre it vertically */
+.navbar .nav>li>#nav-countdown {
+    display: inline-block;
+    padding: 0 15px;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 50px;
+    white-space: nowrap;
+}
+.navbar .nav>li>#nav-countdown .fa {
+    font-size: 18px;
+    vertical-align: baseline;
+}
+/* Endgame warnings - under 5 minutes, then under 1 minute */
+.navbar .nav>li>#nav-countdown.countdown-warning {
+    color: #f89406;
+}
+.navbar .nav>li>#nav-countdown.countdown-critical {
+    color: #ee5f5b;
+}
+/* Collapsed nav stacks its items, so drop the fixed bar height */
+@media screen and (max-width: 979px) {
+    .navbar .nav>li>#nav-countdown {
+        line-height: 30px;
+    }
+}

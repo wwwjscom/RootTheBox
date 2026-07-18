@@ -3,6 +3,7 @@
 Unit tests for everything in handlers/
 """
 import logging
+import time
 import unittest
 
 try:
@@ -12,6 +13,8 @@ except ImportError:
 
 from tornado.options import options
 
+from handlers.BaseHandlers import BaseHandler
+from libs import GameState
 from libs.SecurityDecorators import game_started
 from models import dbsession
 from models.Team import Team
@@ -95,6 +98,144 @@ class TestPublicHandlers(ApplicationTest):
     def test_about_get(self):
         rsp, body = self.get("/about")
         self.assertIn(b"<title> About", body)
+
+
+class GameStateTestCase(unittest.TestCase):
+    """Shared fake app for the libs/GameState.py tests"""
+
+    def _app(self, **overrides):
+        settings = {
+            "game_started": True,
+            "countdown_timer": False,
+            "countdown_expired": False,
+            "hide_scoreboard": False,
+            "stop_timer": False,
+            "score_bots_callback": mock.Mock(_running=False),
+        }
+        settings.update(overrides)
+        app = mock.Mock()
+        app.settings = settings
+        return app
+
+
+class TestCountdownSeconds(GameStateTestCase):
+    """countdown_seconds() must be a pure read - no writes to settings"""
+
+    def test_no_countdown_returns_none(self):
+        self.assertIsNone(GameState.countdown_seconds(self._app()))
+
+    def test_future_deadline(self):
+        app = self._app(countdown_timer=time.time() + 60)
+        seconds = GameState.countdown_seconds(app)
+        self.assertTrue(55 < seconds <= 60, "got %r" % seconds)
+
+    def test_past_deadline_clamps_to_zero(self):
+        app = self._app(countdown_timer=time.time() - 30)
+        self.assertEqual(GameState.countdown_seconds(app), 0.0)
+
+    def test_reading_an_expired_countdown_mutates_nothing(self):
+        """The whole point of the split: display must have no side effects"""
+        app = self._app(
+            countdown_timer=time.time() - 30, stop_timer=True, hide_scoreboard=True
+        )
+        before = dict(app.settings)
+        GameState.countdown_seconds(app)
+        self.assertEqual(app.settings, before)
+
+    def test_seconds_remaining_returns_a_string(self):
+        """
+        Scoreboard templates gate on `{% if timer %}` - a float 0.0 is
+        falsy and would hide the timer exactly when it expires.
+        """
+        handler = mock.Mock()
+        handler.application = self._app(countdown_timer=time.time() - 5)
+        value = BaseHandler.seconds_remaining(handler)
+        self.assertEqual(value, "0.0")
+        self.assertTrue(value)
+
+    def test_seconds_remaining_none_without_countdown(self):
+        handler = mock.Mock()
+        handler.application = self._app()
+        self.assertIsNone(BaseHandler.seconds_remaining(handler))
+
+
+class TestExpireCountdown(GameStateTestCase):
+    """expire_countdown() owns the side effects that used to live in timer()"""
+
+    def setUp(self):
+        patcher = mock.patch.object(GameState, "EventManager")
+        self.events = patcher.start().instance.return_value
+        self.addCleanup(patcher.stop)
+        webhook = mock.patch.object(GameState, "send_game_stop_webhook")
+        self.webhook = webhook.start()
+        self.addCleanup(webhook.stop)
+
+    def test_no_countdown_is_a_noop(self):
+        app = self._app()
+        self.assertFalse(GameState.expire_countdown(app))
+        self.assertTrue(app.settings["game_started"])
+
+    def test_not_yet_expired_is_a_noop(self):
+        app = self._app(countdown_timer=time.time() + 60, stop_timer=True)
+        before = dict(app.settings)
+        self.assertFalse(GameState.expire_countdown(app))
+        self.assertEqual(app.settings, before)
+        self.assertFalse(self.events.push_game_stopped.called)
+
+    def test_expired_with_stop_timer_stops_the_game(self):
+        app = self._app(
+            countdown_timer=time.time() - 1, stop_timer=True, hide_scoreboard=True
+        )
+        self.assertTrue(GameState.expire_countdown(app))
+        self.assertFalse(app.settings["game_started"])
+        self.assertFalse(app.settings["stop_timer"])
+        self.assertFalse(app.settings["hide_scoreboard"])
+        self.assertEqual(self.events.push_game_stopped.call_count, 1)
+        self.assertEqual(self.webhook.call_count, 1)
+
+    def test_expired_without_stop_timer_leaves_the_game_running(self):
+        """
+        A countdown can expire without ending the game (the scoreboard
+        freeze case).  Nobody may be redirected, so no push may fire.
+        """
+        app = self._app(
+            countdown_timer=time.time() - 1, stop_timer=False, hide_scoreboard=True
+        )
+        self.assertFalse(GameState.expire_countdown(app))
+        self.assertTrue(app.settings["game_started"])
+        self.assertFalse(app.settings["hide_scoreboard"])
+        self.assertFalse(self.events.push_game_stopped.called)
+
+    def test_second_call_does_not_re_unhide_the_scoreboard(self):
+        """An admin re-hiding the board must not be overridden a tick later"""
+        app = self._app(countdown_timer=time.time() - 1, stop_timer=True)
+        GameState.expire_countdown(app)
+        app.settings["hide_scoreboard"] = True
+        self.assertFalse(GameState.expire_countdown(app))
+        self.assertTrue(app.settings["hide_scoreboard"])
+
+
+class TestStopGamePushes(GameStateTestCase):
+    """stop_game() tells connected clients, exactly once"""
+
+    def setUp(self):
+        patcher = mock.patch.object(GameState, "EventManager")
+        self.events = patcher.start().instance.return_value
+        self.addCleanup(patcher.stop)
+        webhook = mock.patch.object(GameState, "send_game_stop_webhook")
+        webhook.start()
+        self.addCleanup(webhook.stop)
+
+    def test_running_game_pushes_once(self):
+        app = self._app(game_started=True)
+        GameState.stop_game(app)
+        self.assertFalse(app.settings["game_started"])
+        self.assertEqual(self.events.push_game_stopped.call_count, 1)
+
+    def test_already_stopped_game_does_not_push(self):
+        app = self._app(game_started=False)
+        GameState.stop_game(app)
+        self.assertFalse(self.events.push_game_stopped.called)
 
 
 class TestGameStartedDecorator(unittest.TestCase):

@@ -13,6 +13,7 @@ services:
       - ./static:/opt/rtb/static:ro
       - ./tests:/opt/rtb/tests:ro
       - ./libs:/opt/rtb/libs:ro
+      - ./modules:/opt/rtb/modules:ro
     environment:
       - COMPOSE_CONVERT_WINDOWS_PATHS=1
       - DEBUG=True
