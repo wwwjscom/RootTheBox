@@ -3,9 +3,16 @@
 Unit tests for everything in handlers/
 """
 import logging
+import unittest
+
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 from tornado.options import options
 
+from libs.SecurityDecorators import game_started
 from models import dbsession
 from models.Team import Team
 from models.User import User
@@ -88,6 +95,62 @@ class TestPublicHandlers(ApplicationTest):
     def test_about_get(self):
         rsp, body = self.get("/about")
         self.assertIn(b"<title> About", body)
+
+
+class TestGameStartedDecorator(unittest.TestCase):
+    """
+    A stopped game must not execute the wrapped handler.
+
+    Regression: the decorator issued the redirect but returned
+    method(...) unconditionally, so handlers ran anyway - flags submitted
+    against a stopped game were still captured and scored.
+    """
+
+    def _fake_handler(self, started, user):
+        """Builds a stand-in handler plus a target that records if it ran"""
+        calls = {"redirected": None, "ran": False}
+        handler = mock.Mock()
+        handler.application.settings = {"game_started": started}
+        handler.get_current_user.return_value = user
+        handler.redirect.side_effect = lambda url: calls.__setitem__(
+            "redirected", url
+        )
+
+        @game_started
+        def target(self):
+            calls["ran"] = True
+
+        return handler, target, calls
+
+    def _player(self):
+        return mock.Mock(is_admin=mock.Mock(return_value=False))
+
+    def _admin(self):
+        return mock.Mock(is_admin=mock.Mock(return_value=True))
+
+    def test_stopped_game_blocks_player(self):
+        handler, target, calls = self._fake_handler(False, self._player())
+        target(handler)
+        self.assertFalse(calls["ran"])
+        self.assertEqual(calls["redirected"], "/gamestatus")
+
+    def test_stopped_game_blocks_anonymous(self):
+        handler, target, calls = self._fake_handler(False, None)
+        target(handler)
+        self.assertFalse(calls["ran"])
+        self.assertEqual(calls["redirected"], "/gamestatus")
+
+    def test_stopped_game_allows_admin(self):
+        handler, target, calls = self._fake_handler(False, self._admin())
+        target(handler)
+        self.assertTrue(calls["ran"])
+        self.assertIsNone(calls["redirected"])
+
+    def test_running_game_allows_player(self):
+        handler, target, calls = self._fake_handler(True, self._player())
+        target(handler)
+        self.assertTrue(calls["ran"])
+        self.assertIsNone(calls["redirected"])
 
 
 # class TestMissionHandlers(ApplicationTest):
