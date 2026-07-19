@@ -193,6 +193,7 @@ urls = [
     (r"/admin/lock/(level|corp|user|box|flag|review_mode)", AdminLockHandler),
     (r"/admin/configuration", AdminConfigurationHandler),
     (r"/admin/gitstatus", AdminGitStatusHandler),
+    (r"/admin/updatecheck", AdminUpdateCheckHandler),
     (r"/admin/export/(.*)", AdminExportHandler),
     (r"/admin/import/xml", AdminImportXmlHandler),
     (r"/admin/reset", AdminResetHandler),

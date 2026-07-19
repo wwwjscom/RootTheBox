@@ -42,7 +42,12 @@ from tornado.options import options
 
 from libs.EventManager import EventManager
 from libs.SecurityDecorators import authenticated
-from libs.UpdateCheckHelpers import CACHE_KEY, is_newer_version
+from libs.UpdateCheckHelpers import (
+    CACHE_KEY,
+    LAST_CHECK_KEY,
+    humanize_seconds_ago,
+    is_newer_version,
+)
 from libs.ValidationError import ValidationError
 from libs.XSSImageCheck import IMG_FORMATS
 from models.Box import Box
@@ -84,8 +89,10 @@ class HomeHandler(BaseHandler):
         if uuid is None and user.is_admin():
             try:
                 latest_version = self.memcached.get(CACHE_KEY)
+                last_checked = humanize_seconds_ago(self.memcached.get(LAST_CHECK_KEY))
             except:
                 latest_version = None
+                last_checked = None
             update_available = bool(latest_version) and is_newer_version(
                 latest_version, __version__
             )
@@ -96,6 +103,7 @@ class HomeHandler(BaseHandler):
                 teamcount=len(gamestate),
                 usercount=len(User.all_users()),
                 activeconnections=activeconnections,
+                last_checked=last_checked,
                 update_available=update_available,
                 latest_version=latest_version,
             )

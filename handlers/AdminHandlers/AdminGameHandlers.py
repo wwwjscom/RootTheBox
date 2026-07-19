@@ -45,6 +45,7 @@ from libs.EventManager import EventManager
 from libs.Scoreboard import Scoreboard, score_bots
 from libs.SecurityDecorators import *
 from libs.StringCoding import decode, encode
+from libs.UpdateCheckHelpers import check_for_updates
 from libs.ValidationError import ValidationError
 from models.Box import Box
 from models.Category import Category
@@ -535,6 +536,16 @@ class AdminGitStatusHandler(BaseHandler):
     def current_time(self):
         """Nicely formatted current time as a string"""
         return str(datetime.now()).split(" ")[1].split(".")[0]
+
+
+class AdminUpdateCheckHandler(BaseHandler):
+    @restrict_ip_address
+    @authenticated
+    @authorized(ADMIN_PERMISSION)
+    def post(self, *args, **kwargs):
+        """Force an immediate check for newer Root the Box releases"""
+        check_for_updates()
+        self.redirect("/user")
 
 
 class AdminExportHandler(BaseHandler):

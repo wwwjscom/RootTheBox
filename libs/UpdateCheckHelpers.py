@@ -20,6 +20,7 @@ dashboard can show an update banner.
 
 import logging
 import re
+import time
 
 import requests
 from tornado.options import options
@@ -28,6 +29,7 @@ from libs.Sessions import MemcachedConnect
 
 GITHUB_REPO = "wwwjscom/RootTheBox"
 CACHE_KEY = "rtb_latest_version"
+LAST_CHECK_KEY = "rtb_update_last_check"
 
 # Matches CalVer tags like v2026.07.18, with an optional same-day counter
 # like v2026.07.18.1
@@ -47,6 +49,22 @@ def is_newer_version(latest, current):
         return False
 
 
+def humanize_seconds_ago(timestamp):
+    """Render a unix timestamp as a short "N units ago" string"""
+    if not timestamp:
+        return None
+    seconds = max(0, int(time.time() - float(timestamp)))
+    for unit_seconds, singular in (
+        (86400, "day"),
+        (3600, "hour"),
+        (60, "minute"),
+    ):
+        if seconds >= unit_seconds:
+            count = seconds // unit_seconds
+            return "%d %s%s ago" % (count, singular, "" if count == 1 else "s")
+    return "just now"
+
+
 def check_for_updates():
     """Look up the latest released tag on GitHub and cache it in memcached"""
     if not options.check_for_updates:
@@ -61,13 +79,16 @@ def check_for_updates():
             },
         )
         response.raise_for_status()
+        memcache = MemcachedConnect()
+        memcache.set(
+            LAST_CHECK_KEY, time.time(), time=options.update_check_interval // 500
+        )
         tags = [
             tag["name"] for tag in response.json() if VERSION_TAG_RE.match(tag["name"])
         ]
         if not tags:
             return
         latest = max(tags, key=_parse_version)
-        memcache = MemcachedConnect()
         memcache.set(CACHE_KEY, latest, time=options.update_check_interval // 500)
     except requests.exceptions.RequestException:
         logging.exception("error checking for Root the Box updates")
