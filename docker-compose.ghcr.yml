@@ -3,14 +3,14 @@ services:
     image: memcached:latest
     restart: unless-stopped
   webapp:
-    image: ghcr.io/wwwjscom/rootthebox:latest
+    image: ghcr.io/wwwjscom/rootthebox:${IMAGE_TAG:-latest}
     ports:
-      - "8888:8888"
+      - "${WEBAPP_PORT:-8888}:8888"
     volumes:
       - rtb_files:/opt/rtb/files
     environment:
       - COMPOSE_CONVERT_WINDOWS_PATHS=1
-      - TZ=America/Chicago
+      - TZ=${TZ:-America/Chicago}
     restart: unless-stopped
     depends_on:
       - memcached

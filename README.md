@@ -53,6 +53,12 @@ docker compose -f docker-compose.ghcr.yml up
 
 The app is then available at `http://localhost:8888`, with default admin credentials `admin` / `rootthebox` (change these immediately). Application data (database, config, uploads) persists in the `rtb_files` Docker volume across restarts.
 
+`docker-compose.ghcr.yml` reads three optional environment variables, useful for running multiple instances on one host (e.g. as separate stacks in Portainer, where each stack's volumes/services are already namespaced automatically but host ports are not):
+
+-   `WEBAPP_PORT` — host port to publish (default `8888`)
+-   `IMAGE_TAG` — image tag to deploy, e.g. a pinned version like `3.15.4` (default `latest`)
+-   `TZ` — container timezone (default `America/Chicago`)
+
 ## Platform Requirements
 
 -   [Python 3](https://www.python.org/), [PyPy](http://pypy.org/) or [Docker](https://github.com/moloch--/RootTheBox/wiki/Docker-Deployment).
