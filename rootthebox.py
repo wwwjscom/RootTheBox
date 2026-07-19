@@ -432,7 +432,7 @@ define(
 
 define(
     "suspend_registration",
-    default=False,
+    default=True,
     group="application",
     help="suspend the registration automatically",
     type=bool,
