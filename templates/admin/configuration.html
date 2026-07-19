@@ -58,6 +58,51 @@
             </div>
             <hr />
             <div class="control-group">
+                <label class="control-label" for="autostart-game">
+                    <i class="fa fa-play"></i>
+                    {{ _("Autostart Game") }}
+                </label>
+                <div class="controls">
+                    <input id="autostart-game" name="autostart_game" type="hidden" value="{{ str(config.autostart_game).lower() }}" />
+                    <div id="autostart-game-button" class="btn-group" data-toggle="buttons-radio"
+                        rel="popover"
+                        data-original-title="{{ _('Autostart Game') }}"
+                        data-content="{{ _('When enabled, the game starts automatically as soon as the server boots, without needing an admin to click Start Game. Recommended Setting: Enabled') }}">
+                        <button id="autostart-game-enable" type="button" class="btn btn-success">
+                            <i id="autostart-game-enable-icon" class="fa fa-fw fa-square-o"></i>
+                            {{ _("Enable") }}
+                        </button>
+                        <button id="autostart-game-disable" type="button" class="btn btn-danger">
+                            <i id="autostart-game-disable-icon" class="fa fa-fw fa-square-o"></i>
+                            {{ _("Disable") }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="suspend-registration">
+                    <i class="fa fa-pause"></i>
+                    {{ _("Suspend Registration") }}
+                </label>
+                <div class="controls">
+                    <input id="suspend-registration" name="suspend_registration" type="hidden" value="{{ str(config.suspend_registration).lower() }}" />
+                    <div id="suspend-registration-button" class="btn-group" data-toggle="buttons-radio"
+                        rel="popover"
+                        data-original-title="{{ _('Suspend Registration') }}"
+                        data-content="{{ _('When enabled, new player registration is suspended by default until an admin opens it from the dashboard. This only sets the default on server startup/restart; use the dashboard to open or suspend registration immediately. Recommended Setting: Enabled') }}">
+                        <button id="suspend-registration-enable" type="button" class="btn btn-success">
+                            <i id="suspend-registration-enable-icon" class="fa fa-fw fa-square-o"></i>
+                            {{ _("Enable") }}
+                        </button>
+                        <button id="suspend-registration-disable" type="button" class="btn btn-danger">
+                            <i id="suspend-registration-disable-icon" class="fa fa-fw fa-square-o"></i>
+                            {{ _("Disable") }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="control-group">
                 <label class="control-label" for="ctf-logo-upload">{{ _("CTF Logo") }}</label>
                 <div class="controls">
                     {% if config.ctf_logo %}

@@ -91,6 +91,22 @@ $(document).ready(function() {
         $("#restrict-registration-disable-icon").addClass("fa-check-square-o");
     }
 
+    if ($("#autostart-game").val() === "true") {
+        $("#autostart-game-enable-icon").removeClass("fa-square-o");
+        $("#autostart-game-enable-icon").addClass("fa-check-square-o");
+    } else {
+        $("#autostart-game-disable-icon").removeClass("fa-square-o");
+        $("#autostart-game-disable-icon").addClass("fa-check-square-o");
+    }
+
+    if ($("#suspend-registration").val() === "true") {
+        $("#suspend-registration-enable-icon").removeClass("fa-square-o");
+        $("#suspend-registration-enable-icon").addClass("fa-check-square-o");
+    } else {
+        $("#suspend-registration-disable-icon").removeClass("fa-square-o");
+        $("#suspend-registration-disable-icon").addClass("fa-check-square-o");
+    }
+
     if ($("#global-notifications").val() === "true") {
         $("#global-notifications-enable-icon").removeClass("fa-square-o");
         $("#global-notifications-enable-icon").addClass("fa-check-square-o");
@@ -245,6 +261,36 @@ $(document).ready(function() {
         $("#restrict-registration-disable-icon").addClass("fa-check-square-o");
         $("#restrict-registration-enable-icon").removeClass("fa-check-square-o");
         $("#restrict-registration-enable-icon").addClass("fa-square-o");
+    });
+
+    $("#autostart-game-enable").click(function() {
+        $("#autostart-game").val("true");
+        $("#autostart-game-enable-icon").removeClass("fa-square-o");
+        $("#autostart-game-enable-icon").addClass("fa-check-square-o");
+        $("#autostart-game-disable-icon").removeClass("fa-check-square-o");
+        $("#autostart-game-disable-icon").addClass("fa-square-o");
+    });
+    $("#autostart-game-disable").click(function() {
+        $("#autostart-game").val("false");
+        $("#autostart-game-disable-icon").removeClass("fa-square-o");
+        $("#autostart-game-disable-icon").addClass("fa-check-square-o");
+        $("#autostart-game-enable-icon").removeClass("fa-check-square-o");
+        $("#autostart-game-enable-icon").addClass("fa-square-o");
+    });
+
+    $("#suspend-registration-enable").click(function() {
+        $("#suspend-registration").val("true");
+        $("#suspend-registration-enable-icon").removeClass("fa-square-o");
+        $("#suspend-registration-enable-icon").addClass("fa-check-square-o");
+        $("#suspend-registration-disable-icon").removeClass("fa-check-square-o");
+        $("#suspend-registration-disable-icon").addClass("fa-square-o");
+    });
+    $("#suspend-registration-disable").click(function() {
+        $("#suspend-registration").val("false");
+        $("#suspend-registration-disable-icon").removeClass("fa-square-o");
+        $("#suspend-registration-disable-icon").addClass("fa-check-square-o");
+        $("#suspend-registration-enable-icon").removeClass("fa-check-square-o");
+        $("#suspend-registration-enable-icon").addClass("fa-square-o");
     });
 
     $("#global-notifications-enable").click(function() {
@@ -461,6 +507,8 @@ $(document).ready(function() {
     $("#require-email-button").popover({placement:'right', trigger:'hover'});
     $("#validate-email-button").popover({placement:'right', trigger:'hover'});
     $("#restrict-registration-button").popover({placement:'right', trigger:'hover'});
+    $("#autostart-game-button").popover({placement:'right', trigger:'hover'});
+    $("#suspend-registration-button").popover({placement:'right', trigger:'hover'});
     $("#global-notifications-button").popover({placement:'right', trigger:'hover'});
     $("#public-teams-button").popover({placement:'right', trigger:'hover'});
     $("#show-mvp-button").popover({placement:'right', trigger:'hover'});
