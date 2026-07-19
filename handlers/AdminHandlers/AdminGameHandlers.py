@@ -400,6 +400,7 @@ class AdminConfigurationHandler(BaseHandler):
         """
         errors = []
         self.config.game_name = self.get_argument("game_name", "Root the Box")
+        self.config.ctf_tagline = self.get_argument("ctf_tagline", "A Game of Hackers")
         self.config.origin = self.get_argument("origin", "ws://localhost:8888")
         self.config.disable_hijack_protection = self.get_bool(
             "disable_hijack_protection", True

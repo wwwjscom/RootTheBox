@@ -502,6 +502,7 @@ $(document).ready(function() {
 
     /* Enable popovers */
     $("#game-name").popover({placement:'right', trigger:'hover'});
+    $("#ctf-tagline").popover({placement:'right', trigger:'hover'});
     $("#origin").popover({placement:'right', trigger:'hover'});
     $("#disable-hijack-button").popover({placement:'right', trigger:'hover'});
     $("#require-email-button").popover({placement:'right', trigger:'hover'});

@@ -44,6 +44,15 @@
                 </div>
             </div>
             <div class="control-group">
+                <label class="control-label" for="ctf-tagline">{{ _("CTF Tagline") }}</label>
+                <div class="controls">
+                    <input id="ctf-tagline" type="text" name="ctf_tagline" value="{{ config.ctf_tagline }}"
+                        rel="popover"
+                        data-original-title="{{ _('CTF Tagline') }}"
+                        data-content="{{ _('This is the tagline displayed over the logo on the homepage') }}" />
+                </div>
+            </div>
+            <div class="control-group">
                 <label class="control-label" for="origin">{{ _("WebSocket Origin") }}</label>
                 <div class="controls">
                     <input required id="origin" type="text" name="origin" value="{{ config.origin }}"
