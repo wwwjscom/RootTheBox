@@ -28,6 +28,7 @@ from tornado.options import options
 
 from handlers.BaseHandlers import BaseHandler
 from libs.SecurityDecorators import authenticated
+from models.Box import Box
 from models.Corporation import Corporation
 
 
@@ -57,18 +58,30 @@ class MaterialsHandler(BaseHandler):
                     self.redirect(self.application.settings["forbidden_url"])
                     return
                 d = os.path.join(d, args[0])
+                box = Box.by_name(os.path.basename(args[0]))
+                if box is not None and box.locked:
+                    self.redirect(self.application.settings["forbidden_url"])
+                    return
             self.write(json.dumps(self.path_to_dict(d)))
         else:
             self.redirect("/gamestatus")
 
     def path_to_dict(self, path):
-        d = {"text": os.path.basename(path)}
+        name = os.path.basename(path)
+        box = Box.by_name(name)
+        if box is not None and box.locked:
+            return None
+        d = {"text": name}
         if os.path.isdir(path):
             d["type"] = "directory"
             d["children"] = [
-                self.path_to_dict(os.path.join(path, x))
-                for x in os.listdir(path)
-                if x != "README.md"
+                child
+                for child in (
+                    self.path_to_dict(os.path.join(path, x))
+                    for x in os.listdir(path)
+                    if x != "README.md"
+                )
+                if child is not None
             ]
         else:
             downloadpath = path.replace(options.game_materials_dir, "/materials")
@@ -115,6 +128,8 @@ def has_materials():
 
 def has_box_materials(box):
     if not options.use_box_materials_dir:
+        return False
+    if box.locked:
         return False
 
     d = options.game_materials_dir
