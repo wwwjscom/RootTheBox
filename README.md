@@ -44,7 +44,7 @@ See the [Root the Box Wiki](https://github.com/moloch--/RootTheBox/wiki)
 
 ### Run from a published image
 
-Pre-built images are published to GitHub Container Registry on every push to `main` (`latest`) and on tagged releases (e.g. `3.15.4`). No git clone is required:
+Pre-built images are published to GitHub Container Registry on every push to `main` (`latest`) and on tagged releases (e.g. `2026.07.18`). No git clone is required:
 
 ```bash
 curl -O https://raw.githubusercontent.com/wwwjscom/RootTheBox/main/docker-compose.ghcr.yml
@@ -56,7 +56,7 @@ The app is then available at `http://localhost:8888`, with default admin credent
 `docker-compose.ghcr.yml` reads three optional environment variables, useful for running multiple instances on one host (e.g. as separate stacks in Portainer, where each stack's volumes/services are already namespaced automatically but host ports are not):
 
 -   `WEBAPP_PORT` — host port to publish (default `8888`)
--   `IMAGE_TAG` — image tag to deploy, e.g. a pinned version like `3.15.4` (default `latest`)
+-   `IMAGE_TAG` — image tag to deploy, e.g. a pinned version like `2026.07.18` (default `latest`)
 -   `TZ` — container timezone (default `America/Chicago`)
 
 ## Platform Requirements

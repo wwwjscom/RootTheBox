@@ -61,6 +61,7 @@ from libs.ConsoleColors import *
 from libs.DatabaseConnection import DatabaseConnection
 from libs.Scoreboard import Scoreboard, score_bots
 from libs.StringCoding import encode
+from libs.UpdateCheckHelpers import check_for_updates
 from modules.AppTheme import AppTheme
 from modules.Menu import Menu
 from modules.Recaptcha import Recaptcha
@@ -257,6 +258,9 @@ app = Application(
     temp_global_notifications=None,
     # Callback functions
     score_bots_callback=PeriodicCallback(score_bots, options.bot_reward_interval),
+    update_check_callback=PeriodicCallback(
+        check_for_updates, options.update_check_interval
+    ),
     # Scoreboard Highlights
     scoreboard_history={},
     scoreboard_state={},
@@ -305,6 +309,9 @@ def start_server():
             app.settings["score_bots_callback"].start()
     # Always running - an admin can set a countdown at any time
     app.settings["countdown_callback"].start()
+    if options.check_for_updates:
+        check_for_updates()
+        app.settings["update_check_callback"].start()
     # Setup server object
     if options.ssl:
         server = HTTPServer(

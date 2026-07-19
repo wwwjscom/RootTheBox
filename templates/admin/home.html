@@ -215,6 +215,14 @@
         Default password - please update in <a href="/user/settings" style="color: #000">User Settings</a>
     </div>
     {% end %}
+    {% if update_available %}
+    <div class="span8 alert alert-info">
+        <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <h4 class="alert-heading">{{ _("Update Available") }}</h4>
+        {{ _("A newer version of Root the Box is available") }}: <strong>{{ latest_version }}</strong>
+        (<a href="https://github.com/wwwjscom/RootTheBox/releases" target="_blank">{{ _("view releases") }}</a>)
+    </div>
+    {% end %}
     <div class="span8 well">
         <div class="control-group" style="float: right; padding-top: 20px;">
                 <div class="controls">

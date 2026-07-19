@@ -415,6 +415,22 @@ define(
 )
 
 define(
+    "check_for_updates",
+    default=True,
+    group="application",
+    help="periodically check GitHub for newer Root the Box releases",
+    type=bool,
+)
+
+define(
+    "update_check_interval",
+    default=int(86400000),
+    group="application",
+    help="interval for checking for new releases (milliseconds)",
+    type=int,
+)
+
+define(
     "suspend_registration",
     default=False,
     group="application",
