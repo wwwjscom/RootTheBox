@@ -137,12 +137,28 @@ window.RTB.countdown = (function() {
      *
      * The endpoint writes an empty body when no countdown is configured;
      * treating that as a number yields 0, which would render "EXPIRED" on
-     * a scoreboard that simply has no timer set.  Guarded here so every
-     * caller gets it right.
+     * a scoreboard that simply has no timer set - so an empty body starts
+     * nothing at all.
+     *
+     * A non-empty 0 (or negative) is different: a countdown was set and
+     * has expired, but the deadline itself isn't cleared until an admin
+     * clears it, so the endpoint keeps reporting it forever.  That should
+     * still render as "EXPIRED" - but must not go through start()/expire(),
+     * since a caller with onExpire wired to location.reload() (the admin
+     * dashboard) would reload, re-fetch, see the same expired value, and
+     * reload forever.  So this paints the expired text directly and skips
+     * onExpire, exactly once per page load rather than once per reload.
      */
     function startFromServer(opts) {
         $.get("/scoreboard/ajax/timer", function(seconds) {
             if (seconds === "" || seconds === null || seconds === undefined) {
+                return;
+            }
+            var distanceMs = parseFloat(seconds) * 1000;
+            if (distanceMs <= 0) {
+                $(opts.target).text(
+                    opts.expiredText !== undefined ? opts.expiredText : "EXPIRED"
+                );
                 return;
             }
             var settings = {};
@@ -151,7 +167,7 @@ window.RTB.countdown = (function() {
                     settings[key] = opts[key];
                 }
             }
-            settings.distanceMs = parseFloat(seconds) * 1000;
+            settings.distanceMs = distanceMs;
             start(settings);
         });
     }
