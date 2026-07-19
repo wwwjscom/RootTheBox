@@ -42,6 +42,17 @@ If you’re using RootTheBox, please ★Star this repository to show your intere
 
 See the [Root the Box Wiki](https://github.com/moloch--/RootTheBox/wiki)
 
+### Run from a published image
+
+Pre-built images are published to GitHub Container Registry on every push to `main` (`latest`) and on tagged releases (e.g. `3.15.4`). No git clone is required:
+
+```bash
+curl -O https://raw.githubusercontent.com/wwwjscom/RootTheBox/main/docker-compose.ghcr.yml
+docker compose -f docker-compose.ghcr.yml up
+```
+
+The app is then available at `http://localhost:8888`, with default admin credentials `admin` / `rootthebox` (change these immediately). Application data (database, config, uploads) persists in the `rtb_files` Docker volume across restarts.
+
 ## Platform Requirements
 
 -   [Python 3](https://www.python.org/), [PyPy](http://pypy.org/) or [Docker](https://github.com/moloch--/RootTheBox/wiki/Docker-Deployment).

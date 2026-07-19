@@ -1,0 +1,19 @@
+services:
+  memcached:
+    image: memcached:latest
+    restart: unless-stopped
+  webapp:
+    image: ghcr.io/wwwjscom/rootthebox:latest
+    ports:
+      - "8888:8888"
+    volumes:
+      - rtb_files:/opt/rtb/files
+    environment:
+      - COMPOSE_CONVERT_WINDOWS_PATHS=1
+      - TZ=America/Chicago
+    restart: unless-stopped
+    depends_on:
+      - memcached
+
+volumes:
+  rtb_files:
