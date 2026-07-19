@@ -249,6 +249,13 @@
         Default WebSocket Origin - please update in <a href="/admin/configuration" style="color: #000">Configuration</a>
     </div>
     {% end %}
+    {% if not options.suspend_registration %}
+    <div class="span8 alert alert-warning">
+        <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <h4 class="alert-heading">{{ _("WARNING") }}</h4>
+        Registration defaults to open when the server starts.  This is a security risk - please update in <a href="/admin/configuration" style="color: #000">Configuration</a>
+    </div>
+    {% end %}
     {% if update_available %}
     <div class="span8 alert alert-info">
         <a class="close" data-dismiss="alert" href="#">&times;</a>
