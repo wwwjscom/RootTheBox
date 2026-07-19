@@ -27,6 +27,7 @@ This is the main file the defines what URLs get routed to what handlers
 
 import sys
 import logging
+import time
 from builtins import str
 from os import _exit, urandom
 from os import path as os_path
@@ -252,6 +253,7 @@ app = Application(
     # Flags used to run the game
     game_started=options.autostart_game,
     suspend_registration=options.suspend_registration,
+    registration_opened_at=(time.time() if not options.suspend_registration else None),
     countdown_timer=False,
     countdown_expired=False,
     hide_scoreboard=False,
@@ -273,9 +275,12 @@ app = Application(
 # Ends the countdown on schedule rather than whenever someone happens to
 # load a scoreboard.  Registered after construction since `app` cannot
 # reference itself in the settings above.
-app.settings["countdown_callback"] = PeriodicCallback(
-    lambda: GameState.expire_countdown(app), 1000
-)
+def _expire_tick():
+    GameState.expire_countdown(app)
+    GameState.expire_registration_window(app)
+
+
+app.settings["countdown_callback"] = PeriodicCallback(_expire_tick, 1000)
 
 
 # Update the database schema

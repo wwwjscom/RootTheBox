@@ -86,6 +86,7 @@
 {% block content %}
 {% from models.Notification import Notification %}
 {% from tornado.options import options %}
+{% from libs.GameState import registration_seconds_remaining %}
 <div class="row-fluid">
     <div class="row">
         <div class="offset1">
@@ -139,9 +140,16 @@
                 <div class="game_button_area">
                     {% if not handler.application.settings['suspend_registration'] %}
                         <button id="suspend-registration-button" class="btn btn-warning game_button" type="button">
-                            <i class="fa fa-fw fa-pause"></i>  
+                            <i class="fa fa-fw fa-pause"></i>
                         </button>
                         <h4 class="game_button_text">{{ _("Pause Registration") }}</h4>
+                        {% set remaining = registration_seconds_remaining(handler.application) %}
+                        {% if remaining is not None %}
+                        <p style="font-size: 11px; color: #999; margin: 0;">
+                            {{ _("Closes in approximately") }}
+                            {% if remaining < 60 %}{{ _("less than a minute") }}{% elif remaining < 3600 %}{{ int(remaining // 60) }}m{% else %}{{ int(remaining // 3600) }}h {{ int((remaining % 3600) // 60) }}m{% end %}
+                        </p>
+                        {% end %}
                     {% else %}
                         <button id="resume-registration-button" class="btn btn-success game_button" type="button">
                             <i class="fa fa-fw fa-play"></i>  
@@ -254,6 +262,13 @@
         <a class="close" data-dismiss="alert" href="#">&times;</a>
         <h4 class="alert-heading">{{ _("WARNING") }}</h4>
         Registration defaults to open when the server starts.  This is a security risk - please update in <a href="/admin/configuration" style="color: #000">Configuration</a>
+    </div>
+    {% end %}
+    {% if options.registration_open_minutes == 0 or options.registration_open_minutes > 120 %}
+    <div class="span8 alert alert-warning">
+        <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <h4 class="alert-heading">{{ _("WARNING") }}</h4>
+        Registration Auto-Close is disabled or set above the recommended 120 minutes - please review in <a href="/admin/configuration" style="color: #000">Configuration</a>
     </div>
     {% end %}
     {% if update_available %}

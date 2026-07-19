@@ -439,6 +439,14 @@ define(
 )
 
 define(
+    "registration_open_minutes",
+    default=30,
+    group="application",
+    help="auto-close registration after this many minutes (0 = never)",
+    type=int,
+)
+
+define(
     "auth",
     default="db",
     group="application",

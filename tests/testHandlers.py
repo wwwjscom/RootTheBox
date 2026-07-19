@@ -112,6 +112,8 @@ class GameStateTestCase(unittest.TestCase):
             "hide_scoreboard": False,
             "stop_timer": False,
             "score_bots_callback": mock.Mock(_running=False),
+            "suspend_registration": True,
+            "registration_opened_at": None,
         }
         settings.update(overrides)
         app = mock.Mock()
@@ -214,6 +216,76 @@ class TestExpireCountdown(GameStateTestCase):
         app.settings["hide_scoreboard"] = True
         self.assertFalse(GameState.expire_countdown(app))
         self.assertTrue(app.settings["hide_scoreboard"])
+
+
+class TestRegistrationSecondsRemaining(GameStateTestCase):
+    """registration_seconds_remaining() must be a pure read - no writes to settings"""
+
+    def test_none_when_suspended(self):
+        app = self._app(suspend_registration=True)
+        self.assertIsNone(GameState.registration_seconds_remaining(app))
+
+    def test_none_when_minutes_disabled(self):
+        options.registration_open_minutes = 0
+        app = self._app(suspend_registration=False, registration_opened_at=time.time())
+        self.assertIsNone(GameState.registration_seconds_remaining(app))
+        options.registration_open_minutes = 30
+
+    def test_none_when_never_opened(self):
+        app = self._app(suspend_registration=False, registration_opened_at=None)
+        self.assertIsNone(GameState.registration_seconds_remaining(app))
+
+    def test_in_range_within_the_window(self):
+        options.registration_open_minutes = 30
+        app = self._app(suspend_registration=False, registration_opened_at=time.time())
+        remaining = GameState.registration_seconds_remaining(app)
+        self.assertTrue(1795 < remaining <= 1800, "got %r" % remaining)
+
+    def test_past_deadline_clamps_to_zero(self):
+        options.registration_open_minutes = 30
+        app = self._app(
+            suspend_registration=False, registration_opened_at=time.time() - 999999
+        )
+        self.assertEqual(GameState.registration_seconds_remaining(app), 0.0)
+
+
+class TestExpireRegistrationWindow(GameStateTestCase):
+    """expire_registration_window() auto re-suspends registration after N minutes"""
+
+    def test_suspended_is_a_noop(self):
+        app = self._app(suspend_registration=True)
+        self.assertFalse(GameState.expire_registration_window(app))
+
+    def test_disabled_minutes_is_a_noop(self):
+        options.registration_open_minutes = 0
+        app = self._app(suspend_registration=False, registration_opened_at=time.time() - 999999)
+        self.assertFalse(GameState.expire_registration_window(app))
+        self.assertFalse(app.settings["suspend_registration"])
+        options.registration_open_minutes = 30
+
+    def test_not_yet_expired_is_a_noop(self):
+        options.registration_open_minutes = 30
+        app = self._app(suspend_registration=False, registration_opened_at=time.time())
+        before = dict(app.settings)
+        self.assertFalse(GameState.expire_registration_window(app))
+        self.assertEqual(app.settings, before)
+
+    def test_expired_closes_registration_and_clears_timestamp(self):
+        options.registration_open_minutes = 30
+        app = self._app(
+            suspend_registration=False, registration_opened_at=time.time() - 1801
+        )
+        self.assertTrue(GameState.expire_registration_window(app))
+        self.assertTrue(app.settings["suspend_registration"])
+        self.assertIsNone(app.settings["registration_opened_at"])
+
+    def test_second_call_after_closing_is_a_noop(self):
+        options.registration_open_minutes = 30
+        app = self._app(
+            suspend_registration=False, registration_opened_at=time.time() - 1801
+        )
+        GameState.expire_registration_window(app)
+        self.assertFalse(GameState.expire_registration_window(app))
 
 
 class TestStopGamePushes(GameStateTestCase):

@@ -93,3 +93,40 @@ def expire_countdown(app):
         # Never let a failure kill the periodic callback
         logging.exception("Error expiring the game countdown")
         return False
+
+
+def registration_seconds_remaining(app):
+    """Seconds until registration auto-closes, or None if not applicable"""
+    if app.settings["suspend_registration"]:
+        return None
+    opened_at = app.settings["registration_opened_at"]
+    if not opened_at or not options.registration_open_minutes:
+        return None
+    deadline = opened_at + options.registration_open_minutes * 60
+    return max(0.0, deadline - time.time())
+
+
+def expire_registration_window(app):
+    """
+    Auto-closes registration after options.registration_open_minutes.
+
+    Reads the minute threshold from options (a plain Configuration value)
+    rather than app.settings, matching how other Configuration-only
+    fields like options.scoreboard_top are read directly at use time.
+    Note: disabling and re-enabling this mid-window does not reset the
+    window start; it's measured from when registration was last opened.
+    """
+    try:
+        if app.settings["suspend_registration"]:
+            return False
+        opened_at = app.settings["registration_opened_at"]
+        if not opened_at or not options.registration_open_minutes:
+            return False
+        if time.time() - opened_at < options.registration_open_minutes * 60:
+            return False
+        app.settings["suspend_registration"] = True
+        app.settings["registration_opened_at"] = None
+        return True
+    except Exception:
+        logging.exception("Error expiring the registration window")
+        return False

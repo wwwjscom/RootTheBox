@@ -122,8 +122,10 @@ class AdminGameHandler(BaseHandler):
         ):
             if suspend_reg == "true":
                 self.application.settings["suspend_registration"] = True
+                self.application.settings["registration_opened_at"] = None
             elif suspend_reg == "false":
                 self.application.settings["suspend_registration"] = False
+                self.application.settings["registration_opened_at"] = time.time()
         if (
             hide_scoreboard
             and self.isOn(hide_scoreboard)
@@ -407,6 +409,9 @@ class AdminConfigurationHandler(BaseHandler):
         )
         self.config.autostart_game = self.get_bool("autostart_game", False)
         self.config.suspend_registration = self.get_bool("suspend_registration", True)
+        self.config.registration_open_minutes = self.get_int(
+            "registration_open_minutes", 30
+        )
         self.config.require_email = self.get_bool("require_email", True)
         self.config.validate_email = self.get_bool("validate_email", False)
         if self.config.validate_email and not len(options.mail_host) > 0:

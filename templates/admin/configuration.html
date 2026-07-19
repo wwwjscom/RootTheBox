@@ -101,6 +101,16 @@
                     </div>
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label" for="registration-open-minutes">{{ _("Registration Auto-Close (Minutes)") }}</label>
+                <div class="controls">
+                    <input id="registration-open-minutes" min="0" type="number" name="registration_open_minutes"
+                        value="{{ config.registration_open_minutes }}"
+                        rel="popover" pattern="\d*"
+                        data-original-title="{{ _('Registration Auto-Close') }}"
+                        data-content="{{ _('Automatically suspend registration this many minutes after it is opened. Set to 0 to disable auto-close. Recommended Setting: 30-120 minutes') }}" />
+                </div>
+            </div>
             <hr />
             <div class="control-group">
                 <label class="control-label" for="ctf-logo-upload">{{ _("CTF Logo") }}</label>

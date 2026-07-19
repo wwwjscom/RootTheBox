@@ -509,6 +509,7 @@ $(document).ready(function() {
     $("#restrict-registration-button").popover({placement:'right', trigger:'hover'});
     $("#autostart-game-button").popover({placement:'right', trigger:'hover'});
     $("#suspend-registration-button").popover({placement:'right', trigger:'hover'});
+    $("#registration-open-minutes").popover({placement:'right', trigger:'hover'});
     $("#global-notifications-button").popover({placement:'right', trigger:'hover'});
     $("#public-teams-button").popover({placement:'right', trigger:'hover'});
     $("#show-mvp-button").popover({placement:'right', trigger:'hover'});
