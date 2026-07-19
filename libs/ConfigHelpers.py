@@ -43,8 +43,7 @@ def save_config():
                     fp.write("%s = %s\n" % (key, value))
 
 
-def save_config_image(b64_data):
-    image_data = bytearray(b64decode(b64_data))
+def save_config_image_bytes(image_data):
     if len(image_data) < (2048 * 2048):
         ext = imghdr.what("", h=image_data)
         file_name = "/story/%s.%s" % (hashlib.sha1(image_data).hexdigest(), ext)
@@ -58,6 +57,10 @@ def save_config_image(b64_data):
             )
     else:
         raise ValidationError("The image is too large")
+
+
+def save_config_image(b64_data):
+    return save_config_image_bytes(bytearray(b64decode(b64_data)))
 
 
 def create_demo_user():

@@ -39,7 +39,7 @@ from tornado.ioloop import PeriodicCallback
 from tornado.options import options
 
 from handlers.BaseHandlers import BaseHandler
-from libs.ConfigHelpers import save_config
+from libs.ConfigHelpers import save_config, save_config_image_bytes
 from libs.ConsoleColors import *
 from libs.EventManager import EventManager
 from libs.Scoreboard import Scoreboard, score_bots
@@ -396,7 +396,7 @@ class AdminConfigurationHandler(BaseHandler):
         Update configuration
         Disabled fields will not be send in the POST, so check for blank values
         """
-        errors = None
+        errors = []
         self.config.game_name = self.get_argument("game_name", "Root the Box")
         self.config.origin = self.get_argument("origin", "ws://localhost:8888")
         self.config.disable_hijack_protection = self.get_bool(
@@ -408,9 +408,9 @@ class AdminConfigurationHandler(BaseHandler):
         self.config.require_email = self.get_bool("require_email", True)
         self.config.validate_email = self.get_bool("validate_email", False)
         if self.config.validate_email and not len(options.mail_host) > 0:
-            errors = [
+            errors.append(
                 "Mail settings must be defined in the rootthebox.cfg to Validate Email."
-            ]
+            )
             self.config.validate_email = False
         self.config.global_notification = self.get_bool("global_notification", True)
         self.config.hints_taken = self.get_bool("hints_taken", False)
@@ -452,7 +452,30 @@ class AdminConfigurationHandler(BaseHandler):
         self.config.password_upgrade_cost = self.get_int("password_upgrade_cost", 1000)
         self.config.bribe_cost = self.get_int("bribe_cost", 2500)
         self.config.max_pastebin_size = self.get_int("max_pastebin_size", 4096)
-        self.render("admin/configuration.html", errors=errors, config=self.config)
+        for field, option_name in (
+            ("ctf_logo_upload", "ctf_logo"),
+            ("story_character_upload", "story_character"),
+            ("scoreboard_right_image_upload", "scoreboard_right_image"),
+        ):
+            if field in self.request.files:
+                try:
+                    image_data = self.request.files[field][0]["body"]
+                    setattr(self.config, option_name, save_config_image_bytes(image_data))
+                except ValidationError as error:
+                    errors.append(str(error))
+        if "scoreboard_right_image_upload" not in self.request.files and self.get_bool(
+            "scoreboard_right_image_clear", False
+        ):
+            old_path = self.config.scoreboard_right_image
+            if old_path.startswith("/story/"):
+                try:
+                    os.remove("files" + old_path)
+                except OSError:
+                    pass
+            self.config.scoreboard_right_image = ""
+        self.render(
+            "admin/configuration.html", errors=errors or None, config=self.config
+        )
 
     def config_bots(self):
         """Updates bot config, and starts/stops the botnet callback"""

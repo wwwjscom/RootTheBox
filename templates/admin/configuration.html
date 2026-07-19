@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="container">
-    <form class="form-horizontal" action="/admin/configuration" method="post">
+    <form class="form-horizontal" action="/admin/configuration" method="post" enctype="multipart/form-data">
         <div class="control-group" style="float: right; padding-top: 20px;">
                 <div class="controls">
                     <button class="btn btn-primary" type="submit">
@@ -56,6 +56,20 @@
                     </span>
                 </div>
             </div>
+            <hr />
+            <div class="control-group">
+                <label class="control-label" for="ctf-logo-upload">{{ _("CTF Logo") }}</label>
+                <div class="controls">
+                    {% if config.ctf_logo %}
+                    <img src="{{ config.ctf_logo }}" alt="{{ _('Ctf Logo') }}" style="max-height: 60px; display: block; margin-bottom: 8px;" />
+                    {% end %}
+                    <input id="ctf-logo-upload" type="file" name="ctf_logo_upload" accept="image/png,image/jpeg,image/gif,image/bmp"
+                        rel="popover"
+                        data-original-title="{{ _('C Logo') }}"
+                        data-content="{{ _('Upload a new logo, shown on the homepage. Leave blank to keep the current logo.') }}" />
+                </div>
+            </div>
+            <hr />
             <div class="control-group">
                 <label class="control-label" for="disable-hijack">
                     <i class="fa fa-shield"></i>
@@ -244,6 +258,23 @@
                     </div>
                 </div>
             </div>
+            <div class="control-group">
+                <label class="control-label" for="scoreboard-right-image-upload">{{ _("Scoreboard Right Image") }}</label>
+                <div class="controls">
+                    {% if config.scoreboard_right_image %}
+                    <img src="{{ config.scoreboard_right_image }}" alt="{{ _('Scoreboard Right Image') }}" style="max-height: 60px; display: block; margin-bottom: 8px;" />
+                    <label class="checkbox" style="display: inline-block; margin-bottom: 8px;">
+                        <input type="checkbox" name="scoreboard_right_image_clear" value="true" />
+                        {{ _("Remove current image") }}
+                    </label>
+                    <br />
+                    {% end %}
+                    <input id="scoreboard-right-image-upload" type="file" name="scoreboard_right_image_upload" accept="image/png,image/jpeg,image/gif,image/bmp"
+                        rel="popover"
+                        data-original-title="{{ _('Scoreboard Right Image') }}"
+                        data-content="{{ _('Upload an image shown on the right side of the scoreboard. Leave blank to keep the current image.') }}" />
+                </div>
+            </div>
             <hr />
             <div class="control-group">
                 <label class="control-label" for="teams">
@@ -385,6 +416,18 @@
                             {{ _("Disable") }}
                         </button>
                     </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="story-character-upload">{{ _("Story Character") }}</label>
+                <div class="controls">
+                    {% if config.story_character %}
+                    <img src="{{ config.story_character }}" alt="{{ _('Story Character') }}" style="max-height: 60px; display: block; margin-bottom: 8px;" />
+                    {% end %}
+                    <input id="story-character-upload" type="file" name="story_character_upload" accept="image/png,image/jpeg,image/gif,image/bmp"
+                        rel="popover"
+                        data-original-title="{{ _('Story Character') }}"
+                        data-content="{{ _('Upload a new story character image. Leave blank to keep the current image.') }}" />
                 </div>
             </div>
             <hr />
