@@ -85,7 +85,8 @@ class AdminGameHandler(BaseHandler):
         start_game = self.get_argument("start_game", None)
         stop_game = self.get_argument("stop_game", None)
         suspend_reg = self.get_argument("suspend_registration", None)
-        set_timer = self.get_argument("countdown_timer", None)
+        clear_timer = self.get_argument("countdown_timer", None)
+        timer_mode = self.get_argument("timer_mode", None)
         hide_scoreboard = self.get_argument("hide_scoreboard", None)
         show_scoreboard = self.get_argument("show_scoreboard", None)
         stop_timer = self.get_argument("stop_timer", None)
@@ -133,24 +134,30 @@ class AdminGameHandler(BaseHandler):
             else:
                 self.application.settings["hide_scoreboard"] = False
         if (
-            set_timer
-            and set_timer != str(self.application.settings["countdown_timer"]).lower()
+            clear_timer == "false"
+            and self.application.settings["countdown_timer"] is not False
         ):
-            if set_timer == "false":
-                self.application.settings["countdown_timer"] = False
-                self.application.settings["countdown_expired"] = False
-                self.application.settings["stop_timer"] = False
-                self.application.settings["hide_scoreboard"] = False
-                if self.application.settings["temp_global_notifications"] is not None:
-                    options.global_notification = self.application.settings[
-                        "temp_global_notifications"
-                    ]
-                    self.application.settings["temp_global_notifications"] = None
-                self.event_manager.push_scoreboard()
-                self.event_manager.push_countdown(None)
-            elif set_timer:
-                diff = 60 * int(float(set_timer))
-                self.application.settings["countdown_timer"] = time.time() + diff
+            self.application.settings["countdown_timer"] = False
+            self.application.settings["countdown_expired"] = False
+            self.application.settings["stop_timer"] = False
+            self.application.settings["hide_scoreboard"] = False
+            if self.application.settings["temp_global_notifications"] is not None:
+                options.global_notification = self.application.settings[
+                    "temp_global_notifications"
+                ]
+                self.application.settings["temp_global_notifications"] = None
+            self.event_manager.push_scoreboard()
+            self.event_manager.push_countdown(None)
+        elif timer_mode:
+            if timer_mode == "absolute":
+                target_epoch = float(self.get_argument("timer_absolute_epoch"))
+            else:
+                hours = int(self.get_argument("timer_hours", "0") or 0)
+                minutes = int(self.get_argument("timer_minutes", "0") or 0)
+                target_epoch = time.time() + hours * 3600 + minutes * 60
+            diff = target_epoch - time.time()
+            if diff > 0:
+                self.application.settings["countdown_timer"] = target_epoch
                 self.application.settings["countdown_expired"] = False
                 self.application.settings[
                     "temp_global_notifications"

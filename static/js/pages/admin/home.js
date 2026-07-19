@@ -53,7 +53,27 @@ $(document).ready(function() {
         $("#clear-ip-form").submit();
     });
 
+    function updateTimerModeUI() {
+        var isAbsolute = $("input[name=timer_mode]:checked").val() === "absolute";
+        $("#timer-hours, #timer-minutes").prop("disabled", isAbsolute);
+        $("#timer-absolute").prop("disabled", !isAbsolute);
+    }
+
+    $("input[name=timer_mode]").change(updateTimerModeUI);
+
+    $("#timer-modal").on("show", function() {
+        $("#timer-form")[0].reset();
+        updateTimerModeUI();
+    });
+
     $("#timer-submit").click(function() {
+        if ($("input[name=timer_mode]:checked").val() === "absolute") {
+            var absoluteValue = $("#timer-absolute").val();
+            if (!absoluteValue) {
+                return;
+            }
+            $("#timer-absolute-epoch").val(Math.floor(new Date(absoluteValue).getTime() / 1000));
+        }
         $("#timer-form").submit();
     });
 

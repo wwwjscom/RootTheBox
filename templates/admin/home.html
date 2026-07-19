@@ -23,16 +23,26 @@
     <div style="margin-left: 50px; vertical-align: middle;">
         <p>
             {{ _("Set the game countdown timer") }}:
-        </p><p><input id="timer-minutes" name="countdown_timer" style="width: 50px;" type="number" value="30" /> Minutes</p>
-        <p>
-            <input name="hide_scoreboard" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> {{ _("Hide scoreboard during countdown") }}.
         </p>
         <p>
-            <input name="stop_timer" type="checkbox" style="margin-top: -5px; margin-right: 5px;"> {{ _("Stop the game after timer ends") }}.
+            <label><input name="timer_mode" type="radio" value="duration" checked> {{ _("Duration") }}</label>
+            <input id="timer-hours" name="timer_hours" style="width: 50px;" type="number" min="0" value="0" /> {{ _("Hours") }}
+            <input id="timer-minutes" name="timer_minutes" style="width: 50px;" type="number" min="0" value="30" /> {{ _("Minutes") }}
+        </p>
+        <p>
+            <label><input name="timer_mode" type="radio" value="absolute"> {{ _("Absolute time") }}</label>
+            <input id="timer-absolute" type="datetime-local" disabled />
+            <input id="timer-absolute-epoch" name="timer_absolute_epoch" type="hidden" />
+        </p>
+        <p>
+            <input name="hide_scoreboard" type="checkbox" style="margin-top: -5px; margin-right: 5px;"> {{ _("Hide scoreboard during countdown") }}.
+        </p>
+        <p>
+            <input name="stop_timer" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> {{ _("Stop the game after timer ends") }}.
         </p>
     </div>
-        
-        
+
+
     </form>
     </div>
     <div class="modal-footer">
@@ -230,6 +240,13 @@
         <a class="close" data-dismiss="alert" href="#">&times;</a>
         <h4 class="alert-heading">{{ _("WARNING") }}</h4>
         Default password - please update in <a href="/user/settings" style="color: #000">User Settings</a>
+    </div>
+    {% end %}
+    {% if "localhost" in options.origin.lower() or "127.0.0.1" in options.origin %}
+    <div class="span8 alert alert-warning">
+        <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <h4 class="alert-heading">{{ _("WARNING") }}</h4>
+        Default WebSocket Origin - please update in <a href="/admin/configuration" style="color: #000">Configuration</a>
     </div>
     {% end %}
     {% if update_available %}
