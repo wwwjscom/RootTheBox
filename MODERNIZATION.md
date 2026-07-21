@@ -16,9 +16,56 @@ Priority order: **urgent → backend → frontend.**
 
 ---
 
+## Running the tests & local dev notes
+
+Post-Phase-0 mechanics (things that are non-obvious and easy to trip on):
+
+**Run the test suite (the reliable way — clean container):**
+```bash
+docker build -t rtb-test .
+docker run --rm --entrypoint sh rtb-test -c \
+  "python3 /opt/rtb/rootthebox.py --tests >/dev/null 2>&1; \
+   python3 /opt/rtb/rootthebox.py --tests"
+```
+Why the **two invocations in one container**: the app gates on a config file
+existing — with no `files/rootthebox.cfg`, `--tests` writes a *default* config
+and `os._exit(1)`s before running anything. The first call creates that default
+config (and exits); the second runs the suite against it. Both must run in the
+**same** container so the config persists between them. This is exactly what
+`.github/workflows/tests.yml` does. `--tests` now runs `pytest` (not nose) with
+coverage over `handlers`/`models`/`libs`.
+
+**⚠️ Config-leakage trap:** `docker compose` mounts host `./files` into the
+container, so a stale `files/rootthebox.cfg` from a previous run **overrides
+test defaults** and produces bogus failures (e.g. `scoreboard_top=3` →
+`assert 3 == 25`; `suspend_registration=True` → registration tests fail;
+`debug=True` → the cookie-secret prod path is skipped). Always validate in a
+**clean container with no `files/` mount** (the `docker run` above), not via
+`docker compose`. To reproduce a prod boot locally, ensure `debug = False` in
+the cfg.
+
+**Per CLAUDE.md** (assumes a running dev stack, i.e. config already exists):
+```bash
+docker compose exec webapp python3 /opt/rtb/rootthebox.py --tests
+docker compose exec webapp python3 -m nose ...   # <-- STALE: nose is gone, use pytest
+```
+Single test / class via pytest goes through `--tests` (the runner defines the
+Tornado `options` that a bare `pytest` invocation would be missing).
+
+**Cookie secret** now lives in the config as `cookie_secret` (or the
+`COOKIE_SECRET` env var); it is generated + persisted once on first non-debug
+boot. Don't commit a real one.
+
+**Test DB files** land at `files/<db_name>.db` and are cleaned up by
+`teardown_database`; they're gitignored. (A pre-Phase-0 bug left a pile of
+strays — fixed.)
+
+---
+
 ## Test coverage baseline (why the plan is shaped this way)
 
-As of this writing: **83 test methods**, `nose`-run, in `tests/`.
+As of Phase 0: **83 tests, pytest-run** (was nose), 22% coverage over
+handlers/models/libs.
 
 **Covered (unit level):**
 - Models — `Flag.capture()` for all 5 flag types (static/regex/file/choice/
