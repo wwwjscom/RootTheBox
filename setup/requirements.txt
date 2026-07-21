@@ -8,12 +8,12 @@ python-binary-memcached; python_version>='3.0'
 python-dateutil
 defusedxml
 netaddr
-nose
+pytest
+pytest-cov
 future
 python-resize-image
 sqlalchemy==1.*
 alembic
-enum34
 mysqlclient
 rocketchat_API
 setuptools-rust==0.10.3; python_version<'3.0'

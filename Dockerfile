@@ -3,7 +3,7 @@
 #  Dockerfile for Root the Box
 #  v0.1.3 - By Moloch, ElJeffe
 
-FROM python:3.8
+FROM python:3.12
 
 RUN apt-get update && apt-get install -y \
 build-essential zlib1g-dev rustc \

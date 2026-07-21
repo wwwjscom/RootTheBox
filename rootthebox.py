@@ -25,12 +25,10 @@ from __future__ import print_function
 
 import logging
 import os
-import random
 import sys
 from builtins import input, str
 from datetime import datetime
 
-import nose
 from tornado.options import define, options
 
 from libs.ConfigHelpers import save_config, save_config_image
@@ -198,14 +196,34 @@ def generate_admins(admin_names):
 
 
 def tests():
-    """Creates a temporary sqlite database and runs the unit tests"""
-    print(INFO + "%s : Running unit tests ..." % current_time())
+    """Creates a temporary sqlite database and runs the unit tests via pytest.
+
+    The database must be provisioned before pytest imports the test modules
+    (and, transitively, the models) so that ``dbsession`` binds to the test
+    database rather than the default one.
+    """
+    from random import randint
+
+    import pytest
+
     from tests import setup_database, teardown_database
 
-    db_name = "test-%04s" % random.randint(0, 9999)
+    print(INFO + "%s : Running unit tests ..." % current_time())
+    db_name = "test-%04d" % randint(0, 9999)
     setup_database(db_name)
-    nose.run(module="tests", argv=[os.getcwd() + "/tests"])
-    teardown_database(db_name)
+    try:
+        code = pytest.main(
+            [
+                os.path.join(os.getcwd(), "tests"),
+                "--cov=handlers",
+                "--cov=models",
+                "--cov=libs",
+                "--cov-report=term-missing",
+            ]
+        )
+    finally:
+        teardown_database(db_name)
+    raise SystemExit(code)
 
 
 def restart():
@@ -216,11 +234,6 @@ def restart():
     pid = os.getpid()
     print(INFO + "%s : Restarting the service (%i)..." % (current_time(), pid))
     os.execl("./setup/restart.sh", "./setup/restart.sh")
-
-
-def update():
-    """Update RTB to the latest repository code."""
-    os.system("git pull")
 
 
 def version():
@@ -284,7 +297,6 @@ def help():
     help_response.append("\t\t--setup\t\tsetup a database (prod|devel|docker)")
     help_response.append("\t\t--start\t\tstart the server")
     help_response.append("\t\t--tests\t\trun the unit tests")
-    help_response.append("\t\t--update\tpull the latest code via github")
     help_response.append("\t\t--version\tdisplay version information and exit")
     help_response.append("\t\t--xml\t\timport xml file(s)")
     help_response.append(
@@ -326,6 +338,15 @@ define(
     group="server",
     help="max session age (minutes) of inactivity",
     type=int,
+)
+
+define(
+    "cookie_secret",
+    default="",
+    group="server",
+    help="secret used to sign secure cookies / XSRF tokens; if empty one is "
+    "generated and persisted to the config file on first run (set via the "
+    "COOKIE_SECRET env var to keep sessions valid across restarts/processes)",
 )
 
 define(
@@ -1164,8 +1185,6 @@ define(
     type=bool,
 )
 
-define("update", default=False, help="pull the latest code via github", type=bool)
-
 define("version", default=False, help="display version information and exit", type=bool)
 
 define("save", default=False, help="save the current configuration to file", type=bool)
@@ -1259,8 +1278,6 @@ if __name__ == "__main__":
         restart()
     elif options.recovery:
         recovery()
-    elif options.update:
-        update()
     elif options.xml:
         setup_xml(options.xml)
     elif options.tests:

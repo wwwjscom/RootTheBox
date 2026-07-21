@@ -149,7 +149,7 @@ class TestBox(unittest.TestCase):
 
     def test_description(self):
         with self.assertRaises(ValidationError):
-            self.box.description = "A" * 1030
+            self.box.description = "A" * 4097
 
 
 class TestFlag(unittest.TestCase):

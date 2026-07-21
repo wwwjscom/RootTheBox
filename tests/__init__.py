@@ -46,7 +46,10 @@ def setup_database(db_name):
 
 
 def teardown_database(db_name):
-    if os.path.exists("%s.db" % db_name):
-        os.unlink("%s.db" % db_name)
-    else:
-        raise ValueError("Cannot delete test database: %s.db" % db_name)
+    # DatabaseConnection creates sqlite files under files/ (falling back to the
+    # cwd), so check both locations when cleaning up.
+    for candidate in ("files/%s.db" % db_name, "%s.db" % db_name):
+        if os.path.exists(candidate):
+            os.unlink(candidate)
+            return
+    raise ValueError("Cannot delete test database: %s.db" % db_name)
