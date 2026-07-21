@@ -30,7 +30,6 @@ import datetime
 import logging
 import time
 import traceback
-from builtins import str
 
 from libs import GameState
 from libs.EventManager import EventManager

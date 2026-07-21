@@ -24,11 +24,9 @@ import hashlib
 import json
 import re
 import xml.etree.cElementTree as ET
-from builtins import str
 from uuid import uuid4
 
 from dateutil.parser import parse
-from past.utils import old_div
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.types import Boolean, Integer, String, Unicode
@@ -246,7 +244,7 @@ class Flag(DatabaseObject):
         elif len(self.team_captures(self.id)) == 0:
             return self.value
         elif team and self in team.flags:
-            depreciation = float(old_div(options.flag_value_decrease, 100.0))
+            depreciation = float(options.flag_value_decrease / 100.0)
             deduction = self.value * depreciation
             if options.dynamic_flag_type == "decay_all":
                 reduction = (len(self.team_captures(self.id)) - 1) * deduction
@@ -259,7 +257,7 @@ class Flag(DatabaseObject):
                             options.flag_value_minimum, int(self.value - reduction)
                         )
         else:
-            depreciation = float(old_div(options.flag_value_decrease, 100.0))
+            depreciation = float(options.flag_value_decrease / 100.0)
             deduction = self.value * depreciation
             reduction = len(self.team_captures(self.id)) * deduction
             return max(options.flag_value_minimum, int(self.value - reduction))

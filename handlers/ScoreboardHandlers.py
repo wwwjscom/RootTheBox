@@ -27,7 +27,6 @@ This file contains handlers related to the scoreboard.
 
 import json
 import logging
-from builtins import str
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from itertools import islice

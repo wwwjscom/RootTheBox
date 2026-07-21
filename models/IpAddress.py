@@ -21,7 +21,6 @@ Created on Mar 11, 2012
 
 
 import xml.etree.cElementTree as ET
-from builtins import str
 from uuid import uuid4
 
 from ipaddress import ip_address

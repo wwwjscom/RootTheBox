@@ -43,7 +43,6 @@ import struct
 import sys
 import traceback
 import uuid
-from builtins import str
 
 try:
     import ConfigParser
@@ -53,7 +52,6 @@ try:
     from urllib.parse import urlparse
 except ImportError:
     from urlparse import urlparse
-from builtins import chr, object, range
 from datetime import datetime
 from hashlib import sha1, sha512
 

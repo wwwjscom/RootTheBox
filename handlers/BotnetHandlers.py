@@ -25,7 +25,6 @@ import binascii
 import json
 import logging
 import os
-from builtins import str
 from hashlib import sha512
 from uuid import uuid4
 

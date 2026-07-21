@@ -32,7 +32,6 @@ CRUD for game objects:
 import json
 import logging
 import re
-from builtins import str
 
 from handlers.BaseHandlers import BaseHandler
 from handlers.MissionsHandler import BoxHandler

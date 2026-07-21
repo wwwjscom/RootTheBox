@@ -20,7 +20,6 @@ Created on Jun 24, 2019
 """
 
 import logging
-from builtins import object
 
 from rocketchat_API.rocketchat import RocketChat
 from tornado.options import options

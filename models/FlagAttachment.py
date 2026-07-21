@@ -21,7 +21,6 @@ Created on Nov 24, 2014
 
 import os
 import xml.etree.cElementTree as ET
-from builtins import str
 from uuid import uuid4
 
 from sqlalchemy import Column, ForeignKey

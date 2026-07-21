@@ -21,7 +21,6 @@ Created on Sep 12, 2012
 
 import logging
 import time
-from builtins import str
 from contextlib import contextmanager
 
 from msal import ConfidentialClientApplication

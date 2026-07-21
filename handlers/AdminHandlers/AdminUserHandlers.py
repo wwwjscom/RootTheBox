@@ -26,7 +26,6 @@ Handlers for user-related tasks.
 
 
 import logging
-from builtins import str
 
 from netaddr import IPAddress
 from tornado.options import options

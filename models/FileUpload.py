@@ -21,7 +21,6 @@ Created on Mar 15, 2012
 
 
 import os
-from builtins import str
 from mimetypes import guess_type
 from string import printable
 from uuid import uuid4

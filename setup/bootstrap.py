@@ -25,7 +25,6 @@ fills the database with some startup data.
 import getpass
 import os
 import sys
-from builtins import input, str
 
 from tornado.options import options
 

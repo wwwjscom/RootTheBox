@@ -35,7 +35,6 @@ except ImportError:
     import urllib2 as urlrequest
 import json
 import logging
-from builtins import str
 
 import tornado
 from tornado.options import options

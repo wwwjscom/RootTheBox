@@ -27,13 +27,11 @@ import logging
 import os
 import time
 import xml.etree.cElementTree as ET
-from builtins import str
 from datetime import datetime
 from string import printable
 from tempfile import NamedTemporaryFile
 
 import defusedxml.minidom
-from past.builtins import basestring
 from tornado.ioloop import PeriodicCallback
 from tornado.options import options
 
@@ -379,7 +377,7 @@ class AdminConfigurationHandler(BaseHandler):
             return default
 
     def get_bool(self, name, default=""):
-        if not isinstance(default, basestring):
+        if not isinstance(default, str):
             default = str(default).lower()
         return self.get_argument(name, default) == "true"
 

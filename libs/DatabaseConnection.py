@@ -26,7 +26,6 @@ import getpass
 import logging
 import os
 import sys
-from builtins import object
 
 from libs.ConsoleColors import *
 

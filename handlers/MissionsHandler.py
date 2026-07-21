@@ -26,10 +26,8 @@ This file contains the code for displaying flags / recv flag submissions
 
 import json
 import logging
-from builtins import next, str
 from datetime import datetime
 
-from past.utils import old_div
 from sqlalchemy.exc import IntegrityError
 from tornado.options import options
 
@@ -499,8 +497,8 @@ class BoxHandler(BaseHandler):
                 success.append("Congratulations! You have completed " + box.name + ".")
 
         # Check for Level Completion
-        level_progress = old_div(
-            len(user.team.level_flags(level.number)), float(len(level.flags))
+        level_progress = len(user.team.level_flags(level.number)) / float(
+            len(level.flags)
         )
         if level_progress == 1.0 and level not in user.team.game_levels:
             reward_dialog = ""

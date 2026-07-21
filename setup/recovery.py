@@ -27,7 +27,6 @@ import cmd
 import getpass
 import os
 import sys
-from builtins import input, str
 
 from libs.ConsoleColors import *
 from models import dbsession

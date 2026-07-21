@@ -25,7 +25,6 @@ This file contains handlers related to the file sharing functionality
 
 
 import logging
-from builtins import str
 
 from tornado.options import options
 

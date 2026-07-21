@@ -20,7 +20,6 @@ Created on Mar 12, 2012
 """
 
 import os
-from builtins import str
 from hashlib import sha1
 from uuid import uuid4
 

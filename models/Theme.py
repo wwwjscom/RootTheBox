@@ -20,7 +20,6 @@ Created on Mar 12, 2012
 """
 
 import logging
-from builtins import str
 from string import ascii_letters, digits
 from uuid import uuid4
 

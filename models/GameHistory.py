@@ -21,7 +21,6 @@ Created on Mar 3, 2023
 # pylint: disable=no-member
 
 import json
-from builtins import str
 
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.types import Integer, String, Unicode

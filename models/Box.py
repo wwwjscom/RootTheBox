@@ -55,11 +55,6 @@ class FlagsSubmissionType(str, enum.Enum):
     SINGLE_SUBMISSION_BOX = "SINGLE_SUBMISSION_BOX"
 
 
-from builtins import (  # noqa: E402
-    str,
-)
-
-
 class Box(DatabaseObject):
     """Box definition"""
 

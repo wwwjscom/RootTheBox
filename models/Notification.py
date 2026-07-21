@@ -25,7 +25,6 @@ try:
     from urllib.parse import urlparse
 except ImportError:
     from urlparse import urlparse
-from builtins import str
 
 from sqlalchemy import Column, ForeignKey, desc
 from sqlalchemy.sql import and_

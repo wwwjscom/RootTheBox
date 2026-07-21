@@ -21,7 +21,6 @@ Created on Mar 12, 2012
 
 
 import json
-from builtins import str
 from uuid import uuid4
 
 from sqlalchemy import Column

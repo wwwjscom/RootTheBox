@@ -29,13 +29,11 @@ import os
 import random
 import string
 import xml.etree.cElementTree as ET
-from builtins import str
 from datetime import datetime
 from hashlib import md5, sha1, sha256, sha512
 from string import printable
 from uuid import uuid4
 
-from past.builtins import basestring
 from pbkdf2 import PBKDF2
 from sqlalchemy import Column, ForeignKey, desc, func
 from sqlalchemy.orm import backref, relationship, synonym
@@ -426,7 +424,7 @@ class User(DatabaseObject):
 
     def get_algorithm(self, index):
         """Return algorithm tuple based on string or int"""
-        if isinstance(index, basestring) and index in self.algorithms:
+        if isinstance(index, str) and index in self.algorithms:
             return self.algorithms[index]
         elif isinstance(index, int):  # Find by numeric index
             for key in self.algorithms:

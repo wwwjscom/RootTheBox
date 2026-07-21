@@ -20,7 +20,6 @@ Created on Sep 20, 2012
 """
 
 import logging
-from builtins import object, str
 
 from tornado.ioloop import IOLoop
 from tornado.options import options

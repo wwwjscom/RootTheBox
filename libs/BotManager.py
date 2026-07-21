@@ -28,7 +28,6 @@ Not gonna sugar code it, this shit gets a bit complicated.
 import logging
 import os
 import re
-from builtins import str
 from datetime import datetime
 from tempfile import NamedTemporaryFile
 

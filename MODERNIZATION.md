@@ -174,7 +174,14 @@ _(Update as branches land.)_
 - [x] 0.4 Remove admin self-update RCE
 - [x] 0.5 Remove Travis; add pytest CI (+coverage)
 - [x] 1.2 nose → pytest (+ coverage baseline) — pulled into Phase 0
-- [ ] 1.1 Strip Python 2 compatibility (enum34 already removed)
+- [x] 1.1 Strip Python 2 compatibility (branch `feature/phase1.1-strip-py2`) —
+      dropped `future`/`past` shims (`from builtins import …`, `from past.builtins
+      import basestring`, `from past.utils import old_div`), the two `__future__`
+      imports, and the `python_version<'3.0'` requirement pins + `future` dep.
+      Replaced `basestring`→`str`, `old_div(a,b)`→`a // b` (int coords) or `a / b`
+      (float), and renamed the Py2-named `unicode()` helper in `StringCoding` to
+      `_to_unicode` (behavior unchanged). enum34 was already removed in Phase 0.
+      Verified: image builds, **83 passed** (unchanged from baseline).
 - [ ] 1.3 Modern packaging + pinned deps
 - [ ] 1.4a Characterization tests (gate before 1.5)
 - [ ] 1.5 SQLAlchemy 1.x → 2.x

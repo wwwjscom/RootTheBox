@@ -23,7 +23,6 @@ try:
 except ImportError:
     import memcache
 
-from builtins import str
 from datetime import datetime, timedelta
 
 from tornado.options import options
