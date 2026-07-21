@@ -1,0 +1,29 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  pytest:
+    name: pytest (docker)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t rtb-test .
+
+      - name: Run test suite
+        # The first invocation writes a default config (with no config file the
+        # app saves one and exits); the second runs the suite against those
+        # defaults. Both run in one container so the config persists between
+        # them. pytest + coverage are driven by rootthebox.py --tests.
+        run: |
+          docker run --rm --entrypoint sh rtb-test -c \
+            "python3 /opt/rtb/rootthebox.py --tests >/dev/null 2>&1; \
+             python3 /opt/rtb/rootthebox.py --tests"

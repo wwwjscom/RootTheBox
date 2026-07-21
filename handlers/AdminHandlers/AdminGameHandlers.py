@@ -25,7 +25,6 @@ Handlers related to controlling and configuring the overall game.
 
 import logging
 import os
-import subprocess
 import time
 import xml.etree.cElementTree as ET
 from builtins import str
@@ -519,61 +518,6 @@ class AdminGarbageCfgHandler(BaseHandler):
             )
             self.set_header("Content-Length", len(data))
             self.write(data)
-
-
-class AdminGitStatusHandler(BaseHandler):
-    @restrict_ip_address
-    @authenticated
-    @authorized(ADMIN_PERMISSION)
-    def get(self, *args, **kwargs):
-        """Get the status of Git"""
-        sp = subprocess.Popen(
-            ["git", "fetch"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        out, err = sp.communicate()
-        if err:
-            git = "RTB Updates: Git unable to connect to repository"
-        else:
-            sp = subprocess.Popen(
-                ["git", "status", "-uno"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            out, err = sp.communicate()
-            out = str(out)
-            if "Your branch is behind" in out and "modified:" in out:
-                git = "RTB Updates: Modified files (merge conflicts)"
-            elif "Your branch is" in out:
-                branch = out.split("\n")
-                for line in branch:
-                    if "Your branch is" in line:
-                        git = "RTB Updates: " + line
-                        break
-            else:
-                git = out
-        if git is not None:
-            self.set_header("Content-Type", "text/plain;charset=utf-8")
-            self.set_header("Content-Length", len(git))
-            self.write(git)
-        self.finish()
-
-    @restrict_ip_address
-    @authenticated
-    @authorized(ADMIN_PERMISSION)
-    def post(self, *args, **kwargs):
-        """Update RTB to the latest repository code."""
-        os.system("git pull")
-        """
-        Shutdown the actual process and restart the service.
-        """
-        pid = os.getpid()
-        print(INFO + "%s : Restarting the service (%i)..." % (self.current_time(), pid))
-        self.finish()
-        os.execl("./setup/restart.sh", "./setup/restart.sh")
-
-    def current_time(self):
-        """Nicely formatted current time as a string"""
-        return str(datetime.now()).split(" ")[1].split(".")[0]
 
 
 class AdminUpdateCheckHandler(BaseHandler):

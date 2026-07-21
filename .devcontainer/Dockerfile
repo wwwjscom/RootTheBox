@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.12
 
 ADD [ "https://dev.mysql.com/get/mysql-apt-config_0.8.32-1_all.deb", "/" ]
 

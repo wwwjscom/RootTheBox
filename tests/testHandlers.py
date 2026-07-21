@@ -13,6 +13,7 @@ except ImportError:
 
 from tornado.options import options
 
+from handlers import app
 from handlers.BaseHandlers import BaseHandler
 from handlers.ErrorHandlers import StopHandler
 from libs import GameState
@@ -26,6 +27,22 @@ from tests.HTTPClient import ApplicationTest
 
 class TestPublicHandlers(ApplicationTest):
     """Test functionality in handlers/PublicHandlers.py"""
+
+    def setUp(self):
+        # Registration is suspended by default; open it so the registration
+        # views under test render the form rather than the closed notice.
+        # Email is likewise required by default, which would short-circuit
+        # form validation before the token/team-name checks these tests target.
+        super().setUp()
+        self._suspend_registration = app.settings["suspend_registration"]
+        self._require_email = options.require_email
+        app.settings["suspend_registration"] = False
+        options.require_email = False
+
+    def tearDown(self):
+        app.settings["suspend_registration"] = self._suspend_registration
+        options.require_email = self._require_email
+        super().tearDown()
 
     def test_home_page_get(self):
         rsp, body = self.get("/")

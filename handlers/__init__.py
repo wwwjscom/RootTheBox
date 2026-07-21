@@ -61,7 +61,7 @@ from libs import GameState
 from libs.ConsoleColors import *
 from libs.DatabaseConnection import DatabaseConnection
 from libs.Scoreboard import Scoreboard, score_bots
-from libs.StringCoding import encode
+from libs.ConfigHelpers import save_config
 from libs.UpdateCheckHelpers import check_for_updates
 from modules.AppTheme import AppTheme
 from modules.Menu import Menu
@@ -78,10 +78,26 @@ io_loop = IOLoop.instance()
 
 
 def get_cookie_secret():
+    """
+    Return the secret used to sign secure cookies / XSRF tokens.
+
+    An explicit ``cookie_secret`` (from the config file or the ``COOKIE_SECRET``
+    env var) is always honored. In debug mode we fall back to a fixed value for
+    convenience. Otherwise we generate one once and persist it to the config
+    file so sessions survive restarts and stay valid across multiple processes.
+    """
+    if options.cookie_secret:
+        return options.cookie_secret
     if options.debug:
         return "Don't use this in production"
-    else:
-        return encode(urandom(32), "hex")
+    secret = urandom(32).hex()
+    options.cookie_secret = secret
+    try:
+        save_config()
+        logging.info("Generated and persisted a new cookie_secret to %s", options.config)
+    except Exception as error:
+        logging.error("Failed to persist generated cookie_secret: %s", error)
+    return secret
 
 
 # Main URL Configuration
@@ -193,7 +209,6 @@ urls = [
     (r"/admin/ajax/(user|team)", AdminAjaxUserHandler),
     (r"/admin/lock/(level|corp|user|box|flag|review_mode)", AdminLockHandler),
     (r"/admin/configuration", AdminConfigurationHandler),
-    (r"/admin/gitstatus", AdminGitStatusHandler),
     (r"/admin/updatecheck", AdminUpdateCheckHandler),
     (r"/admin/export/(.*)", AdminExportHandler),
     (r"/admin/import/xml", AdminImportXmlHandler),
