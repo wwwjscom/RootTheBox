@@ -97,3 +97,12 @@ When adding a boolean toggle to a game object (e.g., `locked`, `review_mode`):
 - Never use `{% raw %}` in templates with user-controlled data.
 - Use single quotes `'` in Python but use `&#x27;` (not `'`) inside HTML template attributes to prevent contextual encoding issues.
 - WebSocket handlers must implement `check_origin` (provided by `BaseWebSocketHandler`).
+
+## Git Workflow
+
+This project follows Gitflow (see CONTRIBUTING.md for the full description):
+
+- `main` is production — every commit is a tagged release; never commit to it directly. `develop` is the integration branch and the default branch for PRs.
+- Everyday work goes on `feature/*` branches off `develop`, merged back into `develop` with `--no-ff`.
+- Releases use a `release/*` branch off `develop`: bump `setup/__init__.py`, merge into `main` and `develop`, then tag `main` `vYYYY.MM.DD[.N]` (CalVer) — the `v*` tag triggers the Docker publish. Urgent fixes use `hotfix/*` off `main`, merged into both `main` and `develop`.
+- GitHub release notes are hand-written bullets grouped by category (New Features, Bug Fixes, etc.).
