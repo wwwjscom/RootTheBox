@@ -7,7 +7,26 @@ Please ensure pull requests adhere to the following guidelines, it's okay to dev
 -   No functions should exceed a [cyclomatic complexity](https://en.wikipedia.org/wiki/Cyclomatic_complexity) of 8.
 -   Do not use single character variable names.
 -   All non-trival functions and classes should contain docstrings.
--   Please create a new branch for your edits (bug fixes, features, etc) and choose an appropriate branch name so we can keep everything nice and organized.
+-   Please create a new branch for your edits (bug fixes, features, etc) and choose an appropriate branch name so we can keep everything nice and organized. See the Git Workflow section below for the branching model.
+
+# Git Workflow
+
+This project follows [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow). There are two long-lived branches:
+
+-   **`main`** — production. Every commit is a tagged release; nothing is committed here directly.
+-   **`develop`** — integration branch for the next release, and the default branch for pull requests.
+
+Supporting branches:
+
+-   **`feature/*`** — branch from `develop`, merge back into `develop`. Use these for everyday bug fixes and features.
+-   **`release/*`** — branch from `develop` when cutting a release. Bump the version (`setup/__init__.py`) here, then merge into both `main` and `develop`, and tag `main`.
+-   **`hotfix/*`** — branch from `main` for urgent production fixes, then merge into both `main` (tagged) and `develop`.
+
+Conventions:
+
+-   Merge with `--no-ff` so each feature or release stays a distinct unit in history.
+-   Releases are tagged using [CalVer](https://calver.org/) as `vYYYY.MM.DD[.N]` (e.g. `v2026.07.20`, then `v2026.07.20.1` for a second release the same day). Pushing a `v*` tag publishes the Docker image via `docker-publish.yml`.
+-   GitHub release notes should be hand-written as bullets grouped by category (New Features, Bug Fixes, etc.).
 
 # Secure Coding Practices
 
