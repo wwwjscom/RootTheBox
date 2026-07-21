@@ -87,6 +87,10 @@ $(document).ready(function() {
         config.container.prepend(notificationElement);
     };
 
+    // Cosmetic UX hint only - see the warning on <body data-is-admin> in
+    // main.html. Never use this to gate authorization or sensitive rendering.
+    var currentUserIsAdmin = $("body").data("is-admin") === true;
+
     window.notifier_ws = new WebSocket(wsUrl() + "/connect/notifications/updates");
     notifier_ws.onmessage = function(evt) {
         var notification = $.parseJSON(evt.data);
@@ -109,15 +113,24 @@ $(document).ready(function() {
             }
         }
         if ('game_stopped' in notification) {
-            // Only pull players off the pages where they'd be submitting
-            if (window.location.pathname.indexOf("/user/missions") === 0) {
+            var stoppedPath = window.location.pathname;
+            // Pull players off the pages where they'd be submitting
+            if (stoppedPath.indexOf("/user/missions") === 0) {
                 window.location = "/gamestatus";
+            } else if (!currentUserIsAdmin && stoppedPath === "/user") {
+                // The home dashboard renders a "Waiting for the game to
+                // start..." state server-side; reload so a parked player sees
+                // it without a manual refresh. Admins are left undisturbed.
+                window.location.reload();
             }
         }
         if ('game_started' in notification) {
-            // The stopped page is only true while the game is stopped
-            if (window.location.pathname === "/gamestatus") {
-                window.location = "/user";
+            // The stopped page, and the home dashboard's "waiting" state, only
+            // apply while the game is stopped - pull those players into missions.
+            // Admins are never redirected; they may be mid-task on these pages.
+            var startedPath = window.location.pathname;
+            if (!currentUserIsAdmin && (startedPath === "/gamestatus" || startedPath === "/user")) {
+                window.location = "/user/missions";
             }
         }
     };

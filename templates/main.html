@@ -27,7 +27,14 @@
         {% module Theme() %}
     </head>
     {% block modals %}{% end %}
-    <body>
+    <!--
+        data-is-admin is a COSMETIC UX hint only (used to skip the game-resume
+        redirect for admins in notifier.js). It is trivially forgeable from the
+        browser console and MUST NOT gate authorization or sensitive rendering.
+        Enforce those server-side (@authorized) and never emit admin-only markup
+        or data to non-admins in the first place.
+    -->
+    <body data-is-admin="{% if handler.current_user and handler.current_user.is_admin() %}true{% else %}false{% end %}">
         {% module Menu() %}
         <div class="container-fluid animated fadeIn">
             {% block content %} {{ _("Content Missing") }} {% end %}
