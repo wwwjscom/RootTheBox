@@ -7,13 +7,12 @@ Create Date: 2026-02-22 16:10:00.000000
 """
 
 import sqlalchemy as sa
-from sqlalchemy.engine.reflection import Inspector
 
 from alembic import op
 
 try:
     conn = op.get_bind()
-    inspector = Inspector.from_engine(conn)
+    inspector = sa.inspect(conn)
 except Exception:
     conn = None
     inspector = None

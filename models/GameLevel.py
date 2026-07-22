@@ -24,7 +24,7 @@ import xml.etree.cElementTree as ET
 from uuid import uuid4
 
 from sqlalchemy import Column, ForeignKey, asc
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import relationship
 from sqlalchemy.types import Boolean, Integer, String, Unicode
 
 from libs.ValidationError import ValidationError
@@ -51,9 +51,10 @@ class GameLevel(DatabaseObject):
     _locked = Column(Boolean, default=False, nullable=False)
     _review_mode = Column(Boolean, default=False, nullable=False)
 
+    # Box.game_level is provided by a read-only @property (by_id lookup); no
+    # backref, which would collide with it (an error under SQLAlchemy 2.x).
     boxes = relationship(
         "Box",
-        backref=backref("game_level", lazy="select"),
         cascade="all,delete,delete-orphan",
     )
 

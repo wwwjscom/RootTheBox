@@ -187,6 +187,24 @@ decide on a real framework migration as a separate initiative.
 
 ---
 
+## Known issues surfaced (deferred)
+
+Bugs found while doing the modernization work that are **out of scope** for the
+phase that surfaced them and were intentionally left for a dedicated fix:
+
+- **`GameLevel.__eq__` is always False** (found during 1.5). Its `__cmp__`
+  returns `-1` when `self.number < other.number` and `1` otherwise — never `0`
+  — so `__eq__` (which checks `__cmp__() == 0`) never holds, and a `GameLevel`
+  never compares equal to anything, including itself. It works in practice only
+  because Python's `in`/`list.remove` short-circuit on identity before calling
+  `==`. Affects any `==`/`sorted()` on levels. Fix is small (return `0` when
+  `number`s are equal) but changes comparison/sort semantics app-wide, so it
+  wants its own change + test, not a migration side effect. `tests/
+  testRelationships.py` works around it by comparing `uuid`.
+- **`setup/xmlsetup.py` ElementTree deprecations** (visible under 2.0): uses
+  `defusedxml.cElementTree` and truth-tests elements (`if parent and box:`),
+  both deprecated. Candidate for the 1.7 (ruff) / general-cleanup pass.
+
 ## Progress log
 
 _(Update as branches land.)_
@@ -215,7 +233,35 @@ _(Update as branches land.)_
       testMissionScoring / testXmlSetup / testAdminGameObjects /
       testMarketScoreboard; suite 83 → 104, coverage 21% → 28%. Handler methods
       driven below the auth layer (no memcached under `--tests`).
-- [ ] 1.5 SQLAlchemy 1.x → 2.x
+- [x] 1.5 SQLAlchemy 1.x → 2.x — **compatibility migration** (2.0.51). Scope
+      decision: the legacy `Session.query()` API (149 calls, 0 `Query.get()`)
+      is still supported in 2.x, so a full `select()` rewrite was **deferred**
+      as gratuitous/high-risk; the goal was to run cleanly on 2.0. Two steps:
+      **1.5A** (future mode on 1.4 — declarative import move, `BotManager`
+      autocommit→commit, alembic raw-SQL `text()` wrap, `future=True`) then
+      **1.5B** (bump pin `>=2,<3` + relock). The flip surfaced 5 mapper
+      warnings where a `@property` collided with a same-named backref
+      (`Box.corporation`/`game_level`/`category`, `Flag.box`, `Hint.flag`) —
+      fixed by dropping those 5 backrefs (the read-only `@property` remains the
+      accessor; relationships/cascades preserved, and pinned by a new
+      `tests/testRelationships.py` — accessor + FK-management + cascade-delete
+      characterization). Verified: **113 passed** on
+      2.0 with no new warnings, a clean-container app boot (setup + alembic +
+      server start, 0 tracebacks), and — against a **real populated DB** — the
+      production deploy path (boot + `upgrade head` no-op) plus a forced re-run
+      of the `ffe623ae412` data migration over real `team_to_flag` rows. That
+      real-data run surfaced one more raw `conn.execute(f"INSERT …")` in the
+      migration's `add_history()` helper (missed by the literal-string grep;
+      silently no-ops on 2.0) — fixed with a parameterized `sa.text()` (also
+      removes the f-string injection risk); the conversion then processed all
+      rows correctly. Also replaced deprecated `Inspector.from_engine(conn)`
+      with `sa.inspect(conn)` across all 9 migrations that used it (deprecated
+      since 1.4, slated for removal), so the migrations are fully 2.0-clean.
+      Added `tests/testMigrations.py` guarding the migration paths that exist
+      under RTB's create_all+stamp architecture: production DB lifecycle, the
+      `ffe623` data conversion on real rows (regression guard for the
+      `add_history` bug), chain integrity, and a models↔created-schema no-drift
+      tripwire. Suite now **117 passed**.
 - [ ] 1.6 Tornado async cleanup
 - [ ] 1.7 Adopt ruff
 - [ ] 2.1 Patch-bump vendored frontend libs

@@ -99,9 +99,10 @@ class Flag(DatabaseObject):
         cascade="all,delete,delete-orphan",
     )
 
+    # Hint.flag is provided by a read-only @property (by_id lookup); no backref,
+    # which would collide with it (an error under SQLAlchemy 2.x).
     hints = relationship(
         "Hint",
-        backref=backref("flag", lazy="select"),
         cascade="all,delete,delete-orphan",
     )
 

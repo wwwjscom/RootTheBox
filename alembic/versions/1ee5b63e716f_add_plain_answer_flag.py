@@ -6,7 +6,6 @@ Create Date: 2024-02-15 11:17:27.270274
 
 """
 import sqlalchemy as sa
-from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.sql.expression import func
 
 from alembic import op
@@ -19,7 +18,7 @@ depends_on = None
 
 try:
     conn = op.get_bind()
-    inspector = Inspector.from_engine(conn)
+    inspector = sa.inspect(conn)
     tables = inspector.get_table_names()
 except:
     conn = None

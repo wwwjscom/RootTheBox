@@ -13,8 +13,9 @@ dependencies = [
     # Web framework — pinned below the next major until the Tornado async
     # cleanup (roadmap item 1.6) is done.
     "tornado>=6.4,<7",
-    # ORM — held on 1.x until the SQLAlchemy 2.x migration (roadmap item 1.5).
-    "sqlalchemy>=1.4,<2",
+    # ORM — migrated to 2.x (roadmap item 1.5). The codebase uses the legacy
+    # Session.query() API, which remains supported in 2.x.
+    "sqlalchemy>=2,<3",
     "alembic",
     # Sessions (memcached, binary protocol) — imported as `bmemcached`.
     "python-binary-memcached",

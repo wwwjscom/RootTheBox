@@ -92,9 +92,10 @@ class Box(DatabaseObject):
         cascade="all,delete,delete-orphan",
     )
 
+    # Flag.box is provided by a read-only @property (by_id lookup); no backref,
+    # which would collide with it (an error under SQLAlchemy 2.x).
     _flags = relationship(
         "Flag",
-        backref=backref("box", lazy="select"),
         cascade="all,delete,delete-orphan",
         order_by="desc(-Flag._order)",
     )

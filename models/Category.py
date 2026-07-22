@@ -25,7 +25,7 @@ import xml.etree.cElementTree as ET
 from uuid import uuid4
 
 from sqlalchemy import Column
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import relationship
 from sqlalchemy.types import String, Unicode
 
 from libs.ValidationError import ValidationError
@@ -41,7 +41,9 @@ class Category(DatabaseObject):
     _category = Column(Unicode(64), unique=True, nullable=False)
     _description = Column(Unicode(4096), nullable=True)
 
-    boxes = relationship("Box", backref=backref("category", lazy="select"))
+    # Box.category is provided by a read-only @property (by_id lookup); no
+    # backref, which would collide with it (an error under SQLAlchemy 2.x).
+    boxes = relationship("Box")
 
     @classmethod
     def all(cls):

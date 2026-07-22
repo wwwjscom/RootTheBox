@@ -6,14 +6,13 @@ Create Date: 2023-02-28 19:33:02.808038
 
 """
 import sqlalchemy as sa
-from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.sql.expression import func
 
 from alembic import op
 
 try:
     conn = op.get_bind()
-    inspector = Inspector.from_engine(conn)
+    inspector = sa.inspect(conn)
     tables = inspector.get_table_names()
 except:
     conn = None
