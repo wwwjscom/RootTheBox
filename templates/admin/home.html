@@ -236,36 +236,36 @@
         </div>
     </div>
     {% if user.validate_password("rootthebox") %}
-    <div class="col-md-8 alert alert-warning">
-        <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+    <div class="col-md-8 alert alert-warning alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <h4 class="alert-heading">{{ _("WARNING") }}</h4>
         Default password - please update in <a href="/user/settings" style="color: #000">User Settings</a>
     </div>
     {% end %}
     {% if "localhost" in options.origin.lower() or "127.0.0.1" in options.origin %}
-    <div class="col-md-8 alert alert-warning">
-        <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+    <div class="col-md-8 alert alert-warning alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <h4 class="alert-heading">{{ _("WARNING") }}</h4>
         Default WebSocket Origin - please update in <a href="/admin/configuration" style="color: #000">Configuration</a>
     </div>
     {% end %}
     {% if not options.suspend_registration %}
-    <div class="col-md-8 alert alert-warning">
-        <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+    <div class="col-md-8 alert alert-warning alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <h4 class="alert-heading">{{ _("WARNING") }}</h4>
         Registration defaults to open when the server starts.  This is a security risk - please update in <a href="/admin/configuration" style="color: #000">Configuration</a>
     </div>
     {% end %}
     {% if options.registration_open_minutes == 0 or options.registration_open_minutes > 120 %}
-    <div class="col-md-8 alert alert-warning">
-        <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+    <div class="col-md-8 alert alert-warning alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <h4 class="alert-heading">{{ _("WARNING") }}</h4>
         Registration Auto-Close is disabled or set above the recommended 120 minutes - please review in <a href="/admin/configuration" style="color: #000">Configuration</a>
     </div>
     {% end %}
     {% if update_available %}
-    <div class="col-md-8 alert alert-info">
-        <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+    <div class="col-md-8 alert alert-info alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <h4 class="alert-heading">{{ _("Update Available") }}</h4>
         {{ _("A newer version of Root the Box is available") }}: <strong>{{ latest_version }}</strong>
         (<a href="https://github.com/wwwjscom/RootTheBox/releases" target="_blank">{{ _("view releases") }}</a>)

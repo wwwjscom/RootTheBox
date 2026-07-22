@@ -47,8 +47,8 @@
         <br />
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
-            <div class="alert alert-error">
-                    <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+            <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("ERROR") }}</h4>
                     {{ error }}
             </div>
@@ -83,7 +83,7 @@
                     {% if level.description %}<h4 class="levelheader">({{ level.description }})</h4>{% end %}
                     {% if team and has_level and level_timer.get("enabled") %}
                         {# Visible countdown per level; actual enforcement remains server-side. #}
-                        <div class="alert {% if level_timer.get('expired') %}alert-error{% else %}alert-info{% end %}"
+                        <div class="alert {% if level_timer.get('expired') %}alert-danger{% else %}alert-info{% end %}"
                              style="margin: 10px 0;"
                              data-level-submission-timer="1"
                              data-level-submission-timer-started="{{ str(level_timer.get('started')).lower() }}"

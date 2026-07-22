@@ -2,6 +2,12 @@ body {
     padding-top: 60px;
     padding-bottom: 40px;
 }
+/* Bootstrap 5 grid rows are flexbox (BS2 used floats), so a column that is also
+   an .alert would stretch to the row's full height. An alert should size to its
+   content; align-self is a no-op when the alert isn't a flex/grid child. */
+.alert {
+    align-self: flex-start;
+}
 footer {
     font-size: 75%;
     position: fixed;

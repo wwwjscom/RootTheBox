@@ -220,8 +220,8 @@
         </div><br />
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
-                <div class="alert alert-error">
-                    <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("Incorrect") }}</h4>
                     {{ error }}
                 </div>
@@ -229,8 +229,8 @@
         {% end %}
         {% if success is not None and len(success) != 0 %}
             {% for msg in success %}
-                <div class="alert alert-success">
-                    <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("Success!") }}</h4>
                     {{ msg }}
                 </div>
@@ -238,8 +238,8 @@
         {% end %}
         {% if info is not None and len(info) != 0 %}
             {% for msg in info %}
-                <div class="alert alert-info">
-                    <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-info alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("Information") }}</h4>
                     {{ msg }}
                 </div>
@@ -248,7 +248,7 @@
         {# Per-user timer status for the current level (read-only once started). #}
         {% if level_submission_timer_enabled %}
             <div id="level-submission-timer"
-                 class="alert {% if level_submission_timer_expired %}alert-error{% else %}alert-info{% end %}"
+                 class="alert {% if level_submission_timer_expired %}alert-danger{% else %}alert-info{% end %}"
                  data-total-seconds="{{ level_submission_timer_total_seconds }}"
                  data-remaining-seconds="{{ level_submission_timer_remaining_seconds }}"
                  data-expired="{{ str(level_submission_timer_expired).lower() }}">

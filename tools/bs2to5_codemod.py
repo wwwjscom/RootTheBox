@@ -43,6 +43,8 @@ CLASS_SUBS = [
     (re.compile(r"\bbtn-small\b"), "btn-sm"),
     (re.compile(r"\bbtn-large\b"), "btn-lg"),
     (re.compile(r"\bbtn-inverse\b"), "btn-dark"),
+    # alerts
+    (re.compile(r"\balert-error\b"), "alert-danger"),
     # wells -> cards
     (re.compile(r"\bwell-small\b"), "card card-body"),
     (re.compile(r"\bwell-large\b"), "card card-body"),
@@ -72,6 +74,27 @@ DATA_ATTR_MAP = {
 }
 
 CLASS_ATTR_RE = re.compile(r"""class\s*=\s*(?P<q>["'])(?P<val>.*?)(?P=q)""", re.DOTALL)
+
+# Dismissible-alert pattern: an alert <div> immediately followed by the BS2 close
+# anchor. Add `alert-dismissible` to the div and swap the anchor for BS5 .btn-close.
+# (RTB's dismissible alerts consistently place the close as the div's first child.)
+ALERT_DISMISS_RE = re.compile(
+    r"""(?P<open><div\s+class=")(?P<cls>[^"]*\balert\b[^"]*)(?P<mid>"[^>]*>\s*)"""
+    r"""<a\s+class="close"\s+data-bs-dismiss="alert"[^>]*>\s*&times;\s*</a>""",
+    re.DOTALL,
+)
+
+
+def _alert_dismiss_sub(match):
+    cls = match.group("cls")
+    if "alert-dismissible" not in cls.split():
+        cls = cls + " alert-dismissible"
+    return (
+        match.group("open")
+        + cls
+        + match.group("mid")
+        + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
+    )
 
 
 def _sub_plain(segment):
@@ -103,6 +126,8 @@ def transform_text(text):
     # 2) data-* attribute-name renames
     for old, new in DATA_ATTR_MAP.items():
         text = text.replace(old, new)
+    # 3) dismissible alerts: .alert-dismissible + BS5 .btn-close
+    text = ALERT_DISMISS_RE.sub(_alert_dismiss_sub, text)
     return text
 
 

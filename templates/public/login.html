@@ -16,8 +16,8 @@
         </h3>
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
-                <div class="alert alert-error" >
-                    <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-danger alert-dismissible" >
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("Authentication Failure") }}</h4>
                     {{ error }}
                 </div>
@@ -25,8 +25,8 @@
         {% end %}
         {% if info is not None and len(info) != 0 %}
             {% for item in info %}
-                <div class="alert alert-info" >
-                    <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-info alert-dismissible" >
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("Information") }}</h4>
                     {{ item }}
                 </div>
