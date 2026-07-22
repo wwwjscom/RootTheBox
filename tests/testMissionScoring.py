@@ -21,7 +21,7 @@ from tornado.options import options
 
 from handlers.MissionsHandler import BoxHandler
 from models import dbsession
-from models.Box import Box
+from models.Box import Box, FlagsSubmissionType
 from models.Corporation import Corporation
 from models.Flag import FLAG_STATIC, Flag
 from models.GameLevel import GameLevel
@@ -158,6 +158,16 @@ class TestFlagCaptureScoring(ScoringTestCase):
         self.assertFalse(self.handler.attempt_capture(self.flag, self.CORRECT))
         self.assertEqual(self.team.money, self.FLAG_VALUE)
 
+    def test_single_submission_box_resolves_flag_by_token(self):
+        # Single-submission boxes validate against the box, resolving the flag
+        # from the submitted token rather than a flag uuid.
+        self.box.flag_submission_type = FlagsSubmissionType.SINGLE_SUBMISSION_BOX
+        dbsession.add(self.box)
+        dbsession.commit()
+        resolved = Flag.by_token_and_box_id(self.CORRECT, self.box.id)
+        self.assertEqual(resolved, self.flag)
+        self.assertIsNone(Flag.by_token_and_box_id("wrongtoken", self.box.id))
+
 
 class TestFlagPenalties(ScoringTestCase):
     def test_wrong_submission_records_penalty_attempt(self):
@@ -196,3 +206,110 @@ class TestBoxCompletionScoring(ScoringTestCase):
         # Flag value (100) plus the box bonus (250).
         self.assertEqual(self.team.money, self.FLAG_VALUE + 250)
         self.assertTrue(any("completed" in line.lower() for line in success))
+
+
+class TestLevelCompletionScoring(ScoringTestCase):
+    LEVEL_REWARD = 500
+
+    def setUp(self):
+        super().setUp()
+        # Level completion only rewards when the level is not already owned.
+        self.team.game_levels.remove(self.level)
+        self.level.reward = self.LEVEL_REWARD
+        dbsession.add(self.level)
+        dbsession.add(self.team)
+        dbsession.commit()
+
+    def test_level_completion_awards_level_reward(self):
+        self.handler.attempt_capture(self.flag, self.CORRECT)  # flag value 100
+        success = self.handler.success_capture(self.user, self.flag, self.FLAG_VALUE)
+        # Flag value plus the level completion reward. (Completing a level this
+        # way awards the reward but does not itself add the level to
+        # game_levels — in normal play the level is already owned.)
+        self.assertEqual(self.team.money, self.FLAG_VALUE + self.LEVEL_REWARD)
+        self.assertTrue(
+            any(self.level.name in line and "completed" in line.lower() for line in success)
+        )
+
+
+class TestDynamicFlagDecay(unittest.TestCase):
+    """Pins the decay_all dynamic-scoring math on Flag.dynamic_value."""
+
+    FLAG_VALUE = 100
+    DECREASE_PCT = 10
+
+    _OPTIONS = (
+        "dynamic_flag_value",
+        "dynamic_flag_type",
+        "flag_value_decrease",
+        "flag_value_minimum",
+    )
+
+    def setUp(self):
+        self.level = GameLevel(number=9, buyout=0)
+        dbsession.add(self.level)
+        dbsession.commit()
+        self.corp = Corporation()
+        self.corp.name = "DecayCorp"
+        dbsession.add(self.corp)
+        dbsession.commit()
+        self.box = Box(corporation_id=self.corp.id, game_level_id=self.level.id)
+        self.box.name = "DecayBox"
+        self.box.description = "decay"
+        self.corp.boxes.append(self.box)
+        dbsession.add(self.box)
+        dbsession.commit()
+        self.flag = Flag.create_flag(
+            _type=FLAG_STATIC,
+            box=self.box,
+            name="Decay Flag",
+            raw_token="decaytok",
+            description="decays",
+            value=self.FLAG_VALUE,
+        )
+        dbsession.add(self.flag)
+        dbsession.commit()
+
+        self.team1 = self._team("DecayTeam1")
+        self.team2 = self._team("DecayTeam2")
+
+        self._opt_backup = {k: getattr(options, k) for k in self._OPTIONS}
+        options.dynamic_flag_value = True
+        options.dynamic_flag_type = "decay_all"
+        options.flag_value_decrease = self.DECREASE_PCT
+        options.flag_value_minimum = 0
+
+    def _team(self, name):
+        team = Team()
+        team.name = name
+        team.motto = "decay"
+        dbsession.add(team)
+        team.set_score("start", 0)
+        dbsession.commit()
+        return team
+
+    def tearDown(self):
+        for key, value in self._opt_backup.items():
+            setattr(options, key, value)
+        dbsession.delete(self.team1)
+        dbsession.delete(self.team2)
+        dbsession.commit()
+        dbsession.delete(self.corp)
+        dbsession.commit()
+        dbsession.delete(self.level)
+        dbsession.commit()
+
+    def test_value_is_full_before_any_capture(self):
+        self.assertEqual(self.flag.dynamic_value(self.team2), self.FLAG_VALUE)
+
+    def test_value_decays_after_a_capture(self):
+        # One team captures the flag.
+        self.team1.add_flag(self.flag)
+        dbsession.add(self.team1)
+        dbsession.commit()
+        # A team that has not captured now sees the decayed value:
+        # value - (captures * value * decrease%) = 100 - (1 * 10) = 90.
+        expected = self.FLAG_VALUE - int(
+            self.FLAG_VALUE * (self.DECREASE_PCT / 100.0)
+        )
+        self.assertEqual(self.flag.dynamic_value(self.team2), expected)
