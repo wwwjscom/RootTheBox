@@ -11,14 +11,16 @@
 {% from libs.XSSImageCheck import existing_avatars %}
 {% set avatars = filter_avatars("team") %}
 {% set existing = existing_avatars("team") %}
-<div id="change-team-avatar-modal" class="modal hide fade" style="display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}">
+<div id="change-team-avatar-modal" class="modal fade" style="display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>{{_("Team Avatar")}}</h3>
     </div>
     <div class="modal-body">
         {% raw xsrf_form_html() %}
-        <a id="avatarclose" href="#" class="btn" data-bs-dismiss="modal" style="display: none;">{{_("Close")}}</a>
+        <a id="avatarclose" href="#" class="btn btn-secondary" data-bs-dismiss="modal" style="display: none;">{{_("Close")}}</a>
         {% for avatar in avatars[::3] %}
             <div class="row">
                 <div class="col-md-3">
@@ -46,7 +48,9 @@
             <br/>
         {% end %}
     </div>
-</div>
+
+    </div>
+    </div></div>
 {% end %}
 
 {% block content %}

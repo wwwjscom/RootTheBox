@@ -8,9 +8,11 @@
 
 {% block modals %}
 {% from tornado.options import options %}
-    <div id="unlock-game-level-modal" class="modal hide fade" style="display: none;">
+    <div id="unlock-game-level-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-unlock"></i>
                 {{ _("Unlock Level") }}
@@ -25,12 +27,14 @@
             </p>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="unlock-game-level-submit" class="btn btn-primary" type="button">
                 {{ _("Unlock") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -259,7 +263,7 @@
                     </div>
                 {% else %}
                     {% if level._type == "buyout" %}
-                    <a id="unlock-game-level-button{{ index }}" class="btn" data-bs-toggle="modal" href="#unlock-game-level-modal" data-uuid="{{ level.uuid }}" data-banking="{{ str(options.banking).lower() }}" data-buyout="{{ level.buyout }}">
+                    <a id="unlock-game-level-button{{ index }}" class="btn btn-secondary" data-bs-toggle="modal" href="#unlock-game-level-modal" data-uuid="{{ level.uuid }}" data-banking="{{ str(options.banking).lower() }}" data-buyout="{{ level.buyout }}">
                         <i class="fa fa-unlock"></i>
                         {{ _("Unlock") }}
                     </a>

@@ -8,6 +8,19 @@ body {
 .alert {
     align-self: flex-start;
 }
+/* BS2 modal headers place the close button before the title; BS5 modal-header is
+   flex, so order the close to the right and keep the (bare <h3>) titles tidy. */
+.modal-header .btn-close {
+    order: 1;
+    margin: -0.5rem -0.5rem -0.5rem auto;
+}
+.modal-header > h1,
+.modal-header > h2,
+.modal-header > h3,
+.modal-header > h4,
+.modal-header > h5 {
+    margin: 0;
+}
 footer {
     font-size: 75%;
     position: fixed;

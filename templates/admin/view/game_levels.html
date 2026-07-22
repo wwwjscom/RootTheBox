@@ -21,9 +21,11 @@
         <input id="review-mode-level-uuid" name="uuid" type="hidden" />
     </form>
     <!-- Edit Level -->
-    <div id="edit-game-level-modal" class="modal hide fade" style="display: none; ">
+    <div id="edit-game-level-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-pencil"></i>
                 {{ _("Edit Level") }}
@@ -96,17 +98,21 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="edit-game-level-submit" class="btn btn-primary" type="button">
                 <i class="fa fa-save"></i>
                 {{ _("Save") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- Level Access -->
-    <div id="edit-access-modal" class="modal hide fade" style="display: none; ">
+    <div id="edit-access-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-pencil"></i>
                 {{ _("Edit Access") }}
@@ -134,12 +140,12 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <button id="addToLevel" class="btn btn-sm" type="button">
+                                    <button id="addToLevel" class="btn btn-sm btn-secondary" type="button">
                                         &nbsp;&nbsp;&nbsp;{{ _("Add") }}&nbsp;&nbsp;&nbsp;
                                     </button>
                                 </td>
                                 <td>
-                                    <button id="removeFromLevel" class="btn btn-sm" type="button">
+                                    <button id="removeFromLevel" class="btn btn-sm btn-secondary" type="button">
                                         &nbsp;{{ _("Remove") }}&nbsp;
                                     </button>
                                 </td>
@@ -150,17 +156,21 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="edit-access-submit" class="btn btn-primary" type="button">
                 <i class="fa fa-save"></i>
                 {{ _("Save") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- Delete Level -->
-    <div id="delete-game-level-modal" class="modal hide fade" style="display: none; ">
+    <div id="delete-game-level-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-times-circle-o"></i> {{ _("Delete Game Level") }}</h3>
         </div>
         <div class="modal-body">
@@ -175,17 +185,21 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="delete-game-level-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-times-circle-o"></i>
                 {{ _("Delete") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- Switch Level -->
-    <div id="switch-level-modal" class="modal hide fade" style="display: none; ">
+    <div id="switch-level-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-arrows-v"></i>
                 {{ _("Switch Level") }}
@@ -208,13 +222,15 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="switch-level-submit" class="btn btn-primary" type="button">
                 <i class="fa fa-save"></i>
                 {{ _("Save") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -245,11 +261,11 @@
                     <i class="fa fa-times-circle-o"></i>
                     {{ _("Delete Game Level") }}
                 </a>
-                <a id="edit-game-level-button{{ index }}" style="float: right; margin-top: 5px; margin-right: 10px;" class="btn btn-sm" data-bs-toggle="modal" href="#edit-game-level-modal" data-uuid="{{ level.uuid }}">
+                <a id="edit-game-level-button{{ index }}" style="float: right; margin-top: 5px; margin-right: 10px;" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-game-level-modal" data-uuid="{{ level.uuid }}">
                     <i class="fa fa-pencil"></i>
                     {{ _("Edit Game Level") }}
                 </a>
-                <button type="button" id="edit-access-button{{ index }}" style="float: right; margin-top: 5px; margin-right: 10px;" class="btn btn-sm" data-bs-toggle="modal" href="#edit-access-modal" data-uuid="{{ level.uuid }}"{% if level.type == "none" %} disabled{%end%}>
+                <button type="button" id="edit-access-button{{ index }}" style="float: right; margin-top: 5px; margin-right: 10px;" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-access-modal" data-uuid="{{ level.uuid }}"{% if level.type == "none" %} disabled{%end%}>
                     <i class="fa fa-pencil"></i>
                     {{ _("Edit Access") }}
                 </button>
@@ -323,7 +339,7 @@
                                     <td>{{ box.name }}</td>
                                     <td class="shortcolumn" style="text-align: center;">{{ len(box.flags) }}</td>
                                     <td class="shortcolumn" style="margin-right: 10px;">
-                                          <a id="switch-level-button{{ index }}" class="btn btn-sm" data-bs-toggle="modal" href="#switch-level-modal" data-level-uuid="{{ level.uuid }}" data-box-uuid="{{ box.uuid }}">
+                                          <a id="switch-level-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#switch-level-modal" data-level-uuid="{{ level.uuid }}" data-box-uuid="{{ box.uuid }}">
                                             <i class="fa fa-arrows-v"></i>
                                             {{ _("Switch Level") }}
                                           </a>

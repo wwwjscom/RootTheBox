@@ -9,9 +9,11 @@
 
 {% block modals %}
  <!-- Set Countdown Timer -->
- <div id="timer-modal" class="modal hide fade">
+ <div id="timer-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>
             <i class="fa fa-fw fa-clock-o"></i>
             {{ _("Set Countdown Timer") }}
@@ -46,17 +48,21 @@
     </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
         <button id="timer-submit" class="btn btn-primary" type="button">
             <i class="fa fa-fw fa-save"></i>
             {{ _("Save") }}
         </button>
     </div>
-</div>
+
+    </div>
+    </div></div>
  <!-- Send Global Message -->
-<div id="message-modal" class="modal hide fade">
+<div id="message-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-envelope"></i>
                 {{ _("Create Message") }}
@@ -74,13 +80,15 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="message-submit" class="btn btn-primary" type="button">
                 <i class="fa fa-fw fa-save"></i>
                 {{ _("Send") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -187,7 +195,7 @@
                     <i class="fa fa-fw fa-clock-o"></i> {{ _("Last Checked") }}: {{ last_checked if last_checked else _("never") }}
                     <form action="/admin/updatecheck" method="post" style="display: inline;">
                         {% raw xsrf_form_html() %}
-                        <button type="submit" class="btn btn-sm" title="{{ _('Check for updates now') }}">
+                        <button type="submit" class="btn btn-sm btn-secondary" title="{{ _('Check for updates now') }}">
                             <i class="fa fa-refresh"></i> {{ _("Check Now") }}
                         </button>
                     </form>

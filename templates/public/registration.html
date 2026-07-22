@@ -21,9 +21,11 @@
     {% end %}
     {% set avatars = filter_avatars("user") %}
     {% set existing = existing_avatars(dir) %}
-    <div id="change-user-avatar-modal" class="modal hide fade" style="display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}">
+    <div id="change-user-avatar-modal" class="modal fade" style="display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button id="avatarclose" type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" id="avatarclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>{{ _("Select Avatar") }}</h3>
         </div>
         <div class="modal-body">
@@ -63,7 +65,9 @@
                 {% end %}
             {% end %}
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}

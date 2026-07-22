@@ -8,9 +8,11 @@
 {% end %}
 
 {% block modals %}
-    <div id="buy-source-code-modal" class="modal hide fade" style="display: none; ">
+    <div id="buy-source-code-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>{{ _("Buy Source Code") }}</h3>
         </div>
         <div class="modal-body">
@@ -24,12 +26,14 @@
             <br />
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="buy-source-code-submit" class="btn btn-primary" type="button">
                 {{ _("Buy") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -94,7 +98,7 @@
                                     </td>
                                 {% else %}
                                     <td>
-                                        <a id="buy-source-code-button{{ index }}" class="btn btn-sm" data-bs-toggle="modal" href="#buy-source-code-modal" data-uuid="{{ box.uuid }}" data-price="{% if options.banking %}{{ _('$') }}{{ box.source_code.price }}{% else %}{{ box.source_code.price }} points{% end %}">
+                                        <a id="buy-source-code-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#buy-source-code-modal" data-uuid="{{ box.uuid }}" data-price="{% if options.banking %}{{ _('$') }}{{ box.source_code.price }}{% else %}{{ box.source_code.price }} points{% end %}">
                                             {{ _("Buy Source Code") }}
                                         </a>
                                     </td>

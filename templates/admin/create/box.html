@@ -17,14 +17,16 @@
 {% from tornado.options import options %}
 {% set avatars = filter_avatars("box") %}
 <!-- Select Avatars -->
-<div id="change-box-avatar-modal" class="modal hide fade" style="z-index: 100000; display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}">
+<div id="change-box-avatar-modal" class="modal fade" style="z-index: 100000; display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>{{_("Change Avatar")}}</h3>
     </div>
     <div class="modal-body">
         {% raw xsrf_form_html() %}
-        <a id="avatarclose" href="#" class="btn" data-bs-dismiss="modal" style="display: none;">{{_("Close")}}</a>
+        <a id="avatarclose" href="#" class="btn btn-secondary" data-bs-dismiss="modal" style="display: none;">{{_("Close")}}</a>
         {% for avatar in avatars[::3] %}
             <div class="row">
                 <div class="col-md-3">
@@ -52,7 +54,9 @@
             <br/>
         {% end %}
     </div>
-</div>
+
+    </div>
+    </div></div>
 {% end %}
 {% block content %}
 
@@ -132,23 +136,23 @@
                             rel="popover"
                             data-bs-title="{{_('System Type')}}"
                             data-bs-content="{{_('What type of system is this?')}}">
-                        <button id="os-button1" class="btn osbutton" type="button" data-os="linux">
+                        <button id="os-button1" class="btn osbutton btn-secondary" type="button" data-os="linux">
                             <i class="fa fa-linux"></i>
                             Linux
                         </button>
-                        <button id="os-button2" class="btn osbutton" type="button" data-os="windows">
+                        <button id="os-button2" class="btn osbutton btn-secondary" type="button" data-os="windows">
                             <i class="fa fa-windows"></i>
                             Windows
                         </button>
-                        <button id="os-button2" class="btn osbutton" type="button" data-os="apple">
+                        <button id="os-button2" class="btn osbutton btn-secondary" type="button" data-os="apple">
                             <i class="fa fa-apple"></i>
                             MacOS
                         </button>
-                        <button id="os-button3" class="btn osbutton active" type="button" data-os="?">
+                        <button id="os-button3" class="btn osbutton active btn-secondary" type="button" data-os="?">
                             <i class="fa fa-desktop"></i>
                              {{ _("Unknown") }}
                         </button>
-                        <button id="os-button4" class="btn osbutton" type="button" data-os="none">
+                        <button id="os-button4" class="btn osbutton btn-secondary" type="button" data-os="none">
                             <i class="fa fa-th"></i>
                             {{ _("None") }}
                         </button>

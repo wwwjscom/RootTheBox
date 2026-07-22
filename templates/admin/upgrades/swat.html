@@ -7,9 +7,11 @@
 {% end %}
 
 {% block modals %}
-<div id="accept-bribe-modal" class="modal hide fade" style="display: none;">
+<div id="accept-bribe-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>{{ _("Accept Bribe?") }}</h3>
     </div>
     <div class="modal-body">
@@ -23,15 +25,19 @@
         <br />
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="accept-bribe-submit" class="btn btn-primary" type="button">
             {{ _("Confirm") }}
         </button>
     </div>
-</div>
-<div id="decline-bribe-modal" class="modal hide fade" style="display: none;">
+
+    </div>
+    </div></div>
+<div id="decline-bribe-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>{{ _("Decline Bribe?") }}</h3>
     </div>
     <div class="modal-body">
@@ -45,15 +51,19 @@
         <br />
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="decline-bribe-submit" class="btn btn-primary" type="button">
             {{ _("Confirm") }}
         </button>
     </div>
-</div>
-<div id="complete-bribe-modal" class="modal hide fade" style="display: none;">
+
+    </div>
+    </div></div>
+<div id="complete-bribe-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>{{ _("Complete Bribe") }}</h3>
     </div>
     <div class="modal-body">
@@ -67,12 +77,14 @@
         <br />
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="complete-bribe-submit" class="btn btn-primary" type="button">
             {{ _("Confirm") }}
         </button>
     </div>
-</div>
+
+    </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -161,7 +173,7 @@
                         <td>{{ swat.target.handle }}</td>
                         <td>${{ swat.paid }}</td>
                         <td>
-                            <a id="complete-bribe-button{{ index }}" class="btn btn-sm" data-bs-toggle="modal" href="#complete-bribe-modal" data-uuid="{{ swat.uuid }}">
+                            <a id="complete-bribe-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#complete-bribe-modal" data-uuid="{{ swat.uuid }}">
                                 {{ _("Complete") }}
                             </a>
                         </td>

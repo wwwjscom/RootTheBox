@@ -9,9 +9,11 @@
 
 {% block modals %}
     <!-- Hidden Download Form -->
-    <div id="buy-market-item-modal" class="modal hide fade" style="display: none;">
+    <div id="buy-market-item-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 {{ _("Details") }}
             </h3>
@@ -43,12 +45,14 @@
             <input id="buy-market-item-uuid" type="hidden" id="uuid" name="uuid" />
         </form>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="buy-market-item-submit" type="button" class="btn btn-primary">
                 {{ _("Buy Upgrade") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -91,7 +95,7 @@
 						<td>{% if options.banking %}{{ _("$") }}{% end %}{{ item.price }}</td>
 						<td>
 							{% if not user.has_item(item.name) %}
-							<a id="item-details-button{{ index }}" class="btn btn-sm" data-bs-toggle="modal" href="#buy-market-item-modal" data-uuid="{{ item.uuid }}">
+							<a id="item-details-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#buy-market-item-modal" data-uuid="{{ item.uuid }}">
 								{{ _("Details") }}
 							</a>
 							{% else %}

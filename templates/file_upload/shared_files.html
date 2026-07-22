@@ -7,9 +7,11 @@
 {% end %}
 
 {% block modals %}
-    <div id="delete-file-upload-modal" class="modal hide fade" style="display: none; ">
+    <div id="delete-file-upload-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-times-circle-o"></i>
                 {{ _("Delete File Upload") }}
@@ -25,13 +27,15 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="delete-file-upload-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-times-circle-o"></i>
                 {{ _("Delete") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -61,7 +65,7 @@
                         <textarea class="form-control" id="description" name="description" type="text" placeholder="{{ _('File Description') }}">
                         </textarea>
                     </fieldset>
-                    <button class="btn">
+                    <button class="btn btn-secondary">
                         <i class="fa fa-fw fa-upload"></i>
                         {{ _("Upload Files") }}
                     </button>
@@ -94,7 +98,7 @@
                                                 {{ share.description }}
                                             </p>
                                             <br />
-                                            <button id="file-upload-download{{ index }}" class="btn" data-uuid="{{ share.uuid }}" type="button">
+                                            <button id="file-upload-download{{ index }}" class="btn btn-secondary" data-uuid="{{ share.uuid }}" type="button">
                                                 <i class="fa fa-download"></i>
                                                 {{ _("Download") }} {{ share.file_name }}
                                             </button>

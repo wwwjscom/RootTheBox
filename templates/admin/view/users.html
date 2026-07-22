@@ -21,9 +21,11 @@
     {% end %}
     {% set avatars = filter_avatars(dir) %}
     {% set existing = existing_avatars("team") %}
-    <div id="change-team-avatar-modal" class="modal hide fade" style="z-index: 100000; display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}">
+    <div id="change-team-avatar-modal" class="modal fade" style="z-index: 100000; display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button id="team-avatar-form" type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" id="team-avatar-form" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>{{_("Change")}} {% if options.teams %}{{_("Team")}} {% end %}{{_("Avatar")}}</h3>
         </div>
         <div class="modal-body">
@@ -60,12 +62,16 @@
                     {% end %}
             </form>
         </div>
+    
     </div>
+    </div></div>
     {% set avatars = filter_avatars("user") %}
     {% set existing = existing_avatars("user") %}
-    <div id="change-user-avatar-modal" class="modal hide fade" style="z-index: 100000; display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}">
+    <div id="change-user-avatar-modal" class="modal fade" style="z-index: 100000; display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button id="user-avatar-form" type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" id="user-avatar-form" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>{{_("Change")}} {% if options.teams %}{{_("Player")}} {% end %}{{_("Avatar")}}</h3>
         </div>
         <div class="modal-body">
@@ -103,11 +109,15 @@
                
             </form>
         </div>
+    
     </div>
+    </div></div>
     <!-- Edit Team -->
-    <div id="edit-team-modal" class="modal hide fade" style="display: none; ">
+    <div id="edit-team-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-fw fa-pencil"></i>
                 {% if options.teams %}{{_("Edit")}} {{_("Team")}}{% else %}{{_("Edit")}} {{_("Player")}}{% end %}
@@ -158,17 +168,21 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="edit-team-submit" type="button" class="btn btn-primary">
                 <i class="fa fa-fw fa-save"></i>
                 {{_("Save")}}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- Edit User -->
-    <div id="edit-user-modal" class="modal hide fade" style="display: none; ">
+    <div id="edit-user-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-fw fa-pencil"></i>
                 {{_("Edit User")}}
@@ -274,16 +288,20 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="edit-user-submit" type="button" class="btn btn-primary">
                 <i class="fa fa-fw fa-save"></i>
                 {{_("Save")}}
             </button>
         </div>
+    
     </div>
-    <div id="delete-team-modal" class="modal hide fade" style="display: none; ">
+    </div></div>
+    <div id="delete-team-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-times-circle-o"></i> {% if options.teams %}{{_("Delete Team")}}{% else %}{{_("Delete Player")}}{% end %}</h3>
         </div>
         <div class="modal-body">
@@ -297,16 +315,20 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="delete-team-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-fw fa-times-circle-o"></i>
                 {{_("Delete")}}
             </button>
         </div>
+    
     </div>
-    <div id="delete-user-modal" class="modal hide fade" style="display: none; ">
+    </div></div>
+    <div id="delete-user-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-times-circle-o"></i> {{_("Delete User")}}</h3>
         </div>
         <div class="modal-body">
@@ -319,17 +341,21 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="delete-user-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-fw fa-times-circle-o"></i>
                 {{_("Delete")}}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- Add score to all teams -->
-    <div id="edit-scores-modal" class="modal hide fade" style="display: none; ">
+    <div id="edit-scores-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-fw fa-plus"></i>
                 {{_("Add")}} {% if options.banking %}{{_("Money")}}{% else %}{{_("Points")}}{% end %}
@@ -364,13 +390,15 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="edit-scores-submit" type="button" class="btn btn-primary">
                 <i class="fa fa-fw fa-save"></i>
                 {{_("Save")}}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -387,7 +415,7 @@
             <h1>
                 <i class="fa fa-fw fa-group"></i>
                 {{_("User Management")}}
-                <a style="float: right; margin-right: 5px; margin-top: 12px;" id="edit-scores-button" class="btn btn-sm" data-bs-toggle="modal" href="#edit-scores-modal">
+                <a style="float: right; margin-right: 5px; margin-top: 12px;" id="edit-scores-button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-scores-modal">
                     <i class="fa fa-fw fa-plus"></i> {{_("add")}} {% if options.banking %}{{_("money")}}{% else %}{{_("points")}}{% end %}
                 </a>
             </h1>
@@ -443,7 +471,7 @@
                                 {% end %}
                                 <td> {% if user.notes %}{{ user.notes }}{% end %} </td>
                                 <td class="shortcolumn">
-                                    <a id="edit-user-button-{{ user.uuid }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}">
+                                    <a id="edit-user-button-{{ user.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}">
                                         <i class="fa fa-fw fa-pencil"></i>
                                         {{_("Edit Account")}}
                                     </a>
@@ -472,7 +500,7 @@
                         <i class="fa fa-fw fa-times-circle-o"></i>
                         {% if options.teams %}{{_("Delete Team")}}{% else %}{{_("Delete Player")}}{% end %}
                     </a>
-                    <a id="edit-team-button{{ team_index }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-team-modal" data-uuid="{{ team.uuid }}" style="float:right; margin-right:10px;">
+                    <a id="edit-team-button{{ team_index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-team-modal" data-uuid="{{ team.uuid }}" style="float:right; margin-right:10px;">
                         <i class="fa fa-fw fa-pencil"></i>
                         {% if options.teams %}{{_("Edit Team")}}{% else %}{{_("Edit Player")}}{% end %}
                     </a>
@@ -545,13 +573,13 @@
                                         {% end %}
                                     </td>
                                     <td class="shortcolumn">
-                                        <a class="btn btn-sm" href="/user?id={{ user.uuid }}">
+                                        <a class="btn btn-sm btn-secondary" href="/user?id={{ user.uuid }}">
                                             <i class="fa fa-fw fa-bar-chart-o"></i>
                                             {{_("Statistics")}}
                                         </a>
                                     </td>
                                     <td class="shortcolumn">
-                                        <a id="edit-user-button-{{ user.uuid }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}" data-hash-algorithm="{{ user.algorithm }}" data-team-uuid="{{ user.team.uuid }}">
+                                        <a id="edit-user-button-{{ user.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}" data-hash-algorithm="{{ user.algorithm }}" data-team-uuid="{{ user.team.uuid }}">
                                             <i class="fa fa-fw fa-pencil"></i>
                                             {{_("Edit Account")}}
                                         </a>

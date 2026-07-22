@@ -150,6 +150,32 @@ def _form_tag_sub(match):
     return "<%s%s%s>" % (match.group("tag"), new_attrs, match.group("slash"))
 
 
+# Modal close button: BS2 <button class="close" data-bs-dismiss="modal">&times;</button>
+# -> BS5 <button class="btn-close" ...></button>. Preserve id/style; keep the
+# dismiss hook; drop the &times; (BS5 draws the X via CSS). The JS-controlled
+# #closebutton overlays (no data-bs-dismiss, <h2>x</h2> content) don't match.
+MODAL_CLOSE_RE = re.compile(
+    r"""<button\b(?P<attrs>[^>]*\bclass=["']close["'][^>]*\bdata-bs-dismiss=["']modal["'][^>]*)>\s*&times;\s*</button>""",
+    re.DOTALL,
+)
+_ID_RE = re.compile(r"""\bid=(["']).*?\1""")
+_STYLE_RE = re.compile(r"""\bstyle=(["']).*?\1""")
+
+
+def _modal_close_sub(match):
+    attrs = match.group("attrs")
+    keep = []
+    for rx in (_ID_RE, _STYLE_RE):
+        m = rx.search(attrs)
+        if m:
+            keep.append(m.group(0))
+    extra = (" " + " ".join(keep)) if keep else ""
+    return (
+        '<button type="button"%s class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>'
+        % extra
+    )
+
+
 def _alert_dismiss_sub(match):
     cls = match.group("cls")
     if "alert-dismissible" not in cls.split():
@@ -168,6 +194,29 @@ def _sub_plain(segment):
     return segment
 
 
+# A bare `.btn` (no colour variant) is unstyled in BS5; give it btn-secondary,
+# the BS5 equivalent of BS2's default grey button.
+_BTN_VARIANTS = {
+    "btn-primary", "btn-secondary", "btn-success", "btn-danger", "btn-warning",
+    "btn-info", "btn-light", "btn-dark", "btn-link",
+}
+
+
+def _plain_tokens(value):
+    """Class tokens outside any {% %}/{{ }} template tag."""
+    plain = TEMPLATE_TAG_RE.sub(" ", value)
+    return plain.split()
+
+
+def _add_btn_variant(value):
+    tokens = _plain_tokens(value)
+    if "btn" not in tokens:
+        return value
+    if any(t in _BTN_VARIANTS or t.startswith("btn-outline-") for t in tokens):
+        return value
+    return value.rstrip() + " btn-secondary" if value.strip() else value
+
+
 def transform_class_value(value):
     """Rewrite class tokens, leaving {% %}/{{ }} template tags opaque."""
     out = []
@@ -177,7 +226,7 @@ def transform_class_value(value):
         out.append(tag.group(0))  # template tag, untouched
         last = tag.end()
     out.append(_sub_plain(value[last:]))
-    return "".join(out)
+    return _add_btn_variant("".join(out))
 
 
 def transform_text(text):
@@ -195,6 +244,8 @@ def transform_text(text):
     text = ALERT_DISMISS_RE.sub(_alert_dismiss_sub, text)
     # 4) form controls: add BS5 form-control/form-select/form-check-input classes
     text = FORM_TAG_RE.sub(_form_tag_sub, text)
+    # 5) modal close buttons -> BS5 .btn-close
+    text = MODAL_CLOSE_RE.sub(_modal_close_sub, text)
     return text
 
 

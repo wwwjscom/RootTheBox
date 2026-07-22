@@ -9,9 +9,11 @@
 {% block modals %}
 {% from tornado.options import options %}
 <!-- Hidden Edit Form -->
-<div id="edit-category-item-modal" class="modal hide fade" style="display: none; ">
+<div id="edit-category-item-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>
             <i class="fa fa-pencil"></i>
             {{ _ ("Edit Category") }}
@@ -38,16 +40,20 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="edit-category-item-submit" type="button" class="btn btn-primary">
             <i class="fa fa-save"></i>
             {{ _("Save") }}
         </button>
     </div>
-</div>
-<div id="delete-category-modal" class="modal hide fade" style="display: none; ">
+
+    </div>
+    </div></div>
+<div id="delete-category-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3><i class="fa fa-fw fa-times-circle-o"></i> {{ _("Delete Category") }}</h3>
     </div>
     <div class="modal-body">
@@ -60,13 +66,15 @@
     </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="delete-category-submit" type="button" class="btn btn-danger">
             <i class="fa fa-fw fa-times-circle-o"></i>
             {{ _("Delete") }}
         </button>
     </div>
-</div>
+
+    </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -103,7 +111,7 @@
                         <td class="shortcolumn"> {{ item.category }} </td>
                         <td> {{ item.description }}</td>
                         <td class="shortcolumn">
-                            <a id="edit-category-item-button{{ index }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-category-item-modal" data-uuid="{{ item.uuid }}" data-name="{{ item.category }}" data-description="{{ item.description }}">
+                            <a id="edit-category-item-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-category-item-modal" data-uuid="{{ item.uuid }}" data-name="{{ item.category }}" data-description="{{ item.description }}">
                                 &nbsp;&nbsp;<i class="fa fa-pencil"></i>&nbsp;
                                 {{ _("Edit") }}&nbsp;&nbsp;&nbsp;
                             </a>

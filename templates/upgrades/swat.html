@@ -8,9 +8,11 @@
 
 {% block modals %}
     <!-- Swat Player Modal -->
-    <div id="swat-player-modal" class="modal hide fade" style="display: none; ">
+    <div id="swat-player-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>S.W.A.T. {{ _("Bribe") }}</h3>
         </div>
         <div class="modal-body">
@@ -23,12 +25,14 @@
             <br />
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="swat-player-submit" class="btn btn-primary" type="button">
                 {{ _("Submit Bribe") }}
             </button>
         </div>
-    </div><!-- End Modal -->
+    
+    </div>
+    </div></div><!-- End Modal -->
 {% end %}
 
 {% block content %}

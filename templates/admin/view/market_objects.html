@@ -9,9 +9,11 @@
 {% block modals %}
 {% from tornado.options import options %}
 <!-- Hidden Edit Form -->
-<div id="edit-market-item-modal" class="modal hide fade" style="display: none; ">
+<div id="edit-market-item-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>
             <i class="fa fa-pencil"></i>
             {{ _("Edit Market Item") }}
@@ -31,13 +33,15 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="edit-market-item-submit" type="button" class="btn btn-primary">
             <i class="fa fa-save"></i>
             {{ _("Save") }}
         </button>
     </div>
-</div>
+
+    </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -74,7 +78,7 @@
                         <td>{{ item.name }}</td>
                         <td class="shortcolumn" style="text-align: center; padding-right: 20px;">{% if options.banking %}${% end %}{{ item.price }}</td>
                         <td class="shortcolumn">
-                            <a id="edit-market-item-button{{ index }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-market-item-modal" data-uuid="{{ item.uuid }}" data-price="{{ item.price }}">
+                            <a id="edit-market-item-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-market-item-modal" data-uuid="{{ item.uuid }}" data-price="{{ item.price }}">
                                 <i class="fa fa-pencil"></i>
                                 {{ _("Edit") }}
                             </a>

@@ -48,9 +48,11 @@
         <input id="lock-flag-uuid" name="uuid" type="hidden" />
     </form>
     <!-- Select Avatars -->
-    <div id="change-box-avatar-modal" class="modal hide fade" style="z-index: 100000; display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}">
+    <div id="change-box-avatar-modal" class="modal fade" style="z-index: 100000; display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button id="avatarclose" type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" id="avatarclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>{{ _("Change Avatar") }}</h3>
         </div>
         <div class="modal-body">
@@ -82,11 +84,15 @@
                 <br/>
             {% end %}
         </div>
+    
     </div>
+    </div></div>
     <!-- Edit Corporation -->
-    <div id="edit-corporation-modal" class="modal hide fade" style="display: none;">
+    <div id="edit-corporation-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-pencil"></i> {{ _("Edit Corporation") }}</h3>
         </div>
         <div class="modal-body">
@@ -108,16 +114,20 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="edit-corporation-submit" class="btn btn-primary" type="button">
                 <i class="fa fa-save"></i>
                 {{_("Save")}}
             </button>
         </div>
+    
     </div>
-    <div id="delete-corporation-modal" class="modal hide fade" style="display: none; ">
+    </div></div>
+    <div id="delete-corporation-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-times-circle-o"></i> {{ _("Delete Corporation") }}</h3>
         </div>
         <div class="modal-body">
@@ -132,17 +142,21 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="delete-corporation-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-fw fa-times-circle-o"></i>
                 {{ _("Delete") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- Edit Box -->
-    <div id="edit-box-modal" class="modal hide fade" style="display: none;">
+    <div id="edit-box-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-pencil"></i> {{ _("Edit Box") }}</h3>
             <div style="padding-left: 5px;">{{ _("Note: Files or documents for the challenge can be placed in the Game Materials.") }}</div>
         </div>
@@ -274,16 +288,20 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="edit-box-submit" type="button" class="btn btn-primary">
                 <i class="fa fa-fw fa-save"></i>
                 {{_("Save")}}
             </button>
         </div>
+    
     </div>
-    <div id="delete-box-modal" class="modal hide fade" style="display: none; ">
+    </div></div>
+    <div id="delete-box-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-times-circle-o"></i> {{_("Delete Box")}}</h3>
         </div>
         <div class="modal-body">
@@ -298,17 +316,21 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="delete-box-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-fw fa-times-circle-o"></i>
                 {{_("Delete")}}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- Edit Flag -->
-    <div id="edit-flag-modal" class="modal hide fade" style="display: none; ">
+    <div id="edit-flag-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-pencil"></i> {{_("Edit Flag")}}</h3>
             <div style="padding-left: 5px;">{{_("Note: Files or documents for the challenge can be placed in the Game Materials.")}}</div>
         </div>
@@ -433,16 +455,20 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="edit-flag-submit" type="button" class="btn btn-primary">
                 <i class="fa fa-fw fa-save"></i>
                 {{_("Save")}}
             </button>
         </div>
+    
     </div>
-    <div id="delete-flag-modal" class="modal hide fade" style="display: none; ">
+    </div></div>
+    <div id="delete-flag-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-times-circle-o"></i> {{_("Delete Flag")}}</h3>
         </div>
         <div class="modal-body">
@@ -455,17 +481,21 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="delete-flag-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-fw fa-times-circle-o"></i>
                 {{ _("Delete") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- Edit Hint -->
-    <div id="edit-hint-modal" class="modal hide fade" style="display: none; ">
+    <div id="edit-hint-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-pencil"></i> {{_("Edit Hint")}}</h3>
         </div>
         <div class="modal-body">
@@ -493,16 +523,20 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="edit-hint-submit" class="btn btn-primary" type="button">
                 <i class="fa fa-fw fa-save"></i>
                 {{_("Save")}}
             </button>
         </div>
+    
     </div>
-    <div id="delete-hint-modal" class="modal hide fade" style="display: none; ">
+    </div></div>
+    <div id="delete-hint-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-times-circle-o"></i> {{_("Delete Hint")}}</h3>
         </div>
         <div class="modal-body">
@@ -515,17 +549,21 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="delete-hint-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-fw fa-times-circle-o"></i>
                 {{_("Delete") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- Add IP  -->
-    <div id="add-ip-address-modal" class="modal hide fade" style="display: none; ">
+    <div id="add-ip-address-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-fw fa-plus"></i>
                 {{_("Add IP address")}}
@@ -551,17 +589,21 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="add-ip-address-submit" type="button" class="btn btn-primary">
                 <i class="fa fa-fw fa-plus"></i>
                 {{_("Add")}}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- Delete IP -->
-    <div id="delete-ip-address-modal" class="modal hide fade" style="display: none; ">
+    <div id="delete-ip-address-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-fw fa-times-circle-o"></i>
                 {{_("Delete IP Address") }}
@@ -577,17 +619,21 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="delete-ip-address-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-fw fa-times-circle-o"></i>
                 {{_("Delete")}}
             </button>
         </div>
+    
     </div>
+    </div></div>
     <!-- View Details -->
-    <div id="details-flag-modal" class="modal hide fade" style="display: none; width:760px; margin-left:-380px;">
+    <div id="details-flag-modal" class="modal fade" style="display: none; width:760px; margin-left:-380px;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header" style="padding-bottom: 0; margin-bottom: 0;">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-flag"></i> {{ _("Flag Details") }}<span id="flag_value" style="float: right; font-size: 80%; padding-right: 50px; margin-top: 6px;"></span></h3>
             <h5>
                 <table class="table">
@@ -646,11 +692,15 @@
                 </table>
             </div>
         </div>
+    
     </div>
+    </div></div>
     <!-- Accept Answer -->
-    <div id="details-answer-modal" class="modal hide fade" style="display: none; width:560px; margin-left:-280px;">
+    <div id="details-answer-modal" class="modal fade" style="display: none; width:560px; margin-left:-280px;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header" style="padding-bottom: 0; margin-bottom: 0;">
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3><i class="fa fa-fw fa-flag"></i> {{ _("Accept Answer") }}</h3>
             <h5>
                 <table class="table">
@@ -685,13 +735,15 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="stat-answer-submit" class="btn btn-primary" type="button">
                 <i class="fa fa-fw fa-save"></i>
                 {{ _("Save") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -718,7 +770,7 @@
                 <br/>
                 {% end %}
                 <li id="boxes-header" style="list-style:none; padding: 2px 4px;">
-                    <button id="sidebar-toggle" class="btn btn-sm" title="Toggle sidebar">
+                    <button id="sidebar-toggle" class="btn btn-sm btn-secondary" title="Toggle sidebar">
                         <i id="sidebar-toggle-icon" class="fa fa-chevron-up"></i>
                     </button>
                     &nbsp;<strong><i class="fa fa-th"></i> {{_("Boxes")}}</strong>
@@ -776,7 +828,7 @@
                                 {{_("Lock")}}&nbsp;
                             </a>
                         {% end %}
-                        <a id="edit-corporation-button{{ corp_index }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-corporation-modal" data-uuid="{{ corporation.uuid }}">
+                        <a id="edit-corporation-button{{ corp_index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-corporation-modal" data-uuid="{{ corporation.uuid }}">
                             <i class="fa fa-fw fa-pencil"></i>
                             {{_("Edit Corporation")}}
                         </a>
@@ -815,11 +867,11 @@
                                                 {{_("Lock")}}&nbsp;
                                             </a>
                                         {% end %}
-                                        <a id="edit-box-button-{{ box.uuid }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-box-modal" data-uuid="{{ box.uuid }}" data-corporation-uuid="{{ box.corporation.uuid }}">
+                                        <a id="edit-box-button-{{ box.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-box-modal" data-uuid="{{ box.uuid }}" data-corporation-uuid="{{ box.corporation.uuid }}">
                                             <i class="fa fa-pencil"></i>
                                             {{_("Edit Box")}}
                                         </a>
-                                        <a class="btn btn-sm"  data-bs-toggle="modal" href="/user/missions/boxes?uuid={{ box.uuid }}">
+                                        <a class="btn btn-sm btn-secondary"  data-bs-toggle="modal" href="/user/missions/boxes?uuid={{ box.uuid }}">
                                             <i class="fa fa-fw fa-eye"></i>
                                             {{_("View Box")}}
                                         </a>
@@ -828,7 +880,7 @@
                                             {{_("Delete Box")}}
                                         </a>
                                         {% if options.use_bots %}
-                                        <a style="float:right;" class="btn" data-bs-toggle="modal" href="/admin/garbage?uuid={{ box.uuid }}" target="_blank">
+                                        <a style="float:right;" class="btn btn-secondary" data-bs-toggle="modal" href="/admin/garbage?uuid={{ box.uuid }}" target="_blank">
                                             <i class="fa fa-fw fa-trash-o"></i>
                                             {{ box.name }} Bot {{_("Garbage File") }}
                                         </a>
@@ -890,7 +942,7 @@
                                                             <td class="shortcolumn" style="text-align: center;">{% if options.banking %}${% end %}{{ flag.value }}</td>
                                                             <td class="shortcolumn">{{ str(flag.type) }}</td>
                                                             <td class="shortcolumn" style="text-align: center;">
-                                                                <a id="flag-attachment-button-{{ flag.uuid }}" class="btn btn-sm" data-bs-toggle="modal" href="#flag-attachment-button" data-uuid="{{ flag.uuid }}">
+                                                                <a id="flag-attachment-button-{{ flag.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#flag-attachment-button" data-uuid="{{ flag.uuid }}">
                                                                     {{ len(flag.flag_attachments) }}
                                                                 </a>
                                                             </td>
@@ -906,13 +958,13 @@
                                                                 {% end %}
                                                             </td>
                                                             <td class="shortcolumn">
-                                                                <a id="details-flag-button-{{ flag.uuid }}" class="btn btn-sm" data-bs-toggle="modal" href="#details-flag-modal" data-uuid="{{ flag.uuid }}" data-box-uuid="{{ flag.box.uuid }}" title="{{flag.token}}">
+                                                                <a id="details-flag-button-{{ flag.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#details-flag-modal" data-uuid="{{ flag.uuid }}" data-box-uuid="{{ flag.box.uuid }}" title="{{flag.token}}">
                                                                     <i class="fa fa-fw fa-eye"></i>
                                                                     {{ _("Details") }}
                                                                 </a>
                                                             </td>
                                                             <td class="shortcolumn">
-                                                                <a id="edit-flag-button-{{ flag.uuid }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-flag-modal" data-flagtype="{{ str(flag._type) }}" data-uuid="{{ flag.uuid }}" data-box-uuid="{{ flag.box.uuid }}">
+                                                                <a id="edit-flag-button-{{ flag.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-flag-modal" data-flagtype="{{ str(flag._type) }}" data-uuid="{{ flag.uuid }}" data-box-uuid="{{ flag.box.uuid }}">
                                                                     <i class="fa fa-fw fa-pencil"></i>
                                                                     {{_("Edit Flag") }}
                                                                 </a>
@@ -974,7 +1026,7 @@
                                                             <td class="shortcolumn flagname" style="padding-right: 25px;">{{ Flag.by_id(hint.flag_id).name }}</td>
                                                             <td class="descriptioncol markdown">{{ hint.description }}</td>
                                                             <td class="shortcolumn">
-                                                                <a id="edit-hint-button-{{ hint.uuid }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-hint-modal" data-uuid="{{ hint.uuid }}" data-box-uuid="{{ hint.box.uuid }}">
+                                                                <a id="edit-hint-button-{{ hint.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-hint-modal" data-uuid="{{ hint.uuid }}" data-box-uuid="{{ hint.box.uuid }}">
                                                                     <i class="fa fa-fw fa-pencil"></i>
                                                                     {{_("Edit Hint")}}
                                                                 </a>
@@ -1009,7 +1061,7 @@
                                                             <td class="shortcolumn" style="text-align: center;">{% if options.banking %}{{_("$")}}{% end %}{{ hint.price }}</td>
                                                             <td class="descriptioncol markdown">{{ hint.description }}</td>
                                                             <td class="shortcolumn">
-                                                                <a id="edit-hint-button-{{ hint.uuid }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-hint-modal" data-uuid="{{ hint.uuid }}" data-box-uuid="{{ hint.box.uuid }}">
+                                                                <a id="edit-hint-button-{{ hint.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-hint-modal" data-uuid="{{ hint.uuid }}" data-box-uuid="{{ hint.box.uuid }}">
                                                                     <i class="fa fa-fw fa-pencil"></i>
                                                                     {{_("Edit Hint")}}
                                                                 </a>
