@@ -6,15 +6,12 @@ Regression: game materials for a locked box (or a box whose level/corp is
 locked) remained visible/fetchable - has_box_materials() and path_to_dict()
 never checked box.locked.
 """
+
 import os
 import shutil
 import tempfile
 import unittest
-
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
 
 from tornado.options import options
 
@@ -100,12 +97,8 @@ class TestMaterialsHandlerLockFiltering(unittest.TestCase):
             "children": [],
         }
         calls = {"redirected": None, "written": None}
-        handler.redirect.side_effect = lambda url: calls.__setitem__(
-            "redirected", url
-        )
-        handler.write.side_effect = lambda body: calls.__setitem__(
-            "written", body
-        )
+        handler.redirect.side_effect = lambda url: calls.__setitem__("redirected", url)
+        handler.write.side_effect = lambda body: calls.__setitem__("written", body)
         # Bypass @authenticated - it's exercised elsewhere; this test targets
         # the lock check inside post() itself.
         MaterialsHandler.post.__wrapped__(handler, self.locked_box.name)

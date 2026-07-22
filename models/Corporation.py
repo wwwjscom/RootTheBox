@@ -19,13 +19,11 @@ Created on Mar 12, 2012
     limitations under the License.
 """
 
-
 import xml.etree.cElementTree as ET
-from builtins import str
 from uuid import uuid4
 
 from sqlalchemy import Column
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import relationship
 from sqlalchemy.types import Boolean, String, Unicode
 
 from libs.ValidationError import ValidationError
@@ -42,9 +40,10 @@ class Corporation(DatabaseObject):
     _description = Column(Unicode(512))
     _locked = Column(Boolean, default=False, nullable=False)
 
+    # Box.corporation is provided by a read-only @property (by_id lookup); no
+    # backref, which would collide with it (an error under SQLAlchemy 2.x).
     boxes = relationship(
         "Box",
-        backref=backref("corporation", lazy="select"),
         cascade="all,delete,delete-orphan",
     )
 

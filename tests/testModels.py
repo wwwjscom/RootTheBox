@@ -3,13 +3,11 @@
 Unit tests for everything in models/
 """
 
-
 import unittest
 from collections import OrderedDict
 from datetime import datetime, timedelta
 
 from libs.StringCoding import encode
-from models.Penalty import Penalty
 from libs.ValidationError import ValidationError
 from models import dbsession
 from models.Box import Box
@@ -23,6 +21,7 @@ from models.Flag import (
     Flag,
 )
 from models.GameLevel import GameLevel
+from models.Penalty import Penalty
 from models.Team import Team
 from models.User import User
 from models.UserLevelTimer import UserLevelTimer
@@ -267,18 +266,29 @@ class TestScoreboardTopX(unittest.TestCase):
         teams = OrderedDict()
         for i in range(n):
             teams["Team%d" % (i + 1)] = {"uuid": "uuid-%d" % i, "money": 1000 - i * 100}
-        return {"teams": teams, "users": {}, "levels": {}, "boxes": {},
-                "hint_count": 0, "flag_count": 0, "box_count": 0, "level_count": 0}
+        return {
+            "teams": teams,
+            "users": {},
+            "levels": {},
+            "boxes": {},
+            "hint_count": 0,
+            "flag_count": 0,
+            "box_count": 0,
+            "level_count": 0,
+        }
 
     def _handler(self, n):
         from handlers.ScoreboardHandlers import ScoreboardAjaxHandler
+
         state = self._make_state(n)
 
         class Stub:
             settings = {"scoreboard_state": state}
 
         stub = Stub()
-        stub.summary_page = lambda *a, **kw: ScoreboardAjaxHandler.summary_page(stub, *a, **kw)
+        stub.summary_page = lambda *a, **kw: ScoreboardAjaxHandler.summary_page(
+            stub, *a, **kw
+        )
         return stub
 
     def test_no_limit_returns_all(self):
@@ -318,6 +328,7 @@ class TestScoreboardTopX(unittest.TestCase):
     def test_projector_default_when_unconfigured(self):
         # When scoreboard_top is 0 (unset), the projector falls back to 25.
         from handlers.ScoreboardHandlers import ScoreboardProjectorHandler
+
         top = options.scoreboard_top if options.scoreboard_top > 0 else 25
         assert top == 25
 

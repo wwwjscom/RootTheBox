@@ -23,7 +23,6 @@ Modification of the tornado web StaticFileHandler
 
 """
 
-
 import logging
 
 from tornado.options import options
@@ -31,7 +30,6 @@ from tornado.web import StaticFileHandler as DefaultStaticHandler
 
 
 class StaticFileHandler(DefaultStaticHandler):
-
     """
     Same as the normal Tornado StaticFileHandler with a
     couple overloaded methods.

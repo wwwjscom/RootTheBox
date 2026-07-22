@@ -20,13 +20,20 @@ command line arguments it calls various components setup/start/etc.
 """
 # pylint: disable=unused-wildcard-import,unused-variable
 
+import asyncio
 
-from __future__ import print_function
+# Tornado grabs IOLoop.current() at import time (e.g. BaseHandler class
+# attributes, EventManager). On Python 3.12 asyncio.get_event_loop() emits a
+# DeprecationWarning ("There is no current event loop") when no loop is set, so
+# create one for the main thread up front — only if none is already running.
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
 import logging
 import os
 import sys
-from builtins import input, str
 from datetime import datetime
 
 from tornado.options import define, options
@@ -648,12 +655,7 @@ define(
 
 
 # Game Settings
-try:
-    # python2
-    game_type = basestring
-except NameError:
-    # python 3
-    game_type = str
+game_type = str
 
 define(
     "game_name",
@@ -1195,7 +1197,6 @@ define("tests", default=False, help="runs the unit tests", type=bool)
 
 
 if __name__ == "__main__":
-
     # We need this to pull the --config option
     try:
         options.parse_command_line()

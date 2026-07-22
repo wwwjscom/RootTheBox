@@ -24,18 +24,15 @@ indiviudal user, such as handle/account/password/etc
 
 """
 
-
 import os
 import random
 import string
 import xml.etree.cElementTree as ET
-from builtins import str
 from datetime import datetime
 from hashlib import md5, sha1, sha256, sha512
 from string import printable
 from uuid import uuid4
 
-from past.builtins import basestring
 from pbkdf2 import PBKDF2
 from sqlalchemy import Column, ForeignKey, desc, func
 from sqlalchemy.orm import backref, relationship, synonym
@@ -47,9 +44,9 @@ from libs.ValidationError import ValidationError
 from libs.WebhookHelpers import send_user_validated_webhook
 from libs.XSSImageCheck import (
     avatar_validation,
-    save_avatar,
     default_avatar,
-    get_new_avatar,    
+    get_new_avatar,
+    save_avatar,
 )
 from models import dbsession
 from models.BaseModels import DatabaseObject
@@ -66,7 +63,6 @@ ITERATE = 0x2BAD  # 11181
 
 
 class User(DatabaseObject):
-
     """User definition"""
 
     uuid = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid4()))
@@ -349,7 +345,9 @@ class User(DatabaseObject):
     @avatar.setter
     def avatar(self, image_data):
         ext = avatar_validation(image_data)
-        self._avatar = save_avatar(os.path.join("upload", f"{self.uuid}.{ext}"),image_data)                
+        self._avatar = save_avatar(
+            os.path.join("upload", f"{self.uuid}.{ext}"), image_data
+        )
 
     def has_item(self, item_name):
         """Check to see if a team has purchased an item"""
@@ -426,7 +424,7 @@ class User(DatabaseObject):
 
     def get_algorithm(self, index):
         """Return algorithm tuple based on string or int"""
-        if isinstance(index, basestring) and index in self.algorithms:
+        if isinstance(index, str) and index in self.algorithms:
             return self.algorithms[index]
         elif isinstance(index, int):  # Find by numeric index
             for key in self.algorithms:

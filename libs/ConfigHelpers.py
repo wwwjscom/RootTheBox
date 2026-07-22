@@ -4,7 +4,6 @@ import logging
 from base64 import b64decode
 from datetime import datetime
 
-from past.builtins import basestring
 from tornado.options import options
 
 from libs.ValidationError import ValidationError
@@ -29,13 +28,7 @@ def save_config():
             fp.write("\n# [ %s ]\n" % group.title())
             opt = list(options.group_dict(group).items())
             for key, value in opt:
-                try:
-                    # python2
-                    value_type = basestring
-                except NameError:
-                    # python 3
-                    value_type = str
-                if isinstance(value, value_type):
+                if isinstance(value, str):
                     # Str/Unicode needs to have quotes
                     fp.write('%s = "%s"\n' % (key, value))
                 else:

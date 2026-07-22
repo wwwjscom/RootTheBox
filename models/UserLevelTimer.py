@@ -3,7 +3,6 @@
 Per-user level timer model.
 """
 
-
 from datetime import datetime, timedelta
 from math import ceil
 
@@ -15,7 +14,6 @@ from models.BaseModels import DatabaseObject
 
 
 class UserLevelTimer(DatabaseObject):
-
     """Stores a player's submission window for a level."""
 
     # Timer ownership is scoped to one user and one level.

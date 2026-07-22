@@ -19,12 +19,10 @@ Created on Mar 11, 2012
     limitations under the License.
 """
 
-
 import xml.etree.cElementTree as ET
-from builtins import str
+from ipaddress import ip_address
 from uuid import uuid4
 
-from ipaddress import ip_address
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.types import Boolean, Integer, String
 

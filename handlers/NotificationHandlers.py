@@ -27,7 +27,6 @@ from libs.SecurityDecorators import *
 
 
 class NotifySocketHandler(BaseWebSocketHandler):
-
     """Handles websocket connections"""
 
     event_manager = EventManager.instance()

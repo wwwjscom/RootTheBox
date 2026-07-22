@@ -20,12 +20,10 @@ Created on Mar 15, 2012
 """
 # pylint: disable=unused-wildcard-import,no-member
 
-
 import binascii
 import json
 import logging
 import os
-from builtins import str
 from hashlib import sha512
 from uuid import uuid4
 

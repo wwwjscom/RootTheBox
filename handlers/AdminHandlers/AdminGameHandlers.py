@@ -27,13 +27,11 @@ import logging
 import os
 import time
 import xml.etree.cElementTree as ET
-from builtins import str
 from datetime import datetime
 from string import printable
 from tempfile import NamedTemporaryFile
 
 import defusedxml.minidom
-from past.builtins import basestring
 from tornado.ioloop import PeriodicCallback
 from tornado.options import options
 
@@ -65,7 +63,6 @@ from setup.xmlsetup import import_xml
 
 
 class AdminGameHandler(BaseHandler):
-
     """Start or stop the game"""
 
     @restrict_ip_address
@@ -160,9 +157,9 @@ class AdminGameHandler(BaseHandler):
             if diff > 0:
                 self.application.settings["countdown_timer"] = target_epoch
                 self.application.settings["countdown_expired"] = False
-                self.application.settings[
-                    "temp_global_notifications"
-                ] = options.global_notification
+                self.application.settings["temp_global_notifications"] = (
+                    options.global_notification
+                )
                 options.global_notification = False
                 self.event_manager.push_scoreboard()
                 self.event_manager.push_countdown(float(diff))
@@ -176,7 +173,6 @@ class AdminGameHandler(BaseHandler):
 
 
 class AdminMessageHandler(BaseHandler):
-
     event_manager = EventManager.instance()
 
     """ Send a global notification message """
@@ -194,7 +190,6 @@ class AdminMessageHandler(BaseHandler):
 
 
 class AdminRegTokenHandler(BaseHandler):
-
     """Manages registration tokens"""
 
     @restrict_ip_address
@@ -235,7 +230,6 @@ class AdminRegTokenHandler(BaseHandler):
 
 
 class AdminSourceCodeMarketHandler(BaseHandler):
-
     """Add source code files to the source code market"""
 
     @restrict_ip_address
@@ -299,7 +293,6 @@ class AdminSourceCodeMarketHandler(BaseHandler):
 
 
 class AdminSwatHandler(BaseHandler):
-
     """Manage SWAT requests"""
 
     @restrict_ip_address
@@ -369,7 +362,6 @@ class AdminSwatHandler(BaseHandler):
 
 
 class AdminConfigurationHandler(BaseHandler):
-
     """Allows the admin to change some of the configuration options"""
 
     def get_int(self, name, default=0):
@@ -379,7 +371,7 @@ class AdminConfigurationHandler(BaseHandler):
             return default
 
     def get_bool(self, name, default=""):
-        if not isinstance(default, basestring):
+        if not isinstance(default, str):
             default = str(default).lower()
         return self.get_argument(name, default) == "true"
 
@@ -467,7 +459,9 @@ class AdminConfigurationHandler(BaseHandler):
             if field in self.request.files:
                 try:
                     image_data = self.request.files[field][0]["body"]
-                    setattr(self.config, option_name, save_config_image_bytes(image_data))
+                    setattr(
+                        self.config, option_name, save_config_image_bytes(image_data)
+                    )
                 except ValidationError as error:
                     errors.append(str(error))
         if "scoreboard_right_image_upload" not in self.request.files and self.get_bool(
@@ -531,7 +525,6 @@ class AdminUpdateCheckHandler(BaseHandler):
 
 
 class AdminExportHandler(BaseHandler):
-
     API_VERSION = "1"
 
     @restrict_ip_address

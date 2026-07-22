@@ -23,13 +23,10 @@ This file contains the code for displaying flags / recv flag submissions
 
 """
 
-
 import json
 import logging
-from builtins import next, str
 from datetime import datetime
 
-from past.utils import old_div
 from sqlalchemy.exc import IntegrityError
 from tornado.options import options
 
@@ -131,7 +128,9 @@ def missions_level_timer_map(dbsession, user):
     return timers
 
 
-def render_level_timer_confirmation(handler, box, timer_context, errors=None, info=None):
+def render_level_timer_confirmation(
+    handler, box, timer_context, errors=None, info=None
+):
     # Shared renderer for the one-time "starting timer" confirmation screen.
     if errors is None:
         errors = []
@@ -218,8 +217,7 @@ class FlagAttemptsHandler(BaseHandler):
             return
         penalties = Penalty.by_team_flag_id(user.team.id, flag.id)
         result = [
-            {"token": p.token or "", "created": str(p.created)[:16]}
-            for p in penalties
+            {"token": p.token or "", "created": str(p.created)[:16]} for p in penalties
         ]
         self.write(json.dumps(result))
 
@@ -466,7 +464,9 @@ class BoxHandler(BaseHandler):
         if level.review_mode:
             old_reward = 0
         else:
-            old_reward = flag.dynamic_value(user.team) if old_reward is None else old_reward
+            old_reward = (
+                flag.dynamic_value(user.team) if old_reward is None else old_reward
+            )
         reward_dialog = flag.name + " answered correctly. "
         if options.banking:
             reward_added_str_template = (
@@ -499,8 +499,8 @@ class BoxHandler(BaseHandler):
                 success.append("Congratulations! You have completed " + box.name + ".")
 
         # Check for Level Completion
-        level_progress = old_div(
-            len(user.team.level_flags(level.number)), float(len(level.flags))
+        level_progress = len(user.team.level_flags(level.number)) / float(
+            len(level.flags)
         )
         if level_progress == 1.0 and level not in user.team.game_levels:
             reward_dialog = ""
@@ -640,7 +640,9 @@ class BoxHandler(BaseHandler):
         box = Box.by_id(box_id)
         self.render_page_by_box(box, errors, success, info, timer_context)
 
-    def render_page_by_box(self, box, errors=[], success=[], info=[], timer_context=None):
+    def render_page_by_box(
+        self, box, errors=[], success=[], info=[], timer_context=None
+    ):
         """Wrapper to .render() to avoid duplicate code"""
         user = self.get_current_user()
         if timer_context is None:

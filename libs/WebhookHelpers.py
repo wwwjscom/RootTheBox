@@ -150,6 +150,7 @@ def send_hint_taken_webhook(user, hint):
         }
     )
 
+
 def send_user_registered_webhook(user):
     send_webhook(
         {
@@ -160,6 +161,7 @@ def send_user_registered_webhook(user):
             "user": get_user_info(user),
         }
     )
+
 
 def send_user_validated_webhook(user):
     send_webhook(

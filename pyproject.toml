@@ -1,0 +1,81 @@
+[project]
+name = "rootthebox"
+description = "A real-time CTF (Capture the Flag) scoring engine."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+# The canonical version lives in setup/__init__.py (bumped at release time per
+# the Gitflow workflow). This project is not pip-installed (see [tool.uv] below),
+# so the value here is metadata only.
+version = "0.0.0"
+
+dependencies = [
+    # Web framework. 1.6 (Tornado async cleanup) is done — handlers stay sync
+    # (fine at CTF scale); kept pinned below the next major since 7.x is
+    # unreleased and untested here.
+    "tornado>=6.4,<7",
+    # ORM — migrated to 2.x (roadmap item 1.5). The codebase uses the legacy
+    # Session.query() API, which remains supported in 2.x.
+    "sqlalchemy>=2,<3",
+    "alembic",
+    # Sessions (memcached, binary protocol) — imported as `bmemcached`.
+    "python-binary-memcached",
+    # Passwords / crypto helpers.
+    "pbkdf2",
+    "msal",
+    # Parsing / validation / networking.
+    "python-dateutil",
+    "defusedxml",
+    "netaddr",
+    "requests",
+    "python-resize-image",
+    "rocketchat-API",
+]
+
+[dependency-groups]
+# Installed in the container so `rootthebox.py --tests` can run pytest.
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+]
+
+[tool.uv]
+# Root the Box runs as `python3 rootthebox.py`, not as an installed package, so
+# uv should resolve/lock the dependencies without trying to build this project.
+package = false
+
+# ruff replaces the old flake8/black/isort trio (roadmap item 1.7). Lint rules
+# cover pycodestyle (E/W), pyflakes (F), and import sorting (I); `ruff format`
+# is black-compatible. bugbear (B) and complexity (C90) are deferred until the
+# pre-existing violations they'd flag (bare-except, mutable defaults, …) are
+# burned down — they were selected in the old .flake8 but never CI-enforced.
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+ignore = [
+    # Carried from .flake8: formatter-conflicting rules, line-length (not
+    # enforced), and the star-import family (ConsoleColors uses `import *`).
+    "E203",
+    "E266",
+    "E501",
+    "F401",
+    "F403",
+    "F405",
+    # Pervasive pre-existing patterns to fix incrementally, not in the adoption
+    # commit: bare `except:`, `== True/False`, `type() ==`, ambiguous names.
+    "E722",
+    "E712",
+    "E721",
+    "E741",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Imports intentionally follow side-effecting setup, not at the top of file.
+"setup/create_database.py" = ["E402"]
+"models/__init__.py" = ["E402"]
+# Alembic migrations bind `conn`/`op` at import time.
+"alembic/versions/*" = ["E402", "F811"]

@@ -5,14 +5,14 @@ Revises: 31918b83c372
 Create Date: 2022-10-14 19:33:02.808038
 
 """
+
 import sqlalchemy as sa
-from sqlalchemy.engine.reflection import Inspector
 
 from alembic import op
 
 try:
     conn = op.get_bind()
-    inspector = Inspector.from_engine(conn)
+    inspector = sa.inspect(conn)
     tables = inspector.get_table_names()
 except:
     conn = None

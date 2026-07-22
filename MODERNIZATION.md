@@ -60,6 +60,14 @@ boot. Don't commit a real one.
 `teardown_database`; they're gitignored. (A pre-Phase-0 bug left a pile of
 strays — fixed.)
 
+**Dependencies (post-1.3)** are managed with **uv**: `pyproject.toml` is the
+human-edited spec, `uv.lock` is the resolved, hashed lockfile (both committed).
+The Docker image installs them with `uv sync --frozen` into `/opt/rtb/.venv`,
+which is placed first on `PATH` so `python3`/`pytest` resolve to the locked
+environment. To change a dependency: edit `pyproject.toml`, run `uv lock`, then
+rebuild. `setup/requirements.txt` and `setup/depends.sh` were removed. `sqlalchemy`
+is held at `>=1.4,<2` and `tornado` at `>=6.4,<7` until items 1.5/1.6.
+
 ---
 
 ## Test coverage baseline (why the plan is shaped this way)
@@ -89,6 +97,21 @@ handlers/models/libs.
 (0 and early 1). Before the SQLAlchemy 2.x migration, add a **characterization
 test layer** (item 1.4a) that pins current behavior of the untested critical
 flows, so the migration can be proven behavior-preserving.
+
+**Update (1.4a done):** the characterization layer landed — **104 tests, 28%**
+coverage (was 83 / 21%). New files pin the previously-blind flows below the
+HTTP/session layer (authenticated HTTP can't run under `--tests` — no
+memcached — so scoring/admin/market handler methods are driven directly with
+stubbed request state):
+- `tests/testMissionScoring.py` — submit → score → penalty → GameHistory,
+  duplicate/rejection, box + level completion, single-submission resolution,
+  dynamic `decay_all` value math.
+- `tests/testXmlSetup.py` — XML import/export round-trip across GameLevel/
+  Category/Corporation/Box/Flag/Hint, all five flag types, capture preserved.
+- `tests/testAdminGameObjects.py` — admin create/edit/delete round-trip for
+  corp/box/flag/hint + `create_game_level` linked-list.
+- `tests/testMarketScoreboard.py` — market purchase mechanic + `has_item`
+  gate, and `Team.ranks()` ordering/visibility.
 
 ---
 
@@ -164,6 +187,24 @@ decide on a real framework migration as a separate initiative.
 
 ---
 
+## Known issues surfaced (deferred)
+
+Bugs found while doing the modernization work that are **out of scope** for the
+phase that surfaced them and were intentionally left for a dedicated fix:
+
+- **`GameLevel.__eq__` is always False** (found during 1.5). Its `__cmp__`
+  returns `-1` when `self.number < other.number` and `1` otherwise — never `0`
+  — so `__eq__` (which checks `__cmp__() == 0`) never holds, and a `GameLevel`
+  never compares equal to anything, including itself. It works in practice only
+  because Python's `in`/`list.remove` short-circuit on identity before calling
+  `==`. Affects any `==`/`sorted()` on levels. Fix is small (return `0` when
+  `number`s are equal) but changes comparison/sort semantics app-wide, so it
+  wants its own change + test, not a migration side effect. `tests/
+  testRelationships.py` works around it by comparing `uuid`.
+- **`setup/xmlsetup.py` ElementTree deprecations** (visible under 2.0): uses
+  `defusedxml.cElementTree` and truth-tests elements (`if parent and box:`),
+  both deprecated. Candidate for the 1.7 (ruff) / general-cleanup pass.
+
 ## Progress log
 
 _(Update as branches land.)_
@@ -174,12 +215,72 @@ _(Update as branches land.)_
 - [x] 0.4 Remove admin self-update RCE
 - [x] 0.5 Remove Travis; add pytest CI (+coverage)
 - [x] 1.2 nose → pytest (+ coverage baseline) — pulled into Phase 0
-- [ ] 1.1 Strip Python 2 compatibility (enum34 already removed)
-- [ ] 1.3 Modern packaging + pinned deps
-- [ ] 1.4a Characterization tests (gate before 1.5)
-- [ ] 1.5 SQLAlchemy 1.x → 2.x
-- [ ] 1.6 Tornado async cleanup
-- [ ] 1.7 Adopt ruff
+- [x] 1.1 Strip Python 2 compatibility (branch `feature/phase1.1-strip-py2`) —
+      dropped `future`/`past` shims (`from builtins import …`, `from past.builtins
+      import basestring`, `from past.utils import old_div`), the two `__future__`
+      imports, and the `python_version<'3.0'` requirement pins + `future` dep.
+      Replaced `basestring`→`str`, `old_div(a,b)`→`a // b` (int coords) or `a / b`
+      (float), and renamed the Py2-named `unicode()` helper in `StringCoding` to
+      `_to_unicode` (behavior unchanged). enum34 was already removed in Phase 0.
+      Verified: image builds, **83 passed** (unchanged from baseline).
+- [x] 1.3 Modern packaging + pinned deps (uv) — added `pyproject.toml` +
+      `uv.lock` (hashed); Docker installs via `uv sync --frozen` from the lock;
+      pinned tornado `>=6.4,<7` (6.5.7) and held sqlalchemy `>=1.4,<2` (1.4.54);
+      dropped `mysqlclient`/`PyMySQL` (SQLite-only) and `setuptools-rust` (build
+      tool, not a runtime dep); removed `setup/requirements.txt` +
+      `setup/depends.sh`. Verified: image builds, **83 passed**.
+- [x] 1.4a Characterization tests (gate before 1.5) — 4 flows pinned across
+      testMissionScoring / testXmlSetup / testAdminGameObjects /
+      testMarketScoreboard; suite 83 → 104, coverage 21% → 28%. Handler methods
+      driven below the auth layer (no memcached under `--tests`).
+- [x] 1.5 SQLAlchemy 1.x → 2.x — **compatibility migration** (2.0.51). Scope
+      decision: the legacy `Session.query()` API (149 calls, 0 `Query.get()`)
+      is still supported in 2.x, so a full `select()` rewrite was **deferred**
+      as gratuitous/high-risk; the goal was to run cleanly on 2.0. Two steps:
+      **1.5A** (future mode on 1.4 — declarative import move, `BotManager`
+      autocommit→commit, alembic raw-SQL `text()` wrap, `future=True`) then
+      **1.5B** (bump pin `>=2,<3` + relock). The flip surfaced 5 mapper
+      warnings where a `@property` collided with a same-named backref
+      (`Box.corporation`/`game_level`/`category`, `Flag.box`, `Hint.flag`) —
+      fixed by dropping those 5 backrefs (the read-only `@property` remains the
+      accessor; relationships/cascades preserved, and pinned by a new
+      `tests/testRelationships.py` — accessor + FK-management + cascade-delete
+      characterization). Verified: **113 passed** on
+      2.0 with no new warnings, a clean-container app boot (setup + alembic +
+      server start, 0 tracebacks), and — against a **real populated DB** — the
+      production deploy path (boot + `upgrade head` no-op) plus a forced re-run
+      of the `ffe623ae412` data migration over real `team_to_flag` rows. That
+      real-data run surfaced one more raw `conn.execute(f"INSERT …")` in the
+      migration's `add_history()` helper (missed by the literal-string grep;
+      silently no-ops on 2.0) — fixed with a parameterized `sa.text()` (also
+      removes the f-string injection risk); the conversion then processed all
+      rows correctly. Also replaced deprecated `Inspector.from_engine(conn)`
+      with `sa.inspect(conn)` across all 9 migrations that used it (deprecated
+      since 1.4, slated for removal), so the migrations are fully 2.0-clean.
+      Added `tests/testMigrations.py` guarding the migration paths that exist
+      under RTB's create_all+stamp architecture: production DB lifecycle, the
+      `ffe623` data conversion on real rows (regression guard for the
+      `add_history` bug), chain integrity, and a models↔created-schema no-drift
+      tripwire. Suite now **117 passed**.
+- [x] 1.6 Tornado async cleanup — replaced the 4 deprecated
+      `IOLoop.instance()` calls with `IOLoop.current()` (EventManager,
+      BaseHandlers ×2, handlers/__init__). Added an asyncio event-loop setup at
+      the `rootthebox.py` entry point to silence the Python 3.12 "no current
+      event loop" DeprecationWarning that Tornado's import-time `IOLoop.current()`
+      triggers. **Kept handlers sync** (no async rewrite — fine at CTF scale;
+      there were no old-style `@gen.coroutine`/`yield` coroutines, and the 6
+      `PeriodicCallback` uses are fine on Tornado 6). Verified: 117 passed
+      (warnings 14 → 13), clean-container boot.
+- [x] 1.7 Adopt ruff — replaced `.flake8` with `[tool.ruff]` in
+      `pyproject.toml` (select E/W/F/I; bugbear/complexity deferred until the
+      pre-existing violations they'd flag are burned down — they were selected
+      in `.flake8` but never CI-enforced). Ran `ruff check --fix` + `ruff
+      format` (104 files reformatted, ~cosmetic). Fixed the two real issues the
+      lint surfaced: an F821 Py2 dead branch in `bot/BotMonitor.py`
+      (`isinstance(data, unicode)` under `sys.version_info.major == 2`) and a
+      dead `admin` var in `UserHandlers`. Added `.pre-commit-config.yaml` and
+      `.github/workflows/lint.yml` (ruff check + format --check), both pinned to
+      ruff 0.15.22 to match the uv.lock dev group. Suite still 117 passed.
 - [ ] 2.1 Patch-bump vendored frontend libs
 - [ ] 2.2 Frontend build pipeline
 - [ ] 2.3 (Optional) framework modernization

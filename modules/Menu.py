@@ -19,7 +19,6 @@ Created on Mar 14, 2012
     limitations under the License.
 """
 
-
 from tornado.options import options
 from tornado.web import UIModule
 
@@ -28,7 +27,6 @@ from models.User import User
 
 
 class Menu(UIModule):
-
     # TODO: Put everything in the session that we need to construct the menu
     #       to avoid having to go to the database to render the menu.
 

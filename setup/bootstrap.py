@@ -21,11 +21,9 @@ fills the database with some startup data.
 """
 # pylint: disable=unused-wildcard-import
 
-
 import getpass
 import os
 import sys
-from builtins import input, str
 
 from tornado.options import options
 

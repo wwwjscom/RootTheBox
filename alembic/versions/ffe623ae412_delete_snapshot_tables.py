@@ -5,17 +5,17 @@ Revises: fe5e615ae090
 Create Date: 2023-03-11 19:33:02.808038
 
 """
+
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.sql.expression import func
 
 from alembic import op
 
 try:
     conn = op.get_bind()
-    inspector = Inspector.from_engine(conn)
+    inspector = sa.inspect(conn)
     tables = inspector.get_table_names()
 except:
     conn = None
@@ -50,7 +50,16 @@ def _has_table(table_name):
 
 def add_history(created, team_id, reason, value):
     conn.execute(
-        f"INSERT INTO game_history (created, team_id, _type, _value) VALUES ('{created}', {team_id}, '{reason}', {value});"
+        sa.text(
+            "INSERT INTO game_history (created, team_id, _type, _value) "
+            "VALUES (:created, :team_id, :reason, :value);"
+        ),
+        {
+            "created": str(created),
+            "team_id": team_id,
+            "reason": reason,
+            "value": value,
+        },
     )
 
 
@@ -91,27 +100,27 @@ def check_history(item):
 
 def upgrade():
     try:
-        res = conn.execute("SELECT * FROM snapshot_team;")
+        res = conn.execute(sa.text("SELECT * FROM snapshot_team;"))
         results = res.fetchall()
         i = 0
         for item in results:
             check_history(item)
             i += 1
         if i > 0:
-            conn.execute("COMMIT;")
+            conn.execute(sa.text("COMMIT;"))
 
     except Exception as e:
         print("Failed to import prior snapshot data into game history: %s" % str(e))
         print("Continuing...")
     try:
-        res = conn.execute("SELECT * FROM team_to_flag;")
+        res = conn.execute(sa.text("SELECT * FROM team_to_flag;"))
         results = res.fetchall()
         i = 0
         for item in results:
             check_flag(item)
             i += 1
         if i > 0:
-            conn.execute("COMMIT;")
+            conn.execute(sa.text("COMMIT;"))
     except Exception as e:
         print("Failed to import prior flag count into game history: %s" % str(e))
         print("Continuing...")

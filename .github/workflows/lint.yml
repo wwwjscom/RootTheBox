@@ -1,0 +1,28 @@
+name: Lint
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  ruff:
+    name: ruff (check + format)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Pinned to the same ruff version as .pre-commit-config.yaml and the
+      # uv.lock dev group, so local and CI results match.
+      - name: ruff check
+        uses: astral-sh/ruff-action@v3
+        with:
+          version: 0.15.22
+
+      - name: ruff format --check
+        uses: astral-sh/ruff-action@v3
+        with:
+          version: 0.15.22
+          args: format --check

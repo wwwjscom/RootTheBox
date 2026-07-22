@@ -20,12 +20,7 @@ Created on Mar 12, 2012
 """
 
 import logging
-
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
-from builtins import str
+from urllib.parse import urlparse
 
 from sqlalchemy import Column, ForeignKey, desc
 from sqlalchemy.sql import and_
@@ -44,7 +39,6 @@ ERROR = "/static/images/error.png"
 
 
 class Notification(DatabaseObject):
-
     """Notification definition"""
 
     user_id = Column(Integer, ForeignKey("user.id"))

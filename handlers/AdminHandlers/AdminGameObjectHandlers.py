@@ -28,11 +28,9 @@ CRUD for game objects:
 """
 # pylint: disable=unused-wildcard-import
 
-
 import json
 import logging
 import re
-from builtins import str
 
 from handlers.BaseHandlers import BaseHandler
 from handlers.MissionsHandler import BoxHandler
@@ -62,7 +60,6 @@ from models.User import ADMIN_PERMISSION
 
 
 class AdminCreateHandler(BaseHandler):
-
     """Handler used to create game objects"""
 
     @restrict_ip_address
@@ -88,7 +85,9 @@ class AdminCreateHandler(BaseHandler):
         if len(args) and args[0] in game_objects:
             if args[0] == "game_level":
                 game_levels = GameLevel.all()
-                self.render(game_objects[args[0]], game_levels=game_levels, box=box, errors=None)
+                self.render(
+                    game_objects[args[0]], game_levels=game_levels, box=box, errors=None
+                )
             else:
                 self.render(game_objects[args[0]], box=box, errors=None)
         else:
@@ -318,7 +317,11 @@ class AdminCreateHandler(BaseHandler):
             self.dbsession.commit()
             self.redirect("/admin/view/game_levels")
         except ValidationError as error:
-            self.render("admin/create/game_level.html", game_levels=game_levels, errors=[str(error)])
+            self.render(
+                "admin/create/game_level.html",
+                game_levels=game_levels,
+                errors=[str(error)],
+            )
 
     def create_hint(self):
         """Add hint to database"""
@@ -391,7 +394,6 @@ class AdminCreateHandler(BaseHandler):
 
 
 class AdminViewHandler(BaseHandler):
-
     """View game objects"""
 
     @restrict_ip_address
@@ -412,7 +414,9 @@ class AdminViewHandler(BaseHandler):
         if len(args) and args[0] in uri:
             if args[0] == "game_levels":
                 game_levels = GameLevel.all()
-                self.render(uri[args[0]], game_levels=game_levels, errors=None, success=None)
+                self.render(
+                    uri[args[0]], game_levels=game_levels, errors=None, success=None
+                )
             else:
                 self.render(uri[args[0]], errors=None, success=None)
         else:
@@ -523,7 +527,6 @@ class AdminViewHandler(BaseHandler):
 
 
 class AdminEditHandler(BaseHandler):
-
     """Edit game objects"""
 
     @restrict_ip_address
@@ -832,7 +835,7 @@ class AdminEditHandler(BaseHandler):
                                 # add choice
                                 FlagChoice.create_choice(flag, decode(flagoption))
         for choice in currentchoices:
-            if not choice["uuid"] in choiceitems:
+            if choice["uuid"] not in choiceitems:
                 # delete choice
                 flagchoice = FlagChoice.by_uuid(choice["uuid"])
                 self.dbsession.delete(flagchoice)
@@ -912,7 +915,7 @@ class AdminEditHandler(BaseHandler):
                 raise ValidationError("Game level does not exist")
             if int(self.get_argument("number", level.number)) != level.number:
                 level.number = self.get_argument("number", "")
-            
+
             level.buyout = self.get_argument("buyout", 1) or 1
             lvlbuyout = self.get_argument("buyoutlvl", 1)
             level._type = self.get_argument("type", "buyout")
@@ -1016,7 +1019,6 @@ class AdminEditHandler(BaseHandler):
 
 
 class AdminDeleteHandler(BaseHandler):
-
     """Delete flags/ips from the database"""
 
     @restrict_ip_address
@@ -1181,7 +1183,7 @@ class AdminDeleteHandler(BaseHandler):
                     game_levels[0].number = 0
                 self.dbsession.add(game_levels[0])
                 game_levels[-1].next_level_id = None
-                self.dbsession.add(game_levels[-1])            
+                self.dbsession.add(game_levels[-1])
             self.dbsession.commit()
             self.redirect("/admin/view/game_levels")
         else:
@@ -1192,7 +1194,6 @@ class AdminDeleteHandler(BaseHandler):
 
 
 class AdminAjaxGameObjectDataHandler(BaseHandler):
-
     """Handles AJAX data for admin handlers"""
 
     @restrict_ip_address
@@ -1301,7 +1302,6 @@ class AdminAjaxGameObjectDataHandler(BaseHandler):
 
 
 class AdminTestTokenHandler(BaseHandler):
-
     """Handles token test"""
 
     @restrict_ip_address

@@ -24,18 +24,10 @@ This file contains code for managing user accounts
 """
 # pylint: disable=no-member
 
-
-try:
-    from urllib.parse import urlencode
-except ImportError:
-    from urllib import urlencode
-try:
-    import urllib.request as urlrequest
-except ImportError:
-    import urllib2 as urlrequest
 import json
 import logging
-from builtins import str
+import urllib.request as urlrequest
+from urllib.parse import urlencode
 
 import tornado
 from tornado.options import options
@@ -64,10 +56,6 @@ class HomeHandler(BaseHandler):
     def get(self, *args, **kwargs):
         """Display the default user page"""
         user = self.get_current_user()
-        if user:
-            admin = user.is_admin()
-        else:
-            admin = False
         uuid = self.get_argument("id", None)
         display_user = User.by_uuid(uuid)
         visitor = False

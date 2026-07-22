@@ -25,12 +25,17 @@ from these base classes.
 """
 # pylint: disable=unused-wildcard-import,no-member
 
-
 import datetime
 import logging
 import time
 import traceback
-from builtins import str
+from urllib.parse import urlparse
+
+from tornado import locale
+from tornado.ioloop import IOLoop
+from tornado.options import options
+from tornado.web import RequestHandler
+from tornado.websocket import WebSocketHandler
 
 from libs import GameState
 from libs.EventManager import EventManager
@@ -40,19 +45,8 @@ from libs.WebhookHelpers import *
 from models import chatsession, dbsession
 from models.User import User
 
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
-from tornado import locale
-from tornado.ioloop import IOLoop
-from tornado.options import options
-from tornado.web import RequestHandler
-from tornado.websocket import WebSocketHandler
-
 
 class BaseHandler(RequestHandler):
-
     """User handlers extend this class"""
 
     csp = {
@@ -71,7 +65,7 @@ class BaseHandler(RequestHandler):
     chatsession = chatsession
     _memcached = None
     new_events = []
-    io_loop = IOLoop.instance()
+    io_loop = IOLoop.current()
     event_manager = EventManager.instance()
     config = options  # backward compatibility
     RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify"
@@ -129,7 +123,7 @@ class BaseHandler(RequestHandler):
         for src, policies in list(self.csp.items()):
             if len(policies):
                 _csp.append("%s %s; " % (src, " ".join(policies)))
-        csp = "".join(_csp)
+        csp = "".join(_csp)  # noqa: F841  (kept for the disabled header below)
         # Disabled until i can figure out the bug
         # self.set_header("Content-Security-Policy", csp)
 
@@ -282,12 +276,11 @@ class BaseHandler(RequestHandler):
 
 
 class BaseWebSocketHandler(WebSocketHandler):
-
     """Handles websocket connections"""
 
     _session = None
     _memcached = None
-    io_loop = IOLoop.instance()
+    io_loop = IOLoop.current()
     manager = EventManager.instance()
     config = options  # backward compatibility
 

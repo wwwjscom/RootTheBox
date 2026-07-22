@@ -19,9 +19,7 @@ Created on Mar 15, 2012
     limitations under the License.
 """
 
-
 import os
-from builtins import str
 from mimetypes import guess_type
 from string import printable
 from uuid import uuid4
@@ -39,7 +37,6 @@ MAX_FILE_SIZE = 50 * (1024**2)  # Max file size 50Mb
 
 
 class FileUpload(DatabaseObject):
-
     """
     This is the object that stores data about files shared by
     players via the team file sharing feature.
