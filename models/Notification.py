@@ -55,9 +55,11 @@ class Notification(DatabaseObject):
     @classmethod
     def admin(cls):
         """Returns a list of unique notifications in the database"""
-        return dbsession.query(
-            cls.created, cls.icon_url, cls.message, cls.title
-        ).distinct()
+        return (
+            dbsession.query(cls.created, cls.icon_url, cls.message, cls.title)
+            .distinct()
+            .all()
+        )
 
     @classmethod
     def clear(cls):

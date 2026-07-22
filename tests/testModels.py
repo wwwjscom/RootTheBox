@@ -21,6 +21,7 @@ from models.Flag import (
     Flag,
 )
 from models.GameLevel import GameLevel
+from models.Notification import Notification
 from models.Penalty import Penalty
 from models.Team import Team
 from models.User import User
@@ -462,3 +463,43 @@ class TestReviewMode(unittest.TestCase):
         if not level.review_mode:
             Penalty.create_attempt(user=self.user, flag=self.flag, submission="wrong")
         assert Penalty.by_count(self.flag, self.team) == 1
+
+
+class TestNotification(unittest.TestCase):
+    """Pins Notification.admin() (used by the admin home + notifications pages)."""
+
+    def setUp(self):
+        self.notifications = []
+        for i in range(8):
+            notify = Notification()
+            notify.title = "Title %d" % i
+            notify.message = "Message %d" % i
+            notify.icon_url = None
+            dbsession.add(notify)
+            self.notifications.append(notify)
+        dbsession.commit()
+
+    def tearDown(self):
+        for notify in self.notifications:
+            dbsession.delete(notify)
+        dbsession.commit()
+
+    def test_admin_returns_list(self):
+        """admin() must return a materialized list, per its docstring/siblings."""
+        assert isinstance(Notification.admin(), list)
+
+    def test_admin_negative_slice(self):
+        """Regression: admin/home.html slices Notification.admin()[-6:].
+
+        On a SQLAlchemy Query a negative index raises IndexError under
+        SQLAlchemy 2.0 (it silently worked in 1.x), which 500'd the admin
+        home page. The template op below must succeed and stay Row-accessible.
+        """
+        recent = Notification.admin()[-6:]
+        assert len(recent) == 6
+        for notify in reversed(list(recent)):
+            assert notify.title is not None
+            assert notify.message is not None
+            # attributes the template reads
+            _ = notify.created
+            _ = notify.icon_url
