@@ -327,9 +327,18 @@ _(Update as branches land.)_
     - [x] (4) Alerts — `alert-error→alert-danger`; dismissible alerts →
           `.btn-close` + `.alert-dismissible`; `.alert{align-self:flex-start}` to
           stop column-alerts stretching under BS5 flex rows.
-    - [ ] Remaining: **forms** (248 `control-group`), **modals** (~59, structural
-          + `.btn-close`), dynamic grid vars (`{% set wellspan %}` scoreboard),
-          `.hide` cleanup, and **theme ports** (8 Bootswatch-5 + 386/cyberpunk +
-          seed-list curation + DB migration for dropped themes).
+    - [x] (5) Forms — codemod form pass over 38 templates: `control-group→row mb-3`,
+          `control-label→col-sm-3 col-form-label`, `controls→col-sm-9`, and a
+          type-aware tag pass adding `form-control`/`form-select`/`form-check-input`
+          (skips hidden/submit/etc., idempotent). Verified: Create Box, the 46-field
+          Configuration form, and login all render as clean BS5 horizontal forms.
+    - [ ] Remaining: **modals** (~59, structural: wrap in `.modal-dialog >
+          .modal-content`, `.modal.hide→.modal`+`tabindex`, modal `.close→.btn-close`),
+          **per-page layout fixes** (BS2 float grids that don't reflow under BS5
+          flex — the admin dashboard's two-column `col-md-3` sidebar + `col-md-8`
+          sibling panels is the worst case; content is present but drops below the
+          sidebar), dynamic grid vars (`{% set wellspan %}` scoreboard), `.hide`
+          cleanup, and **theme ports** (8 Bootswatch-5 + 386/cyberpunk + seed-list
+          curation + DB migration for dropped themes).
 - [ ] 2.2 Frontend build pipeline
 - [ ] 2.3 (Optional) framework modernization
