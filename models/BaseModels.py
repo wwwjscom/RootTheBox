@@ -23,7 +23,7 @@ import re
 from datetime import datetime
 
 from sqlalchemy import Column
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.orm import declarative_base, declared_attr
 from sqlalchemy.types import DateTime, Integer
 
 

@@ -91,27 +91,27 @@ def check_history(item):
 
 def upgrade():
     try:
-        res = conn.execute("SELECT * FROM snapshot_team;")
+        res = conn.execute(sa.text("SELECT * FROM snapshot_team;"))
         results = res.fetchall()
         i = 0
         for item in results:
             check_history(item)
             i += 1
         if i > 0:
-            conn.execute("COMMIT;")
+            conn.execute(sa.text("COMMIT;"))
 
     except Exception as e:
         print("Failed to import prior snapshot data into game history: %s" % str(e))
         print("Continuing...")
     try:
-        res = conn.execute("SELECT * FROM team_to_flag;")
+        res = conn.execute(sa.text("SELECT * FROM team_to_flag;"))
         results = res.fetchall()
         i = 0
         for item in results:
             check_flag(item)
             i += 1
         if i > 0:
-            conn.execute("COMMIT;")
+            conn.execute(sa.text("COMMIT;"))
     except Exception as e:
         print("Failed to import prior flag count into game history: %s" % str(e))
         print("Continuing...")

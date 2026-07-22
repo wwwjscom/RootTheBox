@@ -71,8 +71,8 @@ else:
     azuread_app = None
 
 ### Setup the database session
-engine = create_engine(str(db_connection), pool_pre_ping=True)
-session_maker = sessionmaker(bind=engine)
+engine = create_engine(str(db_connection), pool_pre_ping=True, future=True)
+session_maker = sessionmaker(bind=engine, future=True)
 _Session = scoped_session(session_maker)
 def StartSession():
     return _Session(autoflush=True)
