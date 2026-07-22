@@ -6,10 +6,7 @@ import logging
 import time
 import unittest
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
 
 from tornado.options import options
 

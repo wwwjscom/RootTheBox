@@ -49,10 +49,7 @@ import threading
 import time
 import uuid
 
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from urllib.parse import urlparse
 from datetime import datetime
 
 from libs.StringCoding import encode

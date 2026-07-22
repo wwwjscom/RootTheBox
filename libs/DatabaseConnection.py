@@ -29,10 +29,7 @@ import sys
 
 from libs.ConsoleColors import *
 
-try:
-    from urllib.parse import quote, quote_plus
-except ImportError:
-    from urllib import quote, quote_plus
+from urllib.parse import quote, quote_plus
 from sqlalchemy import create_engine
 from tornado.options import options
 

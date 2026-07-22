@@ -44,14 +44,8 @@ import sys
 import traceback
 import uuid
 
-try:
-    import ConfigParser
-except ImportError:
-    import configparser as ConfigParser
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+import configparser as ConfigParser
+from urllib.parse import urlparse
 from datetime import datetime
 from hashlib import sha1, sha512
 

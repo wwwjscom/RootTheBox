@@ -67,10 +67,7 @@ from modules.Menu import Menu
 from modules.Recaptcha import Recaptcha
 from setup import __version__
 
-try:
-    from urllib.parse import unquote
-except ImportError:
-    from urllib import unquote
+from urllib.parse import unquote
 
 # Singletons
 io_loop = IOLoop.instance()
