@@ -41,11 +41,11 @@
     <br />
     <div class="row">
         {% if len(options.scoreboard_right_image) > 0 %}
-            {% set wellspan="span7" %}
+            {% set wellspan="col-md-7" %}
         {% elif options.teams and options.show_mvp %}
-            {% set wellspan="span7" %}
+            {% set wellspan="col-md-7" %}
         {% else %}
-            {% set wellspan="span10" %}
+            {% set wellspan="col-md-10" %}
         {% end %}
         <div class="card card-body {{wellspan}} offset-md-1" style="padding-left: 30px; padding-right: 30px;">
             <div id="summary_loading"><h3>Loading...</h3></div>
