@@ -45,7 +45,7 @@ class EventManager(object):
     auth_connections = {}
 
     def __init__(self):
-        self.io_loop = IOLoop.instance()
+        self.io_loop = IOLoop.current()
 
     # [ Connection Methods ] -----------------------------------------------
     def add_connection(self, connection):

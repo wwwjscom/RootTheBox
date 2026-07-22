@@ -10,8 +10,9 @@ license = { text = "Apache-2.0" }
 version = "0.0.0"
 
 dependencies = [
-    # Web framework — pinned below the next major until the Tornado async
-    # cleanup (roadmap item 1.6) is done.
+    # Web framework. 1.6 (Tornado async cleanup) is done — handlers stay sync
+    # (fine at CTF scale); kept pinned below the next major since 7.x is
+    # unreleased and untested here.
     "tornado>=6.4,<7",
     # ORM — migrated to 2.x (roadmap item 1.5). The codebase uses the legacy
     # Session.query() API, which remains supported in 2.x.

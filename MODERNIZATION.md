@@ -262,7 +262,15 @@ _(Update as branches land.)_
       `ffe623` data conversion on real rows (regression guard for the
       `add_history` bug), chain integrity, and a models↔created-schema no-drift
       tripwire. Suite now **117 passed**.
-- [ ] 1.6 Tornado async cleanup
+- [x] 1.6 Tornado async cleanup — replaced the 4 deprecated
+      `IOLoop.instance()` calls with `IOLoop.current()` (EventManager,
+      BaseHandlers ×2, handlers/__init__). Added an asyncio event-loop setup at
+      the `rootthebox.py` entry point to silence the Python 3.12 "no current
+      event loop" DeprecationWarning that Tornado's import-time `IOLoop.current()`
+      triggers. **Kept handlers sync** (no async rewrite — fine at CTF scale;
+      there were no old-style `@gen.coroutine`/`yield` coroutines, and the 6
+      `PeriodicCallback` uses are fine on Tornado 6). Verified: 117 passed
+      (warnings 14 → 13), clean-container boot.
 - [x] 1.7 Adopt ruff — replaced `.flake8` with `[tool.ruff]` in
       `pyproject.toml` (select E/W/F/I; bugbear/complexity deferred until the
       pre-existing violations they'd flag are burned down — they were selected

@@ -65,7 +65,7 @@ class BaseHandler(RequestHandler):
     chatsession = chatsession
     _memcached = None
     new_events = []
-    io_loop = IOLoop.instance()
+    io_loop = IOLoop.current()
     event_manager = EventManager.instance()
     config = options  # backward compatibility
     RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify"
@@ -280,7 +280,7 @@ class BaseWebSocketHandler(WebSocketHandler):
 
     _session = None
     _memcached = None
-    io_loop = IOLoop.instance()
+    io_loop = IOLoop.current()
     manager = EventManager.instance()
     config = options  # backward compatibility
 

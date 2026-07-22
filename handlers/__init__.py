@@ -68,7 +68,7 @@ from modules.Recaptcha import Recaptcha
 from setup import __version__
 
 # Singletons
-io_loop = IOLoop.instance()
+io_loop = IOLoop.current()
 
 
 def get_cookie_secret():
