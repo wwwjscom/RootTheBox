@@ -332,13 +332,18 @@ _(Update as branches land.)_
           type-aware tag pass adding `form-control`/`form-select`/`form-check-input`
           (skips hidden/submit/etc., idempotent). Verified: Create Box, the 46-field
           Configuration form, and login all render as clean BS5 horizontal forms.
-    - [ ] Remaining: **modals** (~59, structural: wrap in `.modal-dialog >
-          .modal-content`, `.modal.hide→.modal`+`tabindex`, modal `.close→.btn-close`),
-          **per-page layout fixes** (BS2 float grids that don't reflow under BS5
-          flex — the admin dashboard's two-column `col-md-3` sidebar + `col-md-8`
-          sibling panels is the worst case; content is present but drops below the
-          sidebar), dynamic grid vars (`{% set wellspan %}` scoreboard), `.hide`
-          cleanup, and **theme ports** (8 Bootswatch-5 + 386/cyberpunk + seed-list
-          curation + DB migration for dropped themes).
+    - [x] (6) Modals — codemod adds bare `.btn`→`btn btn-secondary` (107) and
+          modal `.close`→`.btn-close`; a structure-aware pass
+          (`tools/bs2to5_modals.py`) balances `<div>`/`</div>` to wrap all 53 modals
+          in `.modal-dialog > .modal-content`, drops `.hide`, adds `tabindex`
+          (0 skips). CSS orders the header close-button right. Caught+fixed a regex
+          bug where a template tag containing `>` in a modal's style attr split the
+          opening tag. Verified: Edit Category modal opens with full BS5 structure.
+    - [ ] Remaining: **per-page layout fixes** (BS2 float grids that don't reflow
+          under BS5 flex — the admin dashboard's two-column `col-md-3` sidebar +
+          `col-md-8` sibling panels is the worst case; content is present but drops
+          below the sidebar), dynamic grid vars (`{% set wellspan %}` scoreboard),
+          `.hide` cleanup, and **theme ports** (8 Bootswatch-5 + 386/cyberpunk +
+          seed-list curation + DB migration for dropped themes).
 - [ ] 2.2 Frontend build pipeline
 - [ ] 2.3 (Optional) framework modernization
