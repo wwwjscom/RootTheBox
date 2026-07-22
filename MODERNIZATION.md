@@ -304,7 +304,32 @@ _(Update as branches land.)_
         SQLAlchemy-2.0 500 — `Notification.admin()` returned a `Query`, negative-
         sliced in `admin/home.html`; fixed separately on branch
         `fix/admin-home-notification-slice`, out of scope for this frontend branch.)
-  - [ ] 2.1b Bootstrap 2 → **5.x** (target chosen) — template-wide markup rewrite
-        + re-theme; its own branch/effort. High risk; closer to 2.3 in size.
+  - [~] 2.1b Bootstrap 2 → **5.3.3** (branch `feature/phase2.1b-bootstrap5`, off
+        develop). Staged — the CSS swap is atomic, so the app is mid-migration
+        (navbar/alerts done; forms/modals/themes pending) until it lands. Theme
+        decision: **curate to the 8 Bootswatch-5 themes + default**, drop the 4
+        with no BS5 equivalent (amelia/readable/spruce/geocities → fall back to
+        default), port 386 + cyberpunk as custom. Commits so far:
+    - [x] (1) Scaffold — vendor BS5.3.3 bundle (Popper incl.) + BS5 default/Cyborg
+          themes; remove BS2 `bootstrap.min.js` + `bootstrap-responsive.css`; add
+          `libs/bs5-jquery-bridge.js` re-exposing `$.fn.modal/popover/tooltip/…`
+          on BS5's native API (BS5 dropped the jQuery plugin API; ~88 imperative
+          call sites depend on it).
+    - [x] (2) Mechanical codemod (`tools/bs2to5_codemod.py`, committed, idempotent,
+          template-tag-safe) across 67 templates: `spanN→col-md-N`,
+          `offsetN→offset-md-N`, `row-fluid→row`, `btn-mini/small→btn-sm`,
+          `btn-inverse→btn-dark`, `well→card card-body`, `pull-*→float-*`, BS2
+          glyphicons→FA4, `data-toggle/dismiss/target/…→data-bs-*`.
+    - [x] (3) Navbar rewrite — the 3 `Menu` templates to BS5 `navbar-expand-lg` +
+          `navbar-collapse`/`nav-link`; dark bar via `bg-dark`+`data-bs-theme`;
+          the 2 `dropdown-submenu`s flattened to `dropdown-header` groups (BS5 has
+          no native submenu). Menu JS ids preserved.
+    - [x] (4) Alerts — `alert-error→alert-danger`; dismissible alerts →
+          `.btn-close` + `.alert-dismissible`; `.alert{align-self:flex-start}` to
+          stop column-alerts stretching under BS5 flex rows.
+    - [ ] Remaining: **forms** (248 `control-group`), **modals** (~59, structural
+          + `.btn-close`), dynamic grid vars (`{% set wellspan %}` scoreboard),
+          `.hide` cleanup, and **theme ports** (8 Bootswatch-5 + 386/cyberpunk +
+          seed-list curation + DB migration for dropped themes).
 - [ ] 2.2 Frontend build pipeline
 - [ ] 2.3 (Optional) framework modernization
