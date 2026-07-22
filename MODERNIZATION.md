@@ -98,6 +98,21 @@ handlers/models/libs.
 test layer** (item 1.4a) that pins current behavior of the untested critical
 flows, so the migration can be proven behavior-preserving.
 
+**Update (1.4a done):** the characterization layer landed — **104 tests, 28%**
+coverage (was 83 / 21%). New files pin the previously-blind flows below the
+HTTP/session layer (authenticated HTTP can't run under `--tests` — no
+memcached — so scoring/admin/market handler methods are driven directly with
+stubbed request state):
+- `tests/testMissionScoring.py` — submit → score → penalty → GameHistory,
+  duplicate/rejection, box + level completion, single-submission resolution,
+  dynamic `decay_all` value math.
+- `tests/testXmlSetup.py` — XML import/export round-trip across GameLevel/
+  Category/Corporation/Box/Flag/Hint, all five flag types, capture preserved.
+- `tests/testAdminGameObjects.py` — admin create/edit/delete round-trip for
+  corp/box/flag/hint + `create_game_level` linked-list.
+- `tests/testMarketScoreboard.py` — market purchase mechanic + `has_item`
+  gate, and `Team.ranks()` ordering/visibility.
+
 ---
 
 ## Phase 0 — Urgent: security & EOL  ✅ DONE (branch `feature/phase0-urgent`)
@@ -196,7 +211,10 @@ _(Update as branches land.)_
       dropped `mysqlclient`/`PyMySQL` (SQLite-only) and `setuptools-rust` (build
       tool, not a runtime dep); removed `setup/requirements.txt` +
       `setup/depends.sh`. Verified: image builds, **83 passed**.
-- [ ] 1.4a Characterization tests (gate before 1.5)
+- [x] 1.4a Characterization tests (gate before 1.5) — 4 flows pinned across
+      testMissionScoring / testXmlSetup / testAdminGameObjects /
+      testMarketScoreboard; suite 83 → 104, coverage 21% → 28%. Handler methods
+      driven below the auth layer (no memcached under `--tests`).
 - [ ] 1.5 SQLAlchemy 1.x → 2.x
 - [ ] 1.6 Tornado async cleanup
 - [ ] 1.7 Adopt ruff
