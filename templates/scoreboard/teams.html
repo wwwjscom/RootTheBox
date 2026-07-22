@@ -44,22 +44,21 @@
             {% if teamcount > 0 %}
                 {% set pcount = int(ceil(teamcount / float(display))) %}
                 
-                <div class="pagination" style="padding: 5px; margin-right: 75px">
-                    <ul>
+                <ul class="pagination" style="padding: 5px; margin-right: 75px">
                         {% if pcount > 1 %}
-                        <li {%if page==1 %}class="disabled" {%end%}><a {%if page !=1 %}href="?count={{display}}&page={{page-1}}"
+                        <li class="page-item{%if page==1 %} disabled{%end%}"><a class="page-link" {%if page !=1 %}href="?count={{display}}&page={{page-1}}"
                                 {%end%}>Prev</a></li>
                             {% for x in range(max(1,page-4), min(pcount+1, max(page+5, 10))) %}
-                            <li {%if page==x %}class="active" {%end%}><a {%if page !=x %}href="?count={{display}}&page={{x}}"
+                            <li class="page-item{%if page==x %} active{%end%}"><a class="page-link" {%if page !=x %}href="?count={{display}}&page={{x}}"
                                     {%end%}>{{x}}</a></li>
                             {% end %}
-                        <li {%if page==pcount %}class="disabled" {%end%}><a {%if page !=pcount
+                        <li class="page-item{%if page==pcount %} disabled{%end%}"><a class="page-link" {%if page !=pcount
                                 %}href="?count={{display}}&page={{page+1}}" {%end%}>Next</a></li>
                         {% end %}
-                        <li class="disabled">
-                            <a>&nbsp;{% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %} {{ _("per page") }}</a>
+                        <li class="page-item disabled">
+                            <a class="page-link">&nbsp;{% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %} {{ _("per page") }}</a>
                         </li>
-                        <li>
+                        <li class="page-item">
                             <select class="form-select" id="page_count" style="width: 80px;">
                                 {% if display!= 10 and display!=25 and display!=50 and display!=100 and display!=250 %}
                                     <option value={{display}} selected>{{display}}</option>
@@ -72,7 +71,6 @@
                             </select>
                         </li>
                     </ul>
-                </div>
             {% end %}
         </div>
         {% if timer %}

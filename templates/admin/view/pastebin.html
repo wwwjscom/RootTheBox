@@ -36,14 +36,14 @@
           {% end %}
         </div><!--/span-->
         <div id="display-paste" class="col-md-9">
-            <div class="navbar navbar-inverse">
-                <div class="navbar-inner">
-                    <a class="brand">{{ _("PasteBin") }}</a>
-                    <ul class="nav">
-                        <li><a id="create-paste" href="#">{{ _("Create") }}</a></li>
+            <nav class="navbar navbar-expand bg-dark rounded" data-bs-theme="dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand">{{ _("PasteBin") }}</a>
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="nav-link" id="create-paste" href="#">{{ _("Create") }}</a></li>
                     </ul>
                 </div>
-            </div>
+            </nav>
         </div><!--/span-->
     </div>
 {% end %}

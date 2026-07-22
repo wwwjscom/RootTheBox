@@ -254,7 +254,7 @@
             <div class="card card-body{% if level.locked %} locked{% end %}">
                 <h2 class="levelheader">
                     {{ level.name }}&nbsp;
-                    {% if level.review_mode %}<span class="label label-warning">{{_("Review Mode")}}</span>{% end %}
+                    {% if level.review_mode %}<span class="badge text-bg-warning">{{_("Review Mode")}}</span>{% end %}
                 </h2>
                 {% if level.description %}<h4 class="levelheader">({{ level.description }})</h4>{% end %}
                 <a id="delete-game-level-button{{ index }}" style="float: right; margin-top: 5px; margin-right: 10px;" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#delete-game-level-modal" data-uuid="{{ level.uuid }}">

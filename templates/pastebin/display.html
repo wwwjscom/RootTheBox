@@ -1,21 +1,19 @@
-<div class="navbar navbar-inverse">
-    <div class="navbar-inner">
-        <a class="brand">{{ _("PasteBin") }}</a>
-        <ul class="nav">
-            <li><a id="create-paste" href="#">{{ _("Create") }}</a></li>
-            <li><a id="delete-paste" style="cursor: pointer;" data-uuid="{{ paste.uuid }}">{{ _("Delete") }}</a></li>
+<nav class="navbar navbar-expand bg-dark rounded" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand">{{ _("PasteBin") }}</a>
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" id="create-paste" href="#">{{ _("Create") }}</a></li>
+            <li class="nav-item"><a class="nav-link" id="delete-paste" style="cursor: pointer;" data-uuid="{{ paste.uuid }}">{{ _("Delete") }}</a></li>
         </ul>
     </div>
-</div>
+</nav>
 <div class="row">
     <div class="col-md-12 card card-body animated fadeIn">
         {% if paste is not None %}
             <h3>{{ paste.name }} - {{ paste.created.strftime("%I:%M%p %x") }}</h3>
-            <div class="navbar-inverse">
-                <pre class="navbar-inner" style="color: unset; min-height: unset;">
-                {{ paste.contents }}
-                </pre>
-            </div>
+            <pre class="bg-dark text-light rounded p-3" style="min-height: unset;">
+            {{ paste.contents }}
+            </pre>
         {% end %}
     </div>
 </div><!--/row-->

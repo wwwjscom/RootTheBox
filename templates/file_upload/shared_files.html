@@ -82,15 +82,15 @@
                     {% else %}
                         <div class="accordion" id="accordion2">
                             {% for index, share in enumerate(shares) %}
-                                  <div class="accordion-group">
-                                    <div class="accordion-heading">
-                                      <a class="accordion-toggle" data-bs-toggle="collapse" data-bs-parent="#accordion2" href="#collapse{{ index }}">
+                                  <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                      <a class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-parent="#accordion2" href="#collapse{{ index }}">
                                         <strong>{{ share.file_name }}</strong>
                                         &nbsp;&nbsp;&nbsp;{{ share.content_type }}
                                       </a>
-                                    </div>
-                                    <div id="collapse{{ index }}" class="accordion-body collapse">
-                                        <div class="accordion-inner">
+                                    </h2>
+                                    <div id="collapse{{ index }}" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
                                             <strong>{{ _("Created") }}: </strong> {{ share.created }}</strong> <br />
                                             <strong>{{ _("File Size") }}: </strong> {{ share.byte_size }} {{ _("bytes") }} <br />
                                             <p>

@@ -429,7 +429,7 @@
                     </div>
                 </div>
                  <!-- Copy Fields -->
-                <div class="copy hide">
+                <div class="copy d-none">
                     <div class="choice-row mb-3 input-group" style="margin-bottom: 10px; position: relative;">
                         <input class="form-check-input" type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" /><input type="text" name="choice" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
                         <div class="input-group-btn" style="position: absolute; left: 228px; top: 0px;"> 
@@ -854,7 +854,7 @@
                                             <i class="fa fa-th"></i>
                                         {% end %}
                                         {{ box.name }}&nbsp;&nbsp;
-                                        {% if box.game_level.review_mode %}<span class="label label-warning" data-bs-toggle="tooltip" title="{{_('Flags can be captured, but no points are awarded. To enable or disable, visit the Game Levels page.')}}" style="font-size: 0.8em; padding: 4px 7px; vertical-align: middle;"><i class="fa fa-eye"></i> {{_("Review Mode")}}</span>{% end %}
+                                        {% if box.game_level.review_mode %}<span class="badge text-bg-warning" data-bs-toggle="tooltip" title="{{_('Flags can be captured, but no points are awarded. To enable or disable, visit the Game Levels page.')}}" style="font-size: 0.8em; padding: 4px 7px; vertical-align: middle;"><i class="fa fa-eye"></i> {{_("Review Mode")}}</span>{% end %}
                                     </h3>
                                         {% if box.locked %}
                                             <a id="lock-box-button-{{ box.uuid }}" class="btn btn-sm btn-warning" data-uuid="{{ box.uuid }}">
