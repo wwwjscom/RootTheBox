@@ -281,6 +281,30 @@ _(Update as branches land.)_
       dead `admin` var in `UserHandlers`. Added `.pre-commit-config.yaml` and
       `.github/workflows/lint.yml` (ruff check + format --check), both pinned to
       ruff 0.15.22 to match the uv.lock dev group. Suite still 117 passed.
-- [ ] 2.1 Patch-bump vendored frontend libs
+- [~] 2.1 Patch-bump vendored frontend libs — **split into 2.1a (JS libs, done)
+      and 2.1b (Bootstrap, deferred)** once the survey showed one line item bundled
+      four upgrades of wildly different risk. Bootstrap is deeply coupled to markup
+      (129 `spanN` grids, 72 `btn-mini/small`, 19 `row-fluid`, 16 Bootswatch v2
+      theme CSS files, BS-JS modals ×59 / dropdowns ×14), so a BS2→major migration
+      is a template-wide rewrite, not a patch-bump.
+  - [x] 2.1a JS library bumps (branch `feature/phase2.1a-js-libs`) — removed
+        **dead** Backbone 1.0.0 + Underscore 1.6.0 (zero app usage — the only
+        `_(...)` hits are i18n gettext; clears Underscore CVE-2021-23358),
+        jQuery **2.2.4 → 3.7.1**, jQuery UI **1.12.1 → 1.13.3** (base theme,
+        reuses the existing `ui-icons_*` sprites), and added **jQuery Migrate
+        3.5.2** as a compat shim. Kept Bootstrap 2. Static analysis first
+        confirmed the bump was safe: BS2's JS uses no jQuery-3-removed APIs (its
+        one `.load(` is the retained AJAX `.load(url)`), and our own page JS uses
+        none either (1 deprecated `.bind()` in notifier.js, covered by Migrate).
+        Verified live (dev stack + headless Chromium via Playwright): jQuery
+        3.7.1 / Migrate 3.5.2 / jQuery UI 1.13.3 all load, Bootstrap
+        modal/dropdown/tooltip + jQuery-UI datepicker plugins all present,
+        Backbone/Underscore gone, removed files 404, and a real Bootstrap modal
+        show/hide works on `/scoreboard`. (Surfaced a pre-existing admin-home
+        SQLAlchemy-2.0 500 — `Notification.admin()` returned a `Query`, negative-
+        sliced in `admin/home.html`; fixed separately on branch
+        `fix/admin-home-notification-slice`, out of scope for this frontend branch.)
+  - [ ] 2.1b Bootstrap 2 → **5.x** (target chosen) — template-wide markup rewrite
+        + re-theme; its own branch/effort. High risk; closer to 2.3 in size.
 - [ ] 2.2 Frontend build pipeline
 - [ ] 2.3 (Optional) framework modernization
