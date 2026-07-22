@@ -23,7 +23,6 @@ Setup / delete the unit test database
 
 """
 
-
 import logging
 import os
 

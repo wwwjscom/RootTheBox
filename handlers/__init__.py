@@ -24,14 +24,15 @@ This is the main file the defines what URLs get routed to what handlers
 """
 # pylint: disable=no-member,unsupported-assignment-operation
 
-
-import sys
 import logging
+import sys
 import time
 from os import _exit, urandom
 from os import path as os_path
+from urllib.parse import unquote
 
 import tornado.locale
+from alembic.config import Config, command
 from sqlalchemy.exc import OperationalError
 from tornado import locale, netutil
 from tornado.httpserver import HTTPServer
@@ -39,7 +40,6 @@ from tornado.ioloop import IOLoop, PeriodicCallback
 from tornado.options import options
 from tornado.web import Application
 
-from alembic.config import Config, command
 from handlers.AdminHandlers import *
 from handlers.APIHanders import *
 from handlers.BotnetHandlers import *
@@ -57,17 +57,15 @@ from handlers.StaticFileHandler import StaticFileHandler
 from handlers.UpgradeHandlers import *
 from handlers.UserHandlers import *
 from libs import GameState
+from libs.ConfigHelpers import save_config
 from libs.ConsoleColors import *
 from libs.DatabaseConnection import DatabaseConnection
 from libs.Scoreboard import Scoreboard, score_bots
-from libs.ConfigHelpers import save_config
 from libs.UpdateCheckHelpers import check_for_updates
 from modules.AppTheme import AppTheme
 from modules.Menu import Menu
 from modules.Recaptcha import Recaptcha
 from setup import __version__
-
-from urllib.parse import unquote
 
 # Singletons
 io_loop = IOLoop.instance()
@@ -90,7 +88,9 @@ def get_cookie_secret():
     options.cookie_secret = secret
     try:
         save_config()
-        logging.info("Generated and persisted a new cookie_secret to %s", options.config)
+        logging.info(
+            "Generated and persisted a new cookie_secret to %s", options.config
+        )
     except Exception as error:
         logging.error("Failed to persist generated cookie_secret: %s", error)
     return secret
@@ -282,6 +282,7 @@ app = Application(
     version=__version__,
     autoreload=options.autoreload_source,
 )
+
 
 # Ends the countdown on schedule rather than whenever someone happens to
 # load a scoreboard.  Registered after construction since `app` cannot

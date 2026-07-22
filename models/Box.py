@@ -19,7 +19,6 @@ Created on Mar 11, 2012
     limitations under the License.
 """
 
-
 import binascii
 import enum
 import os
@@ -35,11 +34,7 @@ from tornado.options import options
 
 from libs.StringCoding import decode, encode
 from libs.ValidationError import ValidationError
-from libs.XSSImageCheck import (
-    get_new_avatar,
-    avatar_validation,
-    save_avatar
-)
+from libs.XSSImageCheck import avatar_validation, get_new_avatar, save_avatar
 from models import dbsession
 from models.BaseModels import DatabaseObject
 from models.Category import Category
@@ -427,7 +422,7 @@ class Box(DatabaseObject):
         if self.avatar and os.path.isfile(avatarfile):
             with open(avatarfile, mode="rb") as _avatar:
                 data = _avatar.read()
-                if not "upload" in self.avatar:
+                if "upload" not in self.avatar:
                     ET.SubElement(box_elem, "avatar_path").text = self.avatar
                 ET.SubElement(box_elem, "avatar").text = encode(data, "base64")
         else:

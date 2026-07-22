@@ -48,9 +48,8 @@ import sys
 import threading
 import time
 import uuid
-
-from urllib.parse import urlparse
 from datetime import datetime
+from urllib.parse import urlparse
 
 from libs.StringCoding import encode
 
@@ -342,10 +341,7 @@ class ABNF(object):
 
         opcode: operation code. please see OPCODE_XXX.
         """
-        if sys.version_info.major == 2:
-            instance = isinstance(data, unicode)
-        else:
-            instance = isinstance(data, str)
+        instance = isinstance(data, str)
         if opcode == ABNF.OPCODE_TEXT and instance:
             data = encode(data, "utf-8")
         # mask must be set if send data from client

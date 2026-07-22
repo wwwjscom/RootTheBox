@@ -6,7 +6,6 @@
 This module implements sessions for Tornado using Memcached.
 """
 
-
 import json
 import logging
 import os
@@ -174,7 +173,7 @@ class MemcachedSession(BaseSession):
     @staticmethod
     def _parse_connection_details(details):
         if len(details) > 12:
-            return re.sub("\s+", "", details[12:]).split(",")
+            return re.sub(r"\s+", "", details[12:]).split(",")
         else:
             return ["127.0.0.1"]
 

@@ -31,7 +31,6 @@ from models.BaseModels import DatabaseObject
 
 
 class GameHistory(DatabaseObject):
-
     """Game History definition"""
 
     team_id = Column(Integer, ForeignKey("team.id"), nullable=False)

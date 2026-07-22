@@ -19,7 +19,6 @@ Created on Sep 6, 2020
     limitations under the License.
 """
 
-
 from datetime import datetime, timedelta
 from hashlib import sha256
 from os import urandom

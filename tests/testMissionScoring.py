@@ -13,7 +13,6 @@ dbsession, and event_manager. These tests pin *current* behavior; they are a
 safety net, not a specification.
 """
 
-
 import unittest
 from unittest import mock
 
@@ -228,7 +227,10 @@ class TestLevelCompletionScoring(ScoringTestCase):
         # game_levels — in normal play the level is already owned.)
         self.assertEqual(self.team.money, self.FLAG_VALUE + self.LEVEL_REWARD)
         self.assertTrue(
-            any(self.level.name in line and "completed" in line.lower() for line in success)
+            any(
+                self.level.name in line and "completed" in line.lower()
+                for line in success
+            )
         )
 
 
@@ -309,7 +311,5 @@ class TestDynamicFlagDecay(unittest.TestCase):
         dbsession.commit()
         # A team that has not captured now sees the decayed value:
         # value - (captures * value * decrease%) = 100 - (1 * 10) = 90.
-        expected = self.FLAG_VALUE - int(
-            self.FLAG_VALUE * (self.DECREASE_PCT / 100.0)
-        )
+        expected = self.FLAG_VALUE - int(self.FLAG_VALUE * (self.DECREASE_PCT / 100.0))
         self.assertEqual(self.flag.dynamic_value(self.team2), expected)

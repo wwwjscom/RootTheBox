@@ -21,7 +21,6 @@ fills the database with some startup data.
 """
 # pylint: disable=unused-wildcard-import
 
-
 import getpass
 import os
 import sys

@@ -36,9 +36,45 @@ dependencies = [
 dev = [
     "pytest",
     "pytest-cov",
+    "ruff",
 ]
 
 [tool.uv]
 # Root the Box runs as `python3 rootthebox.py`, not as an installed package, so
 # uv should resolve/lock the dependencies without trying to build this project.
 package = false
+
+# ruff replaces the old flake8/black/isort trio (roadmap item 1.7). Lint rules
+# cover pycodestyle (E/W), pyflakes (F), and import sorting (I); `ruff format`
+# is black-compatible. bugbear (B) and complexity (C90) are deferred until the
+# pre-existing violations they'd flag (bare-except, mutable defaults, …) are
+# burned down — they were selected in the old .flake8 but never CI-enforced.
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+ignore = [
+    # Carried from .flake8: formatter-conflicting rules, line-length (not
+    # enforced), and the star-import family (ConsoleColors uses `import *`).
+    "E203",
+    "E266",
+    "E501",
+    "F401",
+    "F403",
+    "F405",
+    # Pervasive pre-existing patterns to fix incrementally, not in the adoption
+    # commit: bare `except:`, `== True/False`, `type() ==`, ambiguous names.
+    "E722",
+    "E712",
+    "E721",
+    "E741",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Imports intentionally follow side-effecting setup, not at the top of file.
+"setup/create_database.py" = ["E402"]
+"models/__init__.py" = ["E402"]
+# Alembic migrations bind `conn`/`op` at import time.
+"alembic/versions/*" = ["E402", "F811"]

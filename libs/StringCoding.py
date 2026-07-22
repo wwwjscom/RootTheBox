@@ -20,7 +20,6 @@ Created on Jul 14, 2018
 """
 # pylint: disable=unused-variable
 
-
 import codecs
 import sys
 from base64 import b64decode, b64encode

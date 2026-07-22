@@ -28,7 +28,6 @@ from sqlalchemy.types import DateTime, Integer
 
 
 class _DatabaseObject(object):
-
     """All game objects inherit from this object"""
 
     @declared_attr

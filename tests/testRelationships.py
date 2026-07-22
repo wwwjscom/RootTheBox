@@ -12,7 +12,6 @@ same-named read-only @property accessors. These tests pin that:
 Tests pin current behavior; they are a safety net, not a specification.
 """
 
-
 import unittest
 
 from models import dbsession

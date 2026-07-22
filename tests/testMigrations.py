@@ -16,17 +16,17 @@ tests therefore exercise the paths that DO exist, on SQLAlchemy 2.0:
   #2  a no-drift tripwire between the models and the schema create_all builds.
 """
 
-
 import os
 import tempfile
 import unittest
 
-from alembic import command
 from alembic.autogenerate import compare_metadata
 from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, text
+
+from alembic import command
 
 # All models are imported by the test bootstrap, so metadata is fully populated.
 from models.BaseModels import DatabaseObject
@@ -78,10 +78,7 @@ class TestMigrationsRunOnSqlAlchemy2(MigrationTestCase):
         with self.engine.begin() as conn:
             for team_id, flag_id in [(1, 1), (1, 2), (2, 1)]:
                 conn.execute(
-                    text(
-                        "INSERT INTO team_to_flag (team_id, flag_id) "
-                        "VALUES (:t, :f)"
-                    ),
+                    text("INSERT INTO team_to_flag (team_id, flag_id) VALUES (:t, :f)"),
                     {"t": team_id, "f": flag_id},
                 )
         # Pretend the DB predates the snapshot-deletion migration.

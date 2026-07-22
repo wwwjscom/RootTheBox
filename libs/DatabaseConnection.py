@@ -20,18 +20,17 @@ Created on Sep 20, 2012
 """
 # pylint: disable=unused-wildcard-import,unused-variable
 
-
 import codecs
 import getpass
 import logging
 import os
 import sys
-
-from libs.ConsoleColors import *
-
 from urllib.parse import quote, quote_plus
+
 from sqlalchemy import create_engine
 from tornado.options import options
+
+from libs.ConsoleColors import *
 
 
 class DatabaseConnection(object):

@@ -24,7 +24,6 @@ This file contains handlers related to the scoreboard.
 """
 # pylint: disable=no-member
 
-
 import json
 import logging
 from collections import OrderedDict
@@ -37,7 +36,12 @@ from tornado.websocket import WebSocketHandler
 
 from handlers.BaseHandlers import BaseHandler
 from libs.Scoreboard import Scoreboard
-from libs.SecurityDecorators import authenticated, authorized, item_allowed, use_black_market
+from libs.SecurityDecorators import (
+    authenticated,
+    authorized,
+    item_allowed,
+    use_black_market,
+)
 from models import dbsession
 from models.Box import Box
 from models.Category import Category
@@ -112,7 +116,9 @@ class ScoreboardHandler(BaseHandler):
                 page=page,
                 display=display,
                 teamcount=teamcount,
-                scoreboard_top=options.scoreboard_top if (options.scoreboard_top > 0 and not is_admin) else 0,
+                scoreboard_top=options.scoreboard_top
+                if (options.scoreboard_top > 0 and not is_admin)
+                else 0,
             )
         elif not user:
             self.redirect("/login")
@@ -163,7 +169,11 @@ class ScoreboardAjaxHandler(BaseHandler):
             display = 50
         user = self.get_current_user()
         is_admin = user and user.is_admin()
-        top = options.scoreboard_top if (options.scoreboard_top > 0 and not is_admin) else 0
+        top = (
+            options.scoreboard_top
+            if (options.scoreboard_top > 0 and not is_admin)
+            else 0
+        )
         self.render(
             "scoreboard/summary_table.html",
             game_state=self.summary_page(page, display, top=top),
@@ -322,7 +332,6 @@ class ScoreboardFeedHandler(BaseHandler):
 
 
 class ScoreboardHistorySocketHandler(WebSocketHandler):
-
     connections = set()
 
     def open(self):
@@ -366,7 +375,6 @@ class ScoreboardWallOfSheepHandler(BaseHandler):
 
 
 class ScoreboardPauseHandler(WebSocketHandler):
-
     connections = set()
 
     def open(self):

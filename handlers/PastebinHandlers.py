@@ -23,7 +23,6 @@ This file contains handlers related to the pastebin functionality
 
 """
 
-
 from tornado.options import options
 
 from handlers.BaseHandlers import BaseHandler
@@ -33,7 +32,6 @@ from models.Team import Team
 
 
 class PasteHandler(BaseHandler):
-
     """Renders the main page"""
 
     @authenticated
@@ -46,7 +44,6 @@ class PasteHandler(BaseHandler):
 
 
 class CreatePasteHandler(BaseHandler):
-
     """Creates paste bin shares"""
 
     @authenticated
@@ -98,7 +95,6 @@ class CreatePasteHandler(BaseHandler):
 
 
 class DisplayPasteHandler(BaseHandler):
-
     """Displays shared texts"""
 
     @authenticated
@@ -123,7 +119,6 @@ class DisplayPasteHandler(BaseHandler):
 
 
 class DeletePasteHandler(BaseHandler):
-
     """Deletes shared texts"""
 
     @authenticated

@@ -19,7 +19,6 @@ Created on Mar 14, 2012
     limitations under the License.
 """
 
-
 from tornado.options import options
 from tornado.web import UIModule
 
@@ -27,7 +26,6 @@ from models.Theme import Theme
 
 
 class AppTheme(UIModule):
-
     theme = Theme.by_name(options.default_theme)
 
     def render(self, *args, **kwargs):

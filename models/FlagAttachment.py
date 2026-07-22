@@ -32,7 +32,6 @@ from models.BaseModels import DatabaseObject
 
 
 class FlagAttachment(DatabaseObject):
-
     """
     These are files that the administrator wants to
     distribute alongside a flag.

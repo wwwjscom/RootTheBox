@@ -15,7 +15,6 @@ new in tearDown to keep the shared test DB stable for other suites.
 These tests pin *current* behavior; they are a safety net, not a specification.
 """
 
-
 import os
 import tempfile
 import unittest
@@ -23,6 +22,7 @@ import xml.etree.cElementTree as ET
 
 from tornado.options import options
 
+from libs.StringCoding import encode
 from models import dbsession
 from models.Box import Box
 from models.Category import Category
@@ -38,7 +38,6 @@ from models.Flag import (
 from models.FlagChoice import FlagChoice
 from models.GameLevel import GameLevel
 from models.Hint import Hint
-from libs.StringCoding import encode
 from setup.xmlsetup import import_xml
 
 
@@ -148,9 +147,7 @@ class TestXmlRoundTrip(unittest.TestCase):
         dbsession.commit()
         self.assertIsNone(Corporation.by_name(self.CORP_NAME))
 
-        tmp = tempfile.NamedTemporaryFile(
-            mode="wb", suffix=".xml", delete=False
-        )
+        tmp = tempfile.NamedTemporaryFile(mode="wb", suffix=".xml", delete=False)
         try:
             tmp.write(xml_bytes)
             tmp.close()
@@ -294,9 +291,7 @@ class TestXmlFlagTypesRoundTrip(unittest.TestCase):
     def test_flag_types_round_trip(self):
         box = self._serialize_and_reimport()
         flags = {flag.name: flag for flag in box.flags}
-        self.assertEqual(
-            set(flags), {"RT Datetime", "RT File", "RT Choice"}
-        )
+        self.assertEqual(set(flags), {"RT Datetime", "RT File", "RT Choice"})
 
         # datetime: equivalent timestamps still capture.
         self.assertTrue(flags["RT Datetime"].capture(self.DATETIME))
@@ -308,8 +303,6 @@ class TestXmlFlagTypesRoundTrip(unittest.TestCase):
 
         # choice: options and the correct answer round-trip.
         choice_flag = flags["RT Choice"]
-        self.assertEqual(
-            {c.choice for c in choice_flag.flag_choice}, set(self.CHOICES)
-        )
+        self.assertEqual({c.choice for c in choice_flag.flag_choice}, set(self.CHOICES))
         self.assertTrue(choice_flag.capture(self.CORRECT_CHOICE))
         self.assertFalse(choice_flag.capture("OptionA"))

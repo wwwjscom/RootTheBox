@@ -20,7 +20,6 @@ Created on Mar 12, 2012
 """
 
 import logging
-
 from urllib.parse import urlparse
 
 from sqlalchemy import Column, ForeignKey, desc
@@ -40,7 +39,6 @@ ERROR = "/static/images/error.png"
 
 
 class Notification(DatabaseObject):
-
     """Notification definition"""
 
     user_id = Column(Integer, ForeignKey("user.id"))

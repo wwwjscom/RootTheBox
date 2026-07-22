@@ -19,7 +19,6 @@ Created on Mar 12, 2012
     limitations under the License.
 """
 
-
 import json
 from uuid import uuid4
 

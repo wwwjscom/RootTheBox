@@ -60,7 +60,9 @@ def upgrade():
             sa.Column("user_id", sa.Integer(), nullable=False),
             sa.Column("game_level_id", sa.Integer(), nullable=False),
             sa.Column("expires_at", sa.DateTime(), nullable=False),
-            sa.ForeignKeyConstraint(["game_level_id"], ["game_level.id"], ondelete="CASCADE"),
+            sa.ForeignKeyConstraint(
+                ["game_level_id"], ["game_level.id"], ondelete="CASCADE"
+            ),
             sa.ForeignKeyConstraint(["user_id"], ["user.id"], ondelete="CASCADE"),
             sa.PrimaryKeyConstraint("id"),
             sa.UniqueConstraint(

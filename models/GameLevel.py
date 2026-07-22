@@ -19,7 +19,6 @@ Created on Mar 12, 2012
     limitations under the License.
 """
 
-
 import xml.etree.cElementTree as ET
 from uuid import uuid4
 
@@ -34,7 +33,6 @@ from models.Relationships import team_to_game_level
 
 
 class GameLevel(DatabaseObject):
-
     """Game Level definition"""
 
     uuid = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid4()))

@@ -19,7 +19,6 @@ Created on Mar 12, 2012
     limitations under the License.
 """
 
-
 import hashlib
 import json
 import re
@@ -52,7 +51,6 @@ FLAG_TYPES = [FLAG_STATIC, FLAG_REGEX, FLAG_FILE, FLAG_DATETIME, FLAG_CHOICE]
 
 
 class Flag(DatabaseObject):
-
     """
     Flags that can be captured by players and what not. This object comes in
     these flavors:
@@ -71,7 +69,9 @@ class Flag(DatabaseObject):
 
     _name = Column(Unicode(64), nullable=True)
     _token = Column(Unicode(256), nullable=False)
-    _plain_answer = Column(Unicode(256)) # https://github.com/moloch--/RootTheBox/issues/601
+    _plain_answer = Column(
+        Unicode(256)
+    )  # https://github.com/moloch--/RootTheBox/issues/601
     _description = Column(Unicode(4096), nullable=False)
     _capture_message = Column(Unicode(4096))
     _case_sensitive = Column(Integer, nullable=True)

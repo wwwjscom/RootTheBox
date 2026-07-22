@@ -20,7 +20,6 @@ Created on Mar 15, 2012
 """
 # pylint: disable=unused-wildcard-import,no-member
 
-
 import binascii
 import json
 import logging

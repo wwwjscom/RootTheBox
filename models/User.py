@@ -24,7 +24,6 @@ indiviudal user, such as handle/account/password/etc
 
 """
 
-
 import os
 import random
 import string
@@ -45,9 +44,9 @@ from libs.ValidationError import ValidationError
 from libs.WebhookHelpers import send_user_validated_webhook
 from libs.XSSImageCheck import (
     avatar_validation,
-    save_avatar,
     default_avatar,
-    get_new_avatar,    
+    get_new_avatar,
+    save_avatar,
 )
 from models import dbsession
 from models.BaseModels import DatabaseObject
@@ -64,7 +63,6 @@ ITERATE = 0x2BAD  # 11181
 
 
 class User(DatabaseObject):
-
     """User definition"""
 
     uuid = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid4()))
@@ -347,7 +345,9 @@ class User(DatabaseObject):
     @avatar.setter
     def avatar(self, image_data):
         ext = avatar_validation(image_data)
-        self._avatar = save_avatar(os.path.join("upload", f"{self.uuid}.{ext}"),image_data)                
+        self._avatar = save_avatar(
+            os.path.join("upload", f"{self.uuid}.{ext}"), image_data
+        )
 
     def has_item(self, item_name):
         """Check to see if a team has purchased an item"""

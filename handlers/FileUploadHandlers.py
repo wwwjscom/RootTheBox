@@ -23,7 +23,6 @@ This file contains handlers related to the file sharing functionality
 
 """
 
-
 import logging
 
 from tornado.options import options
@@ -39,7 +38,6 @@ MAX_UPLOADS = 5
 
 
 class FileUploadHandler(BaseHandler):
-
     """Handles file shares for teams"""
 
     @authenticated
@@ -116,7 +114,6 @@ class FileUploadHandler(BaseHandler):
 
 
 class FileDownloadHandler(BaseHandler):
-
     """Download shared files from here"""
 
     @authenticated
@@ -142,7 +139,6 @@ class FileDownloadHandler(BaseHandler):
 
 
 class FileDeleteHandler(BaseHandler):
-
     """Delete shared files"""
 
     @authenticated

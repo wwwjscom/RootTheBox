@@ -24,7 +24,6 @@ Handlers for user-related tasks.
 # pylint: disable=unused-wildcard-import
 # pylint: disable=no-member
 
-
 import logging
 
 from netaddr import IPAddress
@@ -345,7 +344,6 @@ class AdminBanHammerHandler(BaseHandler):
 
 
 class AdminLockHandler(BaseHandler):
-
     """Used to manually lock/unlocked accounts"""
 
     @restrict_ip_address

@@ -34,7 +34,6 @@ from models.BaseModels import DatabaseObject
 
 
 class SourceCode(DatabaseObject):
-
     """
     Holds the source code for a box which can be purchased from the
     source code market.

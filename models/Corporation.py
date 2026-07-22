@@ -19,7 +19,6 @@ Created on Mar 12, 2012
     limitations under the License.
 """
 
-
 import xml.etree.cElementTree as ET
 from uuid import uuid4
 

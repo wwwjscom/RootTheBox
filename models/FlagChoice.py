@@ -31,7 +31,6 @@ from models.BaseModels import DatabaseObject
 
 
 class FlagChoice(DatabaseObject):
-
     """Flag Choice definition"""
 
     uuid = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid4()))

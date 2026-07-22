@@ -12,7 +12,6 @@ Custom exception we throw when validating model data
 
 
 class ValidationError(Exception):
-
     """Maybe extend this later"""
 
     def __init__(self, message):

@@ -23,7 +23,6 @@ This file contains handlers related to the "Black Market" functionality
 
 """
 
-
 import logging
 
 from tornado.options import options
@@ -36,7 +35,6 @@ from .BaseHandlers import BaseHandler
 
 
 class MarketViewHandler(BaseHandler):
-
     """Renders views of items in the market"""
 
     @authenticated
@@ -101,7 +99,6 @@ class MarketViewHandler(BaseHandler):
 
 
 class MarketDetailsHandler(BaseHandler):
-
     """Renders views of items in the market"""
 
     @authenticated

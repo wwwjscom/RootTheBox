@@ -19,7 +19,6 @@ Created on Jun 19, 2018
     limitations under the License.
 """
 
-
 import json
 import xml.etree.cElementTree as ET
 from uuid import uuid4

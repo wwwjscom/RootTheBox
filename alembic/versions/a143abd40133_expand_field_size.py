@@ -5,6 +5,7 @@ Revises: f443eed40161
 Create Date: 2023-08-14 17:01:22.454528
 
 """
+
 import sqlalchemy as sa
 from sqlalchemy.sql.expression import func
 

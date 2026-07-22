@@ -36,7 +36,6 @@ from models.User import User
 
 @Singleton
 class EventManager(object):
-
     """
     All event callbacks go here!
     This class holds refs to all open web sockets

@@ -21,7 +21,6 @@ Created on Oct 04, 2012
 """
 # pylint: disable=no-member
 
-
 import json
 import logging
 import time

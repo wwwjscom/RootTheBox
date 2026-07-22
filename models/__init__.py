@@ -33,7 +33,6 @@ from libs.ConsoleColors import *
 from libs.DatabaseConnection import DatabaseConnection
 
 if options.log_sql:
-
     sql_logger = logging.getLogger("sqlalchemy.engine")
     sql_logger.setLevel(logging.INFO)
 
@@ -74,8 +73,11 @@ else:
 engine = create_engine(str(db_connection), pool_pre_ping=True, future=True)
 session_maker = sessionmaker(bind=engine, future=True)
 _Session = scoped_session(session_maker)
+
+
 def StartSession():
     return _Session(autoflush=True)
+
 
 dbsession = StartSession()
 
@@ -131,6 +133,7 @@ from models.Swat import Swat
 from models.Team import Team
 from models.Theme import Theme, ThemeFile
 from models.User import User
+
 # Ensure mapper registration for per-user level timer relationships/references.
 from models.UserLevelTimer import UserLevelTimer
 from models.WallOfSheep import WallOfSheep

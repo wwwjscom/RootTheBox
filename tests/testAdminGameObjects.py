@@ -12,7 +12,6 @@ directly on bare handler instances with stubbed request plumbing
 Tests pin current behavior; they are a safety net, not a specification.
 """
 
-
 import types
 import unittest
 from unittest import mock
@@ -143,9 +142,9 @@ class TestAdminGameObjectCrud(unittest.TestCase):
         self.assertIsNone(Hint.by_uuid(hint_uuid))
         make_handler(AdminDeleteHandler, uuid=box_uuid).del_box()
         self.assertIsNone(Box.by_uuid(box_uuid))
-        make_handler(AdminDeleteHandler, uuid=Corporation.by_name(
-            "Renamed Corp"
-        ).uuid).del_corp()
+        make_handler(
+            AdminDeleteHandler, uuid=Corporation.by_name("Renamed Corp").uuid
+        ).del_corp()
         self.assertIsNone(Corporation.by_name("Renamed Corp"))
 
 

@@ -2,10 +2,10 @@
 """
 Unit tests for everything in handlers/
 """
+
 import logging
 import time
 import unittest
-
 from unittest import mock
 
 from tornado.options import options
@@ -272,7 +272,9 @@ class TestExpireRegistrationWindow(GameStateTestCase):
 
     def test_disabled_minutes_is_a_noop(self):
         options.registration_open_minutes = 0
-        app = self._app(suspend_registration=False, registration_opened_at=time.time() - 999999)
+        app = self._app(
+            suspend_registration=False, registration_opened_at=time.time() - 999999
+        )
         self.assertFalse(GameState.expire_registration_window(app))
         self.assertFalse(app.settings["suspend_registration"])
         options.registration_open_minutes = 30
@@ -361,9 +363,7 @@ class TestStopHandlerRedirect(unittest.TestCase):
         handler = mock.Mock()
         handler.application.settings = {"game_started": started}
         calls = {"redirected": None, "rendered": None}
-        handler.redirect.side_effect = lambda url: calls.__setitem__(
-            "redirected", url
-        )
+        handler.redirect.side_effect = lambda url: calls.__setitem__("redirected", url)
         handler.render.side_effect = lambda tmpl, **kw: calls.__setitem__(
             "rendered", tmpl
         )
@@ -397,9 +397,7 @@ class TestGameStartedDecorator(unittest.TestCase):
         handler = mock.Mock()
         handler.application.settings = {"game_started": started}
         handler.get_current_user.return_value = user
-        handler.redirect.side_effect = lambda url: calls.__setitem__(
-            "redirected", url
-        )
+        handler.redirect.side_effect = lambda url: calls.__setitem__("redirected", url)
 
         @game_started
         def target(self):

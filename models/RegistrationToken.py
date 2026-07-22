@@ -19,7 +19,6 @@ Created on Sep 22, 2012
     limitations under the License.
 """
 
-
 import binascii
 from os import urandom
 
@@ -29,6 +28,7 @@ from sqlalchemy.types import Boolean, String
 from libs.StringCoding import decode, encode
 from models import dbsession
 from models.BaseModels import DatabaseObject
+
 
 def gen_token():
     return binascii.hexlify(urandom(3))
@@ -59,8 +59,6 @@ class RegistrationToken(DatabaseObject):
     def by_value(cls, _value):
         """Returns a the object with value of value"""
         return dbsession.query(cls).filter_by(value=encode(_value)).first()
-    
-    def getvalue(self):
-        return  decode(self.value)
-    
 
+    def getvalue(self):
+        return decode(self.value)

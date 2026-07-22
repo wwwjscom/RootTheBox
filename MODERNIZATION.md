@@ -263,7 +263,16 @@ _(Update as branches land.)_
       `add_history` bug), chain integrity, and a models↔created-schema no-drift
       tripwire. Suite now **117 passed**.
 - [ ] 1.6 Tornado async cleanup
-- [ ] 1.7 Adopt ruff
+- [x] 1.7 Adopt ruff — replaced `.flake8` with `[tool.ruff]` in
+      `pyproject.toml` (select E/W/F/I; bugbear/complexity deferred until the
+      pre-existing violations they'd flag are burned down — they were selected
+      in `.flake8` but never CI-enforced). Ran `ruff check --fix` + `ruff
+      format` (104 files reformatted, ~cosmetic). Fixed the two real issues the
+      lint surfaced: an F821 Py2 dead branch in `bot/BotMonitor.py`
+      (`isinstance(data, unicode)` under `sys.version_info.major == 2`) and a
+      dead `admin` var in `UserHandlers`. Added `.pre-commit-config.yaml` and
+      `.github/workflows/lint.yml` (ruff check + format --check), both pinned to
+      ruff 0.15.22 to match the uv.lock dev group. Suite still 117 passed.
 - [ ] 2.1 Patch-bump vendored frontend libs
 - [ ] 2.2 Frontend build pipeline
 - [ ] 2.3 (Optional) framework modernization

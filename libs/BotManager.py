@@ -24,7 +24,6 @@ Not gonna sugar code it, this shit gets a bit complicated.
 """
 # pylint: disable=no-member
 
-
 import logging
 import os
 import re

@@ -1,0 +1,9 @@
+# Ruff replaces flake8/black/isort (roadmap item 1.7).
+# Install with: pip install pre-commit && pre-commit install
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.22
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format

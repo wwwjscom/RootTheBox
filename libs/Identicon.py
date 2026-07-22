@@ -14,9 +14,7 @@ def _svg(width, height, body, color):
         xmlns="http://www.w3.org/2000/svg">
     <rect x="0" y="0" width="{w}" height="{h}" fill="{color}"/>
     {body}
-    </svg>""".format(
-        w=width, h=height, body=body, color=color
-    )
+    </svg>""".format(w=width, h=height, body=body, color=color)
 
 
 def _rect(x, y, width, height, color, stroke, stroke_weight):

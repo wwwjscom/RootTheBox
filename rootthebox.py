@@ -20,7 +20,6 @@ command line arguments it calls various components setup/start/etc.
 """
 # pylint: disable=unused-wildcard-import,unused-variable
 
-
 import logging
 import os
 import sys
@@ -1187,7 +1186,6 @@ define("tests", default=False, help="runs the unit tests", type=bool)
 
 
 if __name__ == "__main__":
-
     # We need this to pull the --config option
     try:
         options.parse_command_line()

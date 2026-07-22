@@ -19,7 +19,6 @@ Created on Mar 13, 2012
     limitations under the License.
 """
 
-
 import logging
 
 from handlers.BaseHandlers import BaseHandler

@@ -22,7 +22,6 @@ The all powerful recovery console
 """
 # pylint: disable=unused-wildcard-import
 
-
 import cmd
 import getpass
 import os

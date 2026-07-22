@@ -24,8 +24,8 @@ Wrapper for AsyncHTTPTestCase that removed some of the boilerplate code
 """
 
 import logging
-
 from urllib.parse import quote_plus
+
 from tornado.httpclient import HTTPRequest
 from tornado.testing import AsyncHTTPTestCase
 

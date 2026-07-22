@@ -12,7 +12,6 @@ can't provide, so we characterize the undecorated purchase mechanic
 on. Tests pin current behavior.
 """
 
-
 import unittest
 from unittest import mock
 

@@ -22,7 +22,6 @@ Application.  These live outside the handlers so the countdown callback can
 end the game without a request context.
 """
 
-
 import logging
 import time
 
