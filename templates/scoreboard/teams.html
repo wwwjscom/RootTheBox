@@ -16,10 +16,10 @@
 {% from models.Team import Team %}
 {% from models.GameLevel import GameLevel %}
 
-<div class="row-fluid">
+<div class="row">
     {% if not hide_scoreboard %}
-    <div class="span2" />
-        <ul id="navWrapper" class="nav nav-tabs nav-stacked affix well">
+    <div class="col-md-2" />
+        <ul id="navWrapper" class="nav nav-tabs nav-stacked affix card card-body">
             <center>
                 <strong>
                     <i class="fa fa-group"></i>
@@ -31,7 +31,7 @@
                 {% set rank = page * display - display + t_index + 1 %}
                 <li>
                     <a href="#{{ team.uuid }}">
-                        <i class="icon-chevron-right"></i>
+                        <i class="fa fa-chevron-right"></i>
                         &nbsp;&nbsp;#{{ rank }} - {{ team.name }}
                     </a>
                 </li>
@@ -39,7 +39,7 @@
         </ul>
     </div>
 
-    <div class="span10">
+    <div class="col-md-10">
         <div style="float:right; margin-top: -15px;">
             {% if teamcount > 0 %}
                 {% set pcount = int(ceil(teamcount / float(display))) %}
@@ -78,7 +78,7 @@
         {% if timer %}
         <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-right: 100px;"></h3>
         {% end %}
-        <h1 class="offset1">
+        <h1 class="offset-md-1">
             <i class="fa fa-group"></i>
             {% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %}
         </h1>
@@ -102,7 +102,7 @@
                         <div class="container">
                             {% for user in team.members %}
                                 {% if not user.locked %}
-                                    <div class="span2" align="middle">
+                                    <div class="col-md-2" align="middle">
                                         <a href="/user?id={{user.uuid}}">
                                             <h5>{{ user.handle }}</h5>
                                             <img src="/avatars/{{ user.avatar }}" class="img-polaroid" align="middle" />

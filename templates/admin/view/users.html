@@ -23,7 +23,7 @@
     {% set existing = existing_avatars("team") %}
     <div id="change-team-avatar-modal" class="modal hide fade" style="z-index: 100000; display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}">
         <div class="modal-header">
-            <button id="team-avatar-form" type="button" class="close" data-dismiss="modal">&times;</button>
+            <button id="team-avatar-form" type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h3>{{_("Change")}} {% if options.teams %}{{_("Team")}} {% end %}{{_("Avatar")}}</h3>
         </div>
         <div class="modal-body">
@@ -31,7 +31,7 @@
                 {% raw xsrf_form_html() %}
                     {% for avatar in avatars[::3] %}
                         <div class="row">
-                            <div class="span3" style="position: relative;">
+                            <div class="col-md-3" style="position: relative;">
                                 <center>
                                     {% if avatar in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
                                     <a href="#" class="teamavatarimg" value="{{avatar}}"><img src="/avatars/{{avatar}}"  class="img-polaroid" style="width: 200px;"></a>
@@ -39,7 +39,7 @@
                             </div>
                             {% if avatars.index(avatar) + 1 < len(avatars) %}
                                 {% set avatar1 = avatars[avatars.index(avatar) + 1] %}
-                                <div class="span3" style="position: relative;">
+                                <div class="col-md-3" style="position: relative;">
                                     <center>
                                         {% if avatar1 in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
                                         <a href="#" class="teamavatarimg" value="{{avatar1}}"><img src="/avatars/{{avatar1}}"  class="img-polaroid" style="width: 200px;"></a>
@@ -48,7 +48,7 @@
                             {% end %}
                             {% if avatars.index(avatar) + 2 < len(avatars) %}
                                 {% set avatar2 = avatars[avatars.index(avatar) + 2] %}
-                                <div class="span3" style="position: relative;">
+                                <div class="col-md-3" style="position: relative;">
                                     <center>
                                         {% if avatar2 in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
                                         <a href="#" class="teamavatarimg" value="{{avatar2}}"><img src="/avatars/{{avatar2}}"  class="img-polaroid" style="width: 200px;"></a>
@@ -65,7 +65,7 @@
     {% set existing = existing_avatars("user") %}
     <div id="change-user-avatar-modal" class="modal hide fade" style="z-index: 100000; display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}">
         <div class="modal-header">
-            <button id="user-avatar-form" type="button" class="close" data-dismiss="modal">&times;</button>
+            <button id="user-avatar-form" type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h3>{{_("Change")}} {% if options.teams %}{{_("Player")}} {% end %}{{_("Avatar")}}</h3>
         </div>
         <div class="modal-body">
@@ -73,7 +73,7 @@
                 {% raw xsrf_form_html() %}
                 {% for avatar in avatars[::3] %}
                         <div class="row">
-                            <div class="span3" style="position: relative;">
+                            <div class="col-md-3" style="position: relative;">
                                 <center>
                                     {% if avatar in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
                                     <a href="#" class="useravatarimg" value="{{avatar}}"><img src="/avatars/{{avatar}}"  class="img-polaroid" style="width: 200px;"></a>
@@ -81,7 +81,7 @@
                             </div>
                             {% if avatars.index(avatar) + 1 < len(avatars) %}
                                 {% set avatar1 = avatars[avatars.index(avatar) + 1] %}
-                                <div class="span3" style="position: relative;">
+                                <div class="col-md-3" style="position: relative;">
                                     <center>
                                         {% if avatar1 in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
                                         <a href="#" class="useravatarimg" value="{{avatar1}}"><img src="/avatars/{{avatar1}}"  class="img-polaroid" style="width: 200px;"></a>
@@ -90,7 +90,7 @@
                             {% end %}
                             {% if avatars.index(avatar) + 2 < len(avatars) %}
                                 {% set avatar2 = avatars[avatars.index(avatar) + 2] %}
-                                <div class="span3" style="position: relative;">
+                                <div class="col-md-3" style="position: relative;">
                                     <center>
                                         {% if avatar2 in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
                                         <a href="#" class="useravatarimg" value="{{avatar2}}"><img src="/avatars/{{avatar2}}"  class="img-polaroid" style="width: 200px;"></a>
@@ -107,7 +107,7 @@
     <!-- Edit Team -->
     <div id="edit-team-modal" class="modal hide fade" style="display: none; ">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h3>
                 <i class="fa fa-fw fa-pencil"></i>
                 {% if options.teams %}{{_("Edit")}} {{_("Team")}}{% else %}{{_("Edit")}} {{_("Player")}}{% end %}
@@ -147,7 +147,7 @@
                     <label class="control-label">
                             <input id="team-avatar" name="avatar" type="hidden" value="" />
                             (w500 x h250)<br/>
-                            {% if len(avatars) > 0 %}<a data-toggle="modal" class="btn btn-primary" href="#change-team-avatar-modal"> {{_("Select New Avatar")}} </a><br/><br/>{% end %}
+                            {% if len(avatars) > 0 %}<a data-bs-toggle="modal" class="btn btn-primary" href="#change-team-avatar-modal"> {{_("Select New Avatar")}} </a><br/><br/>{% end %}
                             <a id="teamuploadbutton" class="btn btn-primary" href="#">{{_("Upload Avatar")}}</a>
                             <input id="team-file-avatar" name="avatarfile" type="file" style="display: none;"/>
                     </label>
@@ -158,7 +158,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="edit-team-submit" type="button" class="btn btn-primary">
                 <i class="fa fa-fw fa-save"></i>
                 {{_("Save")}}
@@ -168,7 +168,7 @@
     <!-- Edit User -->
     <div id="edit-user-modal" class="modal hide fade" style="display: none; ">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h3>
                 <i class="fa fa-fw fa-pencil"></i>
                 {{_("Edit User")}}
@@ -262,7 +262,7 @@
                     <label class="control-label">
                             <input id="user-avatar" name="avatar" type="hidden" value="" />
                             (w500 x h250)<br/>
-                            {% if len(avatars) > 0 %}<a data-toggle="modal" class="btn btn-primary" href="#change-user-avatar-modal"> {{_("Select New Avatar")}} </a><br/><br/>{% end %}
+                            {% if len(avatars) > 0 %}<a data-bs-toggle="modal" class="btn btn-primary" href="#change-user-avatar-modal"> {{_("Select New Avatar")}} </a><br/><br/>{% end %}
                             <a id="useruploadbutton" class="btn btn-primary" href="#">{{_("Upload Avatar")}}</a>
                             <input id="user-file-avatar" name="avatarfile" type="file" style="display: none;"/>
                     </label>
@@ -274,7 +274,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="edit-user-submit" type="button" class="btn btn-primary">
                 <i class="fa fa-fw fa-save"></i>
                 {{_("Save")}}
@@ -283,7 +283,7 @@
     </div>
     <div id="delete-team-modal" class="modal hide fade" style="display: none; ">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h3><i class="fa fa-fw fa-times-circle-o"></i> {% if options.teams %}{{_("Delete Team")}}{% else %}{{_("Delete Player")}}{% end %}</h3>
         </div>
         <div class="modal-body">
@@ -297,7 +297,7 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="delete-team-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-fw fa-times-circle-o"></i>
                 {{_("Delete")}}
@@ -306,7 +306,7 @@
     </div>
     <div id="delete-user-modal" class="modal hide fade" style="display: none; ">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h3><i class="fa fa-fw fa-times-circle-o"></i> {{_("Delete User")}}</h3>
         </div>
         <div class="modal-body">
@@ -319,7 +319,7 @@
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="delete-user-submit" type="button" class="btn btn-danger">
                 <i class="fa fa-fw fa-times-circle-o"></i>
                 {{_("Delete")}}
@@ -329,7 +329,7 @@
     <!-- Add score to all teams -->
     <div id="edit-scores-modal" class="modal hide fade" style="display: none; ">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h3>
                 <i class="fa fa-fw fa-plus"></i>
                 {{_("Add")}} {% if options.banking %}{{_("Money")}}{% else %}{{_("Points")}}{% end %}
@@ -364,7 +364,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="edit-scores-submit" type="button" class="btn btn-primary">
                 <i class="fa fa-fw fa-save"></i>
                 {{_("Save")}}
@@ -382,12 +382,12 @@
         <input id="lock-user-uuid" name="uuid" type="hidden" />
     </form>
     <!-- Start Visible -->
-    <div class="row-fluid">
-        <div class="span10 offset1">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
             <h1>
                 <i class="fa fa-fw fa-group"></i>
                 {{_("User Management")}}
-                <a style="float: right; margin-right: 5px; margin-top: 12px;" id="edit-scores-button" class="btn btn-small" data-toggle="modal" href="#edit-scores-modal">
+                <a style="float: right; margin-right: 5px; margin-top: 12px;" id="edit-scores-button" class="btn btn-sm" data-bs-toggle="modal" href="#edit-scores-modal">
                     <i class="fa fa-fw fa-plus"></i> {{_("add")}} {% if options.banking %}{{_("money")}}{% else %}{{_("points")}}{% end %}
                 </a>
             </h1>
@@ -395,14 +395,14 @@
             {% if errors is not None and len(errors) != 0 %}
                 {% for error in errors %}
                     <div class="alert alert-error">
-                        <a class="close" data-dismiss="alert" href="#">&times;</a>
+                        <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
                         <h4 class="alert-heading">{{_("ERROR")}}</h4>
                         {{ error }}
                     </div>
                 {% end %}
             {% end %}
             {% if len(teams) == 0 %}
-                <p class="well"><strong>{{_("No Users")}}</strong></p>
+                <p class="card card-body"><strong>{{_("No Users")}}</strong></p>
             {% end %}
             {% set admins = [] %}
             {% for user in User.all() %}
@@ -411,7 +411,7 @@
                 {% end %}
             {% end %}
             {% if len(admins) > 0 %}
-                <div class="well">
+                <div class="card card-body">
                     <h2 style="display:inline;"> {{_("Admins")}}&nbsp;&nbsp;</h2>
                     <hr style="border: 2px solid green;" />
                     <table class="table table-striped">
@@ -443,13 +443,13 @@
                                 {% end %}
                                 <td> {% if user.notes %}{{ user.notes }}{% end %} </td>
                                 <td class="shortcolumn">
-                                    <a id="edit-user-button-{{ user.uuid }}" class="btn btn-mini" data-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}">
+                                    <a id="edit-user-button-{{ user.uuid }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}">
                                         <i class="fa fa-fw fa-pencil"></i>
                                         {{_("Edit Account")}}
                                     </a>
                                 </td>
                                 <td class="shortcolumn">
-                                    <a id="delete-user-button-{{ user.uuid }}" class="btn btn-mini btn-danger" data-toggle="modal" href="#delete-user-modal" data-uuid="{{ user.uuid }}">
+                                    <a id="delete-user-button-{{ user.uuid }}" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#delete-user-modal" data-uuid="{{ user.uuid }}">
                                         <i class="fa fa-fw fa-times-circle-o"></i>
                                         {{_("Delete")}}
                                     </a>
@@ -463,16 +463,16 @@
             {% end %}
             {% for team_index, team in enumerate(teams) %}
                 {% if options.teams or len(team.members) > 0 %}
-                <div class="well">
+                <div class="card card-body">
                     <h2 style="display:inline;"> {{ team.name }}&nbsp;&nbsp;</h2>
                     <h4 style="display:inline;">
                         {% if options.banking %}{{_("$")}}{% end %}{{ team.money }}{% if not options.banking %} <span style="font-size: small;">{{_("points")}}</span>{% end %}
                     </h4>
-                    <a id="delete-team-button{{ team_index }}" class="btn btn-small btn-danger" data-toggle="modal" href="#delete-team-modal" data-uuid="{{ team.uuid }}" style="float:right;">
+                    <a id="delete-team-button{{ team_index }}" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#delete-team-modal" data-uuid="{{ team.uuid }}" style="float:right;">
                         <i class="fa fa-fw fa-times-circle-o"></i>
                         {% if options.teams %}{{_("Delete Team")}}{% else %}{{_("Delete Player")}}{% end %}
                     </a>
-                    <a id="edit-team-button{{ team_index }}" class="btn btn-small" data-toggle="modal" href="#edit-team-modal" data-uuid="{{ team.uuid }}" style="float:right; margin-right:10px;">
+                    <a id="edit-team-button{{ team_index }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-team-modal" data-uuid="{{ team.uuid }}" style="float:right; margin-right:10px;">
                         <i class="fa fa-fw fa-pencil"></i>
                         {% if options.teams %}{{_("Edit Team")}}{% else %}{{_("Edit Player")}}{% end %}
                     </a>
@@ -533,32 +533,32 @@
                                     <td> {% if user.notes %}{{ user.notes }}{% end %} </td>
                                     <td class="shortcolumn">
                                         {% if user.locked %}
-                                            <a id="lock-user-button-{{ user.uuid }}" class="btn btn-mini btn-warning" data-uuid="{{ user.uuid }}">
+                                            <a id="lock-user-button-{{ user.uuid }}" class="btn btn-sm btn-warning" data-uuid="{{ user.uuid }}">
                                                 <i class="fa fa-fw fa-lock"></i>
                                                 {{_("Unlock")}}
                                             </a>
                                         {% else %}
-                                            <a id="lock-user-button-{{ user.uuid }}" class="btn btn-mini btn-success" data-uuid="{{ user.uuid }}">
+                                            <a id="lock-user-button-{{ user.uuid }}" class="btn btn-sm btn-success" data-uuid="{{ user.uuid }}">
                                                 <i class="fa fa-fw fa-unlock"></i>
                                                 {{_("Lock")}}
                                             </a>
                                         {% end %}
                                     </td>
                                     <td class="shortcolumn">
-                                        <a class="btn btn-mini" href="/user?id={{ user.uuid }}">
+                                        <a class="btn btn-sm" href="/user?id={{ user.uuid }}">
                                             <i class="fa fa-fw fa-bar-chart-o"></i>
                                             {{_("Statistics")}}
                                         </a>
                                     </td>
                                     <td class="shortcolumn">
-                                        <a id="edit-user-button-{{ user.uuid }}" class="btn btn-mini" data-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}" data-hash-algorithm="{{ user.algorithm }}" data-team-uuid="{{ user.team.uuid }}">
+                                        <a id="edit-user-button-{{ user.uuid }}" class="btn btn-sm" data-bs-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}" data-hash-algorithm="{{ user.algorithm }}" data-team-uuid="{{ user.team.uuid }}">
                                             <i class="fa fa-fw fa-pencil"></i>
                                             {{_("Edit Account")}}
                                         </a>
                                     </td>
                                     {% if options.teams %}
                                     <td class="shortcolumn">
-                                        <a id="delete-user-button-{{ user.uuid }}" class="btn btn-mini btn-danger" data-toggle="modal" href="#delete-user-modal" data-uuid="{{ user.uuid }}">
+                                        <a id="delete-user-button-{{ user.uuid }}" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#delete-user-modal" data-uuid="{{ user.uuid }}">
                                             <i class="fa fa-fw fa-times-circle-o"></i>
                                             {{_("Delete")}}
                                         </a>

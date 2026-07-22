@@ -23,7 +23,7 @@
     {% set existing = existing_avatars(dir) %}
     <div id="change-user-avatar-modal" class="modal hide fade" style="display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}">
         <div class="modal-header">
-            <button id="avatarclose" type="button" class="close" data-dismiss="modal">&times;</button>
+            <button id="avatarclose" type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h3>{{ _("Select Avatar") }}</h3>
         </div>
         <div class="modal-body">
@@ -34,7 +34,7 @@
                 <br>
                 {% for avatar in avatars[::3] %}
                     <div class="row">
-                        <div class="span3" style="position: relative;">
+                        <div class="col-md-3" style="position: relative;">
                             <center>
                                 {% if avatar in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
                                 <a href="#" class="useravatarimg" value="{{avatar}}"><img src="/avatars/{{avatar}}"  class="img-polaroid" style="width: 200px;"></a>
@@ -42,7 +42,7 @@
                         </div>
                         {% if avatars.index(avatar) + 1 < len(avatars) %}
                             {% set avatar1 = avatars[avatars.index(avatar) + 1] %}
-                            <div class="span3" style="position: relative;">
+                            <div class="col-md-3" style="position: relative;">
                                 <center>
                                     {% if avatar1 in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
                                     <a href="#" class="useravatarimg" value="{{avatar1}}"><img src="/avatars/{{avatar1}}"  class="img-polaroid" style="width: 200px;"></a>
@@ -51,7 +51,7 @@
                         {% end %}
                         {% if avatars.index(avatar) + 2 < len(avatars) %}
                             {% set avatar2 = avatars[avatars.index(avatar) + 2] %}
-                            <div class="span3" style="position: relative;">
+                            <div class="col-md-3" style="position: relative;">
                                 <center>
                                     {% if avatar2 in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
                                     <a href="#" class="useravatarimg" value="{{avatar2}}"><img src="/avatars/{{avatar2}}"  class="img-polaroid" style="width: 200px;"></a>
@@ -76,13 +76,13 @@
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
                 <div class="alert alert-error">
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                    <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
                     <h4 class="alert-heading">{{ _("ERROR") }}</h4>
                     {{ error }}
                 </div>
             {% end %}
         {% end %}
-        <div class="{% if len(avatars) == 0 %}span8 offset1 {% end %}well" style="position: relative;">
+        <div class="{% if len(avatars) == 0 %}col-md-8 offset-md-1 {% end %}card card-body" style="position: relative;">
         {% if not suspend %}
             <legend>
                 {{ _("Welcome to the Scene") }}
@@ -95,7 +95,7 @@
                         <img id="avatarimage" src="/avatars/{{avatarimg}}" class="img-polaroid" style="width: 350px; height: 175px; object-fit: cover"/>
                         <div class="controls" style="margin-top: 15px; margin-left: 0px;">
                             <input id="user_avatar_select" name="user_avatar_select" type="hidden" value="{{avatarimg}}" />
-                            {% if len(avatars) > 0 %}<a data-toggle="modal" class="btn btn-primary" href="#change-user-avatar-modal"> {{ _("Select New Avatar") }} </a>&nbsp;&nbsp;{% end %}
+                            {% if len(avatars) > 0 %}<a data-bs-toggle="modal" class="btn btn-primary" href="#change-user-avatar-modal"> {{ _("Select New Avatar") }} </a>&nbsp;&nbsp;{% end %}
                             <a id="uploadbutton" class="btn btn-primary" href="#">{{ _("Upload Avatar") }}</a>&nbsp;&nbsp;(w500 x h250)
                             <input id="user-avatar" name="avatar" type="file" accept="image/bmp,image/jpeg,image/gif,image/png" style="display: none;"/>
                         </div>
@@ -114,8 +114,8 @@
                     <div class="controls">
                         <input required id="handle" name="handle" maxlength="16" minlength="3" placeholder="{{ _('Player Alias') }}" type="text"
                             rel="popover" pattern="^[a-zA-Z0-9_\-\.]{3,16}$"
-                            data-original-title="{{ _('Player Alias') }}"
-                            data-content="{{_('Your handle must be 3-16 alphanumeric characters.  Underscore, dash, and dots allowed.')}}" />
+                            data-bs-title="{{ _('Player Alias') }}"
+                            data-bs-content="{{_('Your handle must be 3-16 alphanumeric characters.  Underscore, dash, and dots allowed.')}}" />
                     </div>
                 </div>
                 <div class="control-group">
@@ -125,8 +125,8 @@
                     <div class="controls">
                         <input required id="playername" name="playername" maxlength="64" minlength="3" placeholder="{{_('Name')}}" type="text"
                             rel="popover" pattern="^[a-zA-Z0-9 ]{3,64}$"
-                            data-original-title="{{ _('Player Name') }}"
-                            data-content="{{_('Your name, visible to game administrators.  Your name can be 3-64 alphanumeric characters')}}" />
+                            data-bs-title="{{ _('Player Name') }}"
+                            data-bs-content="{{_('Your name, visible to game administrators.  Your name can be 3-64 alphanumeric characters')}}" />
                     </div>
                 </div>
                 {% if options.require_email %}
@@ -137,8 +137,8 @@
                     <div class="controls">
                         <input required id="email" name="email" maxlength="64" minlength="3" placeholder="{{ _('Email') }}" type="text"
                             rel="popover" pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
-                            data-original-title="{{_('Player Email')}}"
-                            data-content="{{_('Your email, visible to game administrators.')}}" />
+                            data-bs-title="{{_('Player Email')}}"
+                            data-bs-content="{{_('Your email, visible to game administrators.')}}" />
                     </div>
                 </div>
                 {% end %}
@@ -154,8 +154,8 @@
                                 <div class="controls">
                                     <input id="team-name" name="team_name" maxlength="24" minlength="3" type="text" placeholder="{{ _('Team Name') }}"
                                         rel="popover" pattern="^[a-zA-Z0-9 _\-\.]{3,24}$"
-                                        data-original-title="{{_('New Team Name')}}"
-                                        data-content="{{_('Choose a name for your new team!')}} [3-24 {{_('Characters')}}]" >
+                                        data-bs-title="{{_('New Team Name')}}"
+                                        data-bs-content="{{_('Choose a name for your new team!')}} [3-24 {{_('Characters')}}]" >
                                 </div>
                             </div>
                             <div class="control-group">
@@ -163,8 +163,8 @@
                                 <div class="controls">
                                     <input id="motto" name="motto" maxlength="32" type="text" placeholder="{{ _('Team Motto') }}"
                                         rel="popover" pattern="^[a-zA-Z0-9 _\-\.]{,32}$"
-                                        data-original-title="{{_('Team Motto')}}"
-                                        data-content="{{_('Optional')}}: {{_('What is your teams motto?')}} [{{ _('Max') }}: 32 {{_('Characters')}}]">
+                                        data-bs-title="{{_('Team Motto')}}"
+                                        data-bs-content="{{_('Optional')}}: {{_('What is your teams motto?')}} [{{ _('Max') }}: 32 {{_('Characters')}}]">
                                 </div>
                             </div>
                         </div>
@@ -176,8 +176,8 @@
                         <div class="controls">
                             <input id="team-code" name="team-code" type="text" placeholder="{{ _('Team Code') }}"
                                 rel="popover"
-                                data-original-title="{{_('Team Code')}}"
-                                data-content="{{_('Provide the code used to join an existing team.  Visible to other team members on their home page.')}}" >
+                                data-bs-title="{{_('Team Code')}}"
+                                data-bs-content="{{_('Provide the code used to join an existing team.  Visible to other team members on their home page.')}}" >
                         </div>
                     </div>
                 {% else %}
@@ -186,8 +186,8 @@
                         <div class="controls">
                             <input id="motto" name="motto" maxlength="32" type="text" placeholder="{{ _('Motto') }}"
                                 rel="popover" pattern="^[a-zA-Z0-9_\-\.]{,32}$"
-                                data-original-title="{{_('Motto')}}"
-                                data-content="{{_('Optional')}}: {{_('What is your motto?')}} [{{ _('Max') }}: 32 {{_('Characters')}}]">
+                                data-bs-title="{{_('Motto')}}"
+                                data-bs-content="{{_('Optional')}}: {{_('What is your motto?')}} [{{ _('Max') }}: 32 {{_('Characters')}}]">
                         </div>
                     </div>
                 {% end %}
@@ -198,8 +198,8 @@
                         <input required id="pass1" name="pass1" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Password') }}" type="password"
                             autocomplete="off"
                             rel="popover"
-                            data-original-title="{{_('Password')}}"
-                            data-content="{{_('Enter a complex password of')}} {{ options.min_user_password_length }}+ {{_('Characters')}}" />
+                            data-bs-title="{{_('Password')}}"
+                            data-bs-content="{{_('Enter a complex password of')}} {{ options.min_user_password_length }}+ {{_('Characters')}}" />
                     </div>
                 </div>
                 <div class="control-group">
@@ -208,8 +208,8 @@
                         <input required id="pass2" name="pass2" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Confirm Password') }}" type="password"
                             autocomplete="off"
                             rel="popover"
-                            data-original-title="{{_('Confirm Password')}}"
-                            data-content="{{_('Enter the same password as before')}}" />
+                            data-bs-title="{{_('Confirm Password')}}"
+                            data-bs-content="{{_('Enter the same password as before')}}" />
                     </div>
                 </div>
                 {% if options.banking and not set(["Password Security", "Federal Reserve"]).isdisjoint(options.allowed_market_items) %}
@@ -219,8 +219,8 @@
 							<input required id="bpass" name="bpass" maxlength="{{ options.max_password_length }}" placeholder="{{ _('Bank Account Password') }}" type="password"
 								autocomplete="off"
 								rel="popover"
-								data-original-title="{{_('Password')}}"
-								data-content="{{_('Used to secure your (in-game) bank account.')}} [{{ _('Max') }}: {{ options.max_password_length }} {{_('Characters')}}].  {{_('Please do NOT enter your real bank account password.')}}" />
+								data-bs-title="{{_('Password')}}"
+								data-bs-content="{{_('Used to secure your (in-game) bank account.')}} [{{ _('Max') }}: {{ options.max_password_length }} {{_('Characters')}}].  {{_('Please do NOT enter your real bank account password.')}}" />
 						</div>
 					</div>
                 {% end %}
@@ -230,8 +230,8 @@
                         <div class="controls">
                             <input required id="regtoken" name="token" placeholder="{{ _('Token') }}" type="text"
                                 rel="popover" pattern="^[a-fA-F0-9]{1,6}$"
-                                data-original-title="{{_('Registration Token')}}"
-                                data-content="{{_('Get your registration token from reception')}}" />
+                                data-bs-title="{{_('Registration Token')}}"
+                                data-bs-content="{{_('Get your registration token from reception')}}" />
                         </div>
                     </div>
                 {% end %}

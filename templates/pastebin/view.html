@@ -11,9 +11,9 @@
         {% raw xsrf_form_html() %}
         <input id="delete-paste-uuid" name="uuid" type="hidden" value="" />
     </form>
-    <div class="row-fluid">
-        <div class="span3">
-          <div class="well sidebar-nav">
+    <div class="row">
+        <div class="col-md-3">
+          <div class="card card-body sidebar-nav">
             <ul class="nav nav-list">
                 <li class="nav-header">{{ _("Team Shares") }}</li>
                 {% if user.team.pastes != 0 %}
@@ -30,7 +30,7 @@
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
-        <div id="display-paste" class="span9">
+        <div id="display-paste" class="col-md-9">
             <div class="navbar navbar-inverse">
                 <div class="navbar-inner">
                     <a class="brand">{{ _("PasteBin") }}</a>

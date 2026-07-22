@@ -21,15 +21,15 @@
     {% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
         <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+            <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
             <h4 class="alert-heading">{{_("ERROR")}}</h4>
             {{ error }}
         </div>
         {% end %}
     {% end %}
-    <div class="well">
+    <div class="card card-body">
         <div class="row">
-            <div class="span4">
+            <div class="col-md-4">
                 <form class="form-horizontal" action="/admin/create/flag/choice" method="post">
                     {% raw xsrf_form_html() %}
                     <input id="flagtype" type="hidden" value="choice" />
@@ -39,8 +39,8 @@
                         <div class="controls">
                             <input autofocus id="flag-name" maxlength="64" name="flag_name" type="text" placeholder="({{_('Optional')}})"
                                     rel="popover"
-                                    data-original-title="{{_('Flag Name')}}"
-                                    data-content="{{_('This is what you want the flag to be displayed as.  Leave blank to be named automatically by order #.')}}" />
+                                    data-bs-title="{{_('Flag Name')}}"
+                                    data-bs-content="{{_('This is what you want the flag to be displayed as.  Leave blank to be named automatically by order #.')}}" />
                         </div>
                     </div>
                     <div class="control-group">
@@ -48,8 +48,8 @@
                         <div class="controls">
                             <select id="box-uuid" name="box_uuid"
                                     rel="popover"
-                                    data-original-title="{{_('Box')}}"
-                                    data-content="{{_('This is the box the flag is located on.')}}">
+                                    data-bs-title="{{_('Box')}}"
+                                    data-bs-content="{{_('This is the box the flag is located on.')}}">
                                 <option value=""></option>
                                 {% for thebox in sorted(Box.all()) %}
                                 <option value="{{ thebox.uuid }}"{% if box and box.uuid == thebox.uuid %} selected{% end %}>
@@ -64,8 +64,8 @@
                         <div class="controls">
                             <input required id="reward" name="reward" type="number" pattern="[0-9]+" placeholder="{% if options.banking %}{{_('$')}} {{_('Reward')}}{% else %}{{_('Points')}}{% end %}"
                                    rel="popover"
-                                   data-original-title="{% if options.banking %}{{_('Reward')}}{% else %}{{_('Points')}}{% end %}"
-                                   data-content="{{_('This is the amount awarded for capturing the flag.')}}">
+                                   data-bs-title="{% if options.banking %}{{_('Reward')}}{% else %}{{_('Points')}}{% end %}"
+                                   data-bs-content="{{_('This is the amount awarded for capturing the flag.')}}">
                         </div>
                     </div>
                     <div class="control-group">
@@ -73,9 +73,9 @@
                         <div class="controls">
                             <textarea required class="toolbar" id="description" name="description" maxlength="4096" rows="5" type="text" placeholder="{{_('Description')}}"
                                     rel="popover"
-                                    data-original-title="{{_('Description')}}"
-                                    data-html="true"
-                                    data-content="{{_('This is the description')}} [Max: 4096 {{_('Characters')}}].<br/><br/>{{_('Supports')}} Markdown (GitHub Style)">
+                                    data-bs-title="{{_('Description')}}"
+                                    data-bs-html="true"
+                                    data-bs-content="{{_('This is the description')}} [Max: 4096 {{_('Characters')}}].<br/><br/>{{_('Supports')}} Markdown (GitHub Style)">
                             </textarea>
                         </div>
                     </div>
@@ -103,8 +103,8 @@
                         <div class="controls">
                             <textarea id="capture-message" name="capture_message" type="text" placeholder="({{_('Optional')}})"
                                     rel="popover"
-                                    data-original-title="{{_('Capture Message')}}"
-                                    data-content="{{_('This is the message displayed to the user once the flag is captured.')}}" >
+                                    data-bs-title="{{_('Capture Message')}}"
+                                    data-bs-content="{{_('This is the message displayed to the user once the flag is captured.')}}" >
                             </textarea>
                         </div>
                     </div>
@@ -125,7 +125,7 @@
                     </div>
                 </div>
             </div>
-            <div class="offset3 span4">
+            <div class="offset-md-3 col-md-4">
                 <p>
                     <blockquote>
                         <small>

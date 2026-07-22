@@ -8,7 +8,7 @@
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container-fluid">
-            <a class="btn btncollapse" data-toggle="collapse" data-target=".nav-collapse">
+            <a class="btn btncollapse" data-bs-toggle="collapse" data-bs-target=".nav-collapse">
                     <i class="fa fa-bars"></i>
             </a>
             <a class="brand" href="/">
@@ -27,7 +27,7 @@
                         </a>
                     </li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fa fa-fw fa-gamepad"></i>
                             {{ _("Game") }}
                             <b class="caret"></b>
@@ -69,7 +69,7 @@
                         </ul>
                     </li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fa fa-fw fa-wrench"></i>
                             {{ _("Tools") }}
                             <b class="caret"></b>
@@ -121,7 +121,7 @@
                     {% if options.use_black_market %}
                         {% if user.team and len(user.team.items) != 0 %}
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                                 <i class="fa fa-fw fa-dashboard"></i>
                                 {{ _("Unlocks") }}
                                 <b class="caret"></b>
@@ -165,7 +165,7 @@
                     {% end %}
                     {% if scoreboard_visible %}
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fa fa-fw fa-bar-chart-o"></i>
                             {{ _("Scoreboard") }}
                             <b class="caret"></b>
@@ -210,8 +210,8 @@
                 </ul>
             </div><!--/.nav-collapse -->
             <!-- Right Side -->
-            <div class="btn-group pull-right">
-                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            <div class="btn-group float-end">
+                <a class="btn dropdown-toggle" data-bs-toggle="dropdown" href="#">
                     <i class="fa fa-fw fa-user"></i>
                     {{ user.handle }}
                     <span class="caret"></span>
@@ -241,7 +241,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="nav-collapse pull-right">
+            <div class="nav-collapse float-end">
                 <ul class="nav">
                     <li>
                         <span id="nav-countdown" class="navbar-text"
@@ -251,7 +251,7 @@
                         </span>
                     </li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fa fa-bell" title="{{ _('Notifications') }}"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-alert-menu">

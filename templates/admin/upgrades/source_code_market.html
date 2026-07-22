@@ -10,7 +10,7 @@
 {% block modals %}
 <div id="add-source-code-modal" class="modal hide fade" style="display: none; ">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
         <h3>{{_("Add Source Code to Market")}}</h3>
     </div>
     <div class="modal-body">
@@ -38,7 +38,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+        <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
         <button id="add-source-code-submit" class="btn btn-primary" type="button">
             {{_("Add to Market")}}
         </button>
@@ -46,7 +46,7 @@
 </div>
 <div id="delete-source-code-modal" class="modal hide fade" style="display: none; ">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
         <h3>
             <i class="fa fa-times-circle-o"></i>
             {{_("Delete Source Code")}}
@@ -63,7 +63,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+        <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
         <button id="delete-source-code-submit" type="button" class="btn btn-danger">
             <i class="fa fa-times-circle-o"></i>
             {{_("Delete")}}
@@ -83,13 +83,13 @@
     {% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
         <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+            <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
             <h4 class="alert-heading">{{_("ERROR")}}</h4>
             {{ error }}
         </div>
         {% end %}
     {% end %}
-    <div class="well">
+    <div class="card card-body">
         {% if len(Box.unlocked()) == 0 %}
             <p><strong>{{_("No Boxes")}}</strong></p>
         {% else %}
@@ -116,7 +116,7 @@
                         <td>N / A</td>
                         <td>N / A</td>
                         <td>
-                            <a id="add-source-code-button{{ index }}" class="btn btn-mini" data-toggle="modal" href="#add-source-code-modal" data-uuid="{{ box.uuid }}">
+                            <a id="add-source-code-button{{ index }}" class="btn btn-sm" data-bs-toggle="modal" href="#add-source-code-modal" data-uuid="{{ box.uuid }}">
                                 {{_("Add Source Code")}}
                             </a>
                         </td>
@@ -125,7 +125,7 @@
                         <td>{{ box.source_code.description }}</td>
                         <td>{% if options.banking %}{{ _("$") }}{% end %}{{ box.source_code.price }}</td>
                         <td>
-                            <a id="delete-source-code-button{{ index }}" class="btn btn-mini btn-danger" data-toggle="modal" href="#delete-source-code-modal" data-uuid="{{ box.uuid }}">
+                            <a id="delete-source-code-button{{ index }}" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#delete-source-code-modal" data-uuid="{{ box.uuid }}">
                                 <i class="fa fa-times-circle-o"></i>
                                 {{_("Delete Source Code")}}
                             </a>

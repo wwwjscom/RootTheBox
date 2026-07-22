@@ -14,7 +14,7 @@
     {% from tornado.options import options %}
     {% from math import ceil %}
     {% if not hide_scoreboard %}
-    <div class="row-fluid">
+    <div class="row">
         <div style="float:right; margin-top: -15px; margin-right: 4.75%;">
             {% set pcount = ceil(teamcount / display) %}
             <div id="parameters" data-count="{{display}}" data-page="{{page}}" style="visibility: hidden;"></div>
@@ -51,13 +51,13 @@
         {% if timer %}
         <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-right: 100px;"></h3>
         {% end %}
-        <h1 class="offset1">
+        <h1 class="offset-md-1">
             <i class="fa fa-bar-chart-o"></i>
             {% if scoreboard_top > 0 %}{{ _("Top") }} {{ scoreboard_top }} {% end %}{{ _("Scoreboard") }}
         </h1>
     </div>
     <br />
-    <div class="row-fluid">
+    <div class="row">
         {% if len(options.scoreboard_right_image) > 0 %}
             {% set wellspan="span7" %}
         {% elif options.teams and options.show_mvp %}
@@ -65,7 +65,7 @@
         {% else %}
             {% set wellspan="span10" %}
         {% end %}
-        <div class="well {{wellspan}} offset1" style="padding-left: 30px; padding-right: 30px;">
+        <div class="card card-body {{wellspan}} offset-md-1" style="padding-left: 30px; padding-right: 30px;">
             <div id="summary_loading"><h3>Loading...</h3></div>
             <table id="summary_table" class="table table-striped" data-since-score="{{ _('Since Score') }}">
                 <thead>
@@ -99,7 +99,7 @@
         {% set showimage = len(options.scoreboard_right_image) > 0 %}
         {% set showmvp = options.teams and options.show_mvp %}
         {% if showimage or showmvp %}
-        <div class="well span3">
+        <div class="card card-body col-md-3">
             {% if showimage %}
                 <img id="scoreboard_right_image" src="{{options.scoreboard_right_image}}">
             {% end %}

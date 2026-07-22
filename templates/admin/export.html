@@ -16,13 +16,13 @@
     {% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
         <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+            <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
             <h4 class="alert-heading">{{ _("ERROR") }}</h4>
             {{ error }}
         </div>
         {% end %}
     {% end %}
-    <div class="well">
+    <div class="card card-body">
         <form class="form-horizontal" action="/admin/export/xml" method="post">
             {% raw xsrf_form_html() %}
             <input id="game-objects" name="game_objects" type="hidden" value="true">
@@ -30,7 +30,7 @@
             <!--
             <h4>What do you want to export?</h4>
             <div class="control-group">
-                <div class="btn-group" data-toggle="buttons-checkbox">
+                <div class="btn-group" data-bs-toggle="buttons-checkbox">
                     <button id="export-game-objects-button" type="button" class="btn btn-primary active">
                         Game Objects
                     </button>

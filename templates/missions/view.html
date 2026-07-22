@@ -10,7 +10,7 @@
 {% from tornado.options import options %}
     <div id="unlock-game-level-modal" class="modal hide fade" style="display: none;">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h3>
                 <i class="fa fa-unlock"></i>
                 {{ _("Unlock Level") }}
@@ -25,7 +25,7 @@
             </p>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="unlock-game-level-submit" class="btn btn-primary" type="button">
                 {{ _("Unlock") }}
             </button>
@@ -48,7 +48,7 @@
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
             <div class="alert alert-error">
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                    <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
                     <h4 class="alert-heading">{{ _("ERROR") }}</h4>
                     {{ error }}
             </div>
@@ -69,7 +69,7 @@
             {# Server-provided timer state for this level on the missions overview page. #}
             {% set level_timer = level_submission_timers.get(level.uuid, {}) %}
             {% if not (level.type == 'hidden' and not has_level) %}
-            <div class="well">
+            <div class="card card-body">
                 {% if len(GameLevel.all()) > 1 %}
                     <h3 class="levelheader">
                         {% if has_level %}
@@ -133,7 +133,7 @@
                         {% end %}
                         {% for box in boxes[::3] %}
                             <div class="row">
-                                <div class="span3">
+                                <div class="col-md-3">
                                     <center>
                                         <a href="/user/missions/boxes?uuid={{ box.uuid }}">
                                             <h5 style="margin-bottom: 6px;">
@@ -173,7 +173,7 @@
                                 </div>
                                 {% if boxes.index(box) + 1 < len(boxes) %}
                                     {% set box1 = boxes[boxes.index(box) + 1] %}
-                                    <div class="span3 offset1">
+                                    <div class="col-md-3 offset-md-1">
                                         <center>
                                             <a href="/user/missions/boxes?uuid={{ box1.uuid }}">
                                                 <h5 style="margin-bottom: 6px;">
@@ -214,7 +214,7 @@
                                 {% end %}
                                 {% if boxes.index(box) + 2 < len(boxes) %}
                                     {% set box2 = boxes[boxes.index(box) + 2] %}
-                                    <div class="span3 offset1">
+                                    <div class="col-md-3 offset-md-1">
                                         <center>
                                             <a href="/user/missions/boxes?uuid={{ box2.uuid }}">
                                                 <h5 style="margin-bottom: 6px;">
@@ -259,7 +259,7 @@
                     </div>
                 {% else %}
                     {% if level._type == "buyout" %}
-                    <a id="unlock-game-level-button{{ index }}" class="btn" data-toggle="modal" href="#unlock-game-level-modal" data-uuid="{{ level.uuid }}" data-banking="{{ str(options.banking).lower() }}" data-buyout="{{ level.buyout }}">
+                    <a id="unlock-game-level-button{{ index }}" class="btn" data-bs-toggle="modal" href="#unlock-game-level-modal" data-uuid="{{ level.uuid }}" data-banking="{{ str(options.banking).lower() }}" data-buyout="{{ level.buyout }}">
                         <i class="fa fa-unlock"></i>
                         {{ _("Unlock") }}
                     </a>

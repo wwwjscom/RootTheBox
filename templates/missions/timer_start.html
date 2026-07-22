@@ -9,7 +9,7 @@
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
             <div class="alert alert-error">
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                    <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
                     <h4 class="alert-heading">{{ _("ERROR") }}</h4>
                     {{ error }}
             </div>
@@ -18,7 +18,7 @@
          {% if info is not None and len(info) != 0 %}
             {% for msg in info %}
             <div class="alert alert-info">
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                    <a class="close" data-bs-dismiss="alert" href="#">&times;</a>
                     <h4 class="alert-heading">{{ _("INFO") }}</h4>
                     {{ msg }}
             </div>

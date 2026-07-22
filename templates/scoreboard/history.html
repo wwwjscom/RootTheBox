@@ -16,17 +16,17 @@
             setGraphScale("{% if options.banking %}{{ _('Money') }}{% else %}{{ _('Points') }}{% end %}");
             setGraphSymbol("{% if options.banking %}{{ _('$') }}{% end %}");
         </script>
-        <div class="row-fluid">
+        <div class="row">
             {% if timer %}
             <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-top: 3px; margin-bottom: 0px; margin-right: 150px;"></h3>
             {% end %}
-            <h1 class="offset1" style="margin-bottom: 0px;">
+            <h1 class="offset-md-1" style="margin-bottom: 0px;">
                 <i class="fa fa-bar-chart-o"></i>
                 {{ _("Charts") }}
             </h1>
             <br />
-            <div class="row-fluid">
-            <div class="well span10 offset1">
+            <div class="row">
+            <div class="card card-body col-md-10 offset-md-1">
                 <div class="navbar navbar-inverse">
                     <div class="navbar-inner">
                         <div class="container ">
@@ -73,7 +73,7 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="nav pull-right">
+                            <div class="nav float-end">
                                 <a class="brand">
                                     <i id="activity-monitor" class="fa fa-fw fa-eye-slash"></i>
                                 </a>
@@ -87,13 +87,13 @@
                 </div>
             </div>
         </div>
-            <div id="pie_graphs" class="row-fluid">
-                <div class="well span5 offset1">
+            <div id="pie_graphs" class="row">
+                <div class="card card-body col-md-5 offset-md-1">
                     <div id="pie_flags" style="height:300px;" data-name="{{ _('Flags Captured') }} ({{ _('Top 10') }})">
                         <!-- Pie Chart Here -->
                     </div>
                 </div>
-                <div class="well span5">
+                <div class="card card-body col-md-5">
                     <div id="pie_money" style="height:300px;" 
                         data-name="{% if options.banking %}{{ _('Bank Account') }}{% else %}{{ _('Score') }}{% end %}  ({{ _('Top 10') }})" 
                         data-symbol="{% if options.banking %}{{ _('$') }}{% end %}">
