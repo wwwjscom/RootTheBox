@@ -1,0 +1,43 @@
+[project]
+name = "rootthebox"
+description = "A real-time CTF (Capture the Flag) scoring engine."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+# The canonical version lives in setup/__init__.py (bumped at release time per
+# the Gitflow workflow). This project is not pip-installed (see [tool.uv] below),
+# so the value here is metadata only.
+version = "0.0.0"
+
+dependencies = [
+    # Web framework — pinned below the next major until the Tornado async
+    # cleanup (roadmap item 1.6) is done.
+    "tornado>=6.4,<7",
+    # ORM — held on 1.x until the SQLAlchemy 2.x migration (roadmap item 1.5).
+    "sqlalchemy>=1.4,<2",
+    "alembic",
+    # Sessions (memcached, binary protocol) — imported as `bmemcached`.
+    "python-binary-memcached",
+    # Passwords / crypto helpers.
+    "pbkdf2",
+    "msal",
+    # Parsing / validation / networking.
+    "python-dateutil",
+    "defusedxml",
+    "netaddr",
+    "requests",
+    "python-resize-image",
+    "rocketchat-API",
+]
+
+[dependency-groups]
+# Installed in the container so `rootthebox.py --tests` can run pytest.
+dev = [
+    "pytest",
+    "pytest-cov",
+]
+
+[tool.uv]
+# Root the Box runs as `python3 rootthebox.py`, not as an installed package, so
+# uv should resolve/lock the dependencies without trying to build this project.
+package = false

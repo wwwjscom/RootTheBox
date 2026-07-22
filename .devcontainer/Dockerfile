@@ -26,8 +26,14 @@ RUN apt-get -qq update \
 # Generate the en_US.UTF-8 locale used by mysqlsh
 RUN sed -Ei 's/^# en_US\.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen
 
-COPY ./setup/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt --upgrade && pip install --upgrade pylint
+# uv: install the locked dependencies (+ dev group) into the system interpreter,
+# derived from pyproject.toml + uv.lock for reproducibility.
+COPY --from=ghcr.io/astral-sh/uv:0.11 /uv /uvx /bin/
+COPY ./pyproject.toml ./uv.lock ./
+RUN uv export --frozen --no-emit-project -o /tmp/requirements.lock \
+	&& uv pip install --system --no-cache-dir -r /tmp/requirements.lock \
+	&& uv pip install --system --no-cache-dir pylint \
+	&& rm /tmp/requirements.lock
 
 # Create a new user dev (1000 matches the default user in WSL)
 ARG USERNAME=rtbdev

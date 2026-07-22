@@ -13,3 +13,5 @@ files/*.state
 files/*.key
 files/*.log
 files/data/*-*
+
+.venv/

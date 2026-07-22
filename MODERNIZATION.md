@@ -60,6 +60,14 @@ boot. Don't commit a real one.
 `teardown_database`; they're gitignored. (A pre-Phase-0 bug left a pile of
 strays — fixed.)
 
+**Dependencies (post-1.3)** are managed with **uv**: `pyproject.toml` is the
+human-edited spec, `uv.lock` is the resolved, hashed lockfile (both committed).
+The Docker image installs them with `uv sync --frozen` into `/opt/rtb/.venv`,
+which is placed first on `PATH` so `python3`/`pytest` resolve to the locked
+environment. To change a dependency: edit `pyproject.toml`, run `uv lock`, then
+rebuild. `setup/requirements.txt` and `setup/depends.sh` were removed. `sqlalchemy`
+is held at `>=1.4,<2` and `tornado` at `>=6.4,<7` until items 1.5/1.6.
+
 ---
 
 ## Test coverage baseline (why the plan is shaped this way)
@@ -182,7 +190,12 @@ _(Update as branches land.)_
       (float), and renamed the Py2-named `unicode()` helper in `StringCoding` to
       `_to_unicode` (behavior unchanged). enum34 was already removed in Phase 0.
       Verified: image builds, **83 passed** (unchanged from baseline).
-- [ ] 1.3 Modern packaging + pinned deps
+- [x] 1.3 Modern packaging + pinned deps (uv) — added `pyproject.toml` +
+      `uv.lock` (hashed); Docker/devcontainer install via uv from the lock;
+      pinned tornado `>=6.4,<7` (6.5.7) and held sqlalchemy `>=1.4,<2` (1.4.54);
+      dropped `mysqlclient`/`PyMySQL` (SQLite-only) and `setuptools-rust` (build
+      tool, not a runtime dep); removed `setup/requirements.txt` +
+      `setup/depends.sh`. Verified: image builds, **83 passed**.
 - [ ] 1.4a Characterization tests (gate before 1.5)
 - [ ] 1.5 SQLAlchemy 1.x → 2.x
 - [ ] 1.6 Tornado async cleanup
