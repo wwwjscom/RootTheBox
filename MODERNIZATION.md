@@ -191,7 +191,7 @@ _(Update as branches land.)_
       `_to_unicode` (behavior unchanged). enum34 was already removed in Phase 0.
       Verified: image builds, **83 passed** (unchanged from baseline).
 - [x] 1.3 Modern packaging + pinned deps (uv) — added `pyproject.toml` +
-      `uv.lock` (hashed); Docker/devcontainer install via uv from the lock;
+      `uv.lock` (hashed); Docker installs via `uv sync --frozen` from the lock;
       pinned tornado `>=6.4,<7` (6.5.7) and held sqlalchemy `>=1.4,<2` (1.4.54);
       dropped `mysqlclient`/`PyMySQL` (SQLite-only) and `setuptools-rust` (build
       tool, not a runtime dep); removed `setup/requirements.txt` +
