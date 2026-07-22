@@ -2,72 +2,54 @@
 <link href="/static/css/menu.css" rel="stylesheet" />
 {% end %}
 {% from tornado.options import options %}
-<div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container-fluid">
-            <a class="btn btncollapse" data-bs-toggle="collapse" data-bs-target=".nav-collapse">
-                    <i class="fa fa-bars"></i>
-            </a>
-            <a class="brand" href="/">
-                {% if options.debug %}
-                    <i class="fa fa-fw fa-bug"></i>
-                    {{ _("DEBUG") }}
-                {% else %}
-                    {{ options.game_name }}
+<nav class="navbar navbar-expand-lg bg-dark fixed-top" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            {% if options.debug %}
+                <i class="fa fa-fw fa-bug"></i>
+                {{ _("DEBUG") }}
+            {% else %}
+                {{ options.game_name }}
+            {% end %}
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">
+                        <i class="fa fa-fw fa-sign-in"></i>
+                        {{ _("Login") }}
+                    </a>
+                </li>
+                {% if registration_visible %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/registration">
+                        <i class="fa fa-fw fa-pencil"></i>
+                        {{ _("Registration") }}
+                    </a>
+                </li>
                 {% end %}
-            </a>
-            <div class="nav-collapse float-end">
-                <ul class="nav">
-                    <li>
-                        <a href="/login">
-                            <i class="fa fa-fw fa-sign-in"></i>
-                            {{ _("Login") }}
-                        </a>
-                    </li>
-                    {% if registration_visible %}
-                    <li>
-                        <a href="/registration">
-                            <i class="fa fa-fw fa-pencil"></i>
-                            {{ _("Registration") }}
-                        </a>
-                    </li>
-                    {% end %}
-                    {% if scoreboard_visible %}
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fa fa-fw fa-bar-chart-o"></i>
-                            {{ _("Scoreboard") }}
-                            <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a href="/scoreboard">
-                                    {{ _("Summary") }}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/scoreboard/history">
-                                    {{ _("Charts") }}
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/teams">
-                                    {% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %}
-                              </a>
-                            </li>
-                            {% if options.use_black_market and "Federal Reserve" in options.allowed_market_items %}
-                                <li>
-                                    <a href="/scoreboard/wall_of_sheep">
-                                        {{ _("Wall of Sheep") }}
-                                    </a>
-                                </li>
-                            {% end %}
-                        </ul>
-                    </li>
-                    {% end %}
-                </ul>
-            </div>
-            <!--/.nav-collapse -->
+                {% if scoreboard_visible %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-fw fa-bar-chart-o"></i>
+                        {{ _("Scoreboard") }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/scoreboard">{{ _("Summary") }}</a></li>
+                        <li><a class="dropdown-item" href="/scoreboard/history">{{ _("Charts") }}</a></li>
+                        <li>
+                            <a class="dropdown-item" href="/teams">{% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %}</a>
+                        </li>
+                        {% if options.use_black_market and "Federal Reserve" in options.allowed_market_items %}
+                        <li><a class="dropdown-item" href="/scoreboard/wall_of_sheep">{{ _("Wall of Sheep") }}</a></li>
+                        {% end %}
+                    </ul>
+                </li>
+                {% end %}
+            </ul>
         </div>
     </div>
-</div>
+</nav>
