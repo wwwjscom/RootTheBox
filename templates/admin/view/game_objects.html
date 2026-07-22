@@ -93,16 +93,16 @@
             <form id="edit-corporation-form" class="form-horizontal" method="post" action="/admin/edit/corporation">
                 {% raw xsrf_form_html() %}
                 <input id="edit-corporation-uuid" name="uuid" value="" type="hidden" />
-                <div class="control-group">
-                    <label class="control-label" for="corporation_name">{{ _("Name") }}</label>
-                    <div class="controls">
-                        <input id="corporation-name" name="name" type="text" maxlength="32" placeholder="{{ _('Corporation Name') }}" />
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="corporation_name">{{ _("Name") }}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="corporation-name" name="name" type="text" maxlength="32" placeholder="{{ _('Corporation Name') }}" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="corporation_description">{{ _("Description") }}</label>
-                    <div class="controls">
-                        <textarea id="corporation-description" name="description" maxlength="512" type="text" placeholder="{{ _('Optional') }} {{ _('Description') }}"></textarea>
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="corporation_description">{{ _("Description") }}</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="corporation-description" name="description" maxlength="512" type="text" placeholder="{{ _('Optional') }} {{ _('Description') }}"></textarea>
                     </div>
                 </div>
             </form>
@@ -150,42 +150,42 @@
             <form id="edit-box-form" class="form-horizontal" method="post" action="/admin/edit/box" enctype="multipart/form-data">
                 {% raw xsrf_form_html() %}
                 <input id="box-uuid" name="uuid" value="" type="hidden" />
-                <div class="control-group">
-                    <label class="control-label" for="box_name">{{ _("Box Name") }}</label>
-                    <div class="controls">
-                        <input id="box-name" name="name" type="text" placeholder="{{ _('Box Name') }}" />
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="box_name">{{ _("Box Name") }}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="box-name" name="name" type="text" placeholder="{{ _('Box Name') }}" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="box-order">{{ _("Box Order") }}</label>
-                    <div class="controls">
-                        <input id="box-order" name="order" type="number" pattern="[1-9]+" min=1 placeholder="{{_('Box Order')}}" />
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="box-order">{{ _("Box Order") }}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="box-order" name="order" type="number" pattern="[1-9]+" min=1 placeholder="{{_('Box Order')}}" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="game_level">{{_("Game Level")}}</label>
-                    <div class="controls">
-                        <select id="edit-box-game-level" name="game_level">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="game_level">{{_("Game Level")}}</label>
+                    <div class="col-sm-9">
+                        <select class="form-select" id="edit-box-game-level" name="game_level">
                             {% for level in GameLevel.all() %}
                             <option value="{{ level.uuid }}">{{ level.name }}</option>
                             {% end %}
                         </select>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="box_corporation">{{ _("Corporation") }}</label>
-                    <div class="controls">
-                        <select id="edit-box-corporation" name="corporation_uuid">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="box_corporation">{{ _("Corporation") }}</label>
+                    <div class="col-sm-9">
+                        <select class="form-select" id="edit-box-corporation" name="corporation_uuid">
                             {% for corporation in Corporation.all() %}
                                 <option value="{{ corporation.uuid }}">{% if corporation.name != "" %}{{ corporation.name }}{% else %}({{ _("No name") }}){% end %}</option>
                             {% end %}
                         </select>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="box_catetory">{{ _("Category") }}</label>
-                    <div class="controls">
-                        <select id="edit-box-category" name="category_uuid">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="box_catetory">{{ _("Category") }}</label>
+                    <div class="col-sm-9">
+                        <select class="form-select" id="edit-box-category" name="category_uuid">
                             <option value=""></option>
                             {% for category in Category.all() %}
                                 <option value="{{ category.uuid }}">{{ category.category }}</option>
@@ -193,10 +193,10 @@
                         </select>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="edit-box-operating_system">{{ _("System Type") }}</label>
-                    <div class="controls">
-                        <select id="edit-box-operating_system" name="operating_system">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="edit-box-operating_system">{{ _("System Type") }}</label>
+                    <div class="col-sm-9">
+                        <select class="form-select" id="edit-box-operating_system" name="operating_system">
                             <option value="linux">
                                 Linux
                             </option>
@@ -215,29 +215,29 @@
                         </select>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="box-value">{% if options.banking %}{{ _("Reward") }}{% else %}{{ _("Points") }}{% end %}</label>
-                    <div class="controls">
-                        <input id="box-value" name="value" type="number" pattern="[0-9]+" placeholder="{% if options.banking %}{{_('$')}} {{_('Reward')}}{% else %}{{_('Points')}}{% end %}" />
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="box-value">{% if options.banking %}{{ _("Reward") }}{% else %}{{ _("Points") }}{% end %}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="box-value" name="value" type="number" pattern="[0-9]+" placeholder="{% if options.banking %}{{_('$')}} {{_('Reward')}}{% else %}{{_('Points')}}{% end %}" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="box_description">{{_("Description")}}</label>
-                    <div class="controls">
-                        <textarea rows="4" class="toolbar" id="box-description" name="description" placeholder="{{_('Description')}}" ></textarea>
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="box_description">{{_("Description")}}</label>
+                    <div class="col-sm-9">
+                        <textarea rows="4" class="toolbar form-control" id="box-description" name="description" placeholder="{{_('Description')}}" ></textarea>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="box_difficulty">{{_("Difficulty")}}</label>
-                    <div class="controls">
-                        <input id="box-difficulty" name="difficulty" type="text" placeholder="{{_('Difficulty Rating')}}" />
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="box_difficulty">{{_("Difficulty")}}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="box-difficulty" name="difficulty" type="text" placeholder="{{_('Difficulty Rating')}}" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="flag_submission_type">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="flag_submission_type">
                         {{ _("Flag Submission Type") }}
                     </label>
-                    <div class="controls">
+                    <div class="col-sm-9">
                         <input id="box-flag_submission_type" name="flag_submission_type" type="hidden" value="CLASSIC" />
                         <div id="box-flag-submission-type-button" class="btn-group" data-bs-toggle="buttons-radio">
                             <button id="box-flag-submission-type-classic" type="button" class="btn btn-primary">
@@ -251,11 +251,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="box_avatar">{{ _("Avatar")}}</label>
-                    <div class="controls">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="box_avatar">{{ _("Avatar")}}</label>
+                    <div class="col-sm-9">
                         <a id="uploadbutton" class="btn btn-primary" href="#">{{ _("Upload") }}</a>
-                        <input id="box-avatar" name="avatar" type="file" style="display: none;"/>
+                        <input class="form-control" id="box-avatar" name="avatar" type="file" style="display: none;"/>
                         <input id="box_avatar_select" name="box_avatar_select" type="hidden" />
                         {% if len(avatars) > 0 %}&nbsp;&nbsp;<a id="change_avatar_button" data-bs-toggle="modal" class="btn btn-primary" href="#change-box-avatar-modal">{{_("Choose")}}</a>{% end %}
                         &nbsp;&nbsp;<a id="removeavatar" class="btn btn-primary" href="#">{{ _("None")}}</a>
@@ -263,10 +263,10 @@
                     </div>
                 </div>
                 {% if options.story_mode %}
-                <div class="control-group">
-                    <label class="control-label" for="box-capture_message">{{_("Capture Message")}}</label>
-                    <div class="controls">
-                        <textarea rows="4" id="box-capture_message" name="capture_message" placeholder="({{_('Optional')}}">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="box-capture_message">{{_("Capture Message")}}</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" rows="4" id="box-capture_message" name="capture_message" placeholder="({{_('Optional')}}">
                         </textarea>
                     </div>
                 </div>
@@ -317,26 +317,26 @@
                 {% raw xsrf_form_html() %}
                 <input id="flag-uuid" name="uuid" type="hidden" />
                 <input id="flag-flagtype" name="flagtype" type="hidden" />
-                <div class="control-group">
-                    <label class="control-label" for="flag-name">{{_("Flag Name")}}</label>
-                    <div class="controls">
-                        <input id="flag-name" maxlength="64" name="name" type="text" placeholder="({{_('Optional')}}" />
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="flag-name">{{_("Flag Name")}}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="flag-name" maxlength="64" name="name" type="text" placeholder="({{_('Optional')}}" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="edit-flag-box">{{_("Box")}}</label>
-                    <div class="controls">
-                        <select id="edit-flag-box" name="box_uuid">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="edit-flag-box">{{_("Box")}}</label>
+                    <div class="col-sm-9">
+                        <select class="form-select" id="edit-flag-box" name="box_uuid">
                             {% for box in sorted(Box.all()) %}
                                 <option value="{{ box.uuid }}">{{ box.name }}</option>
                             {% end %}
                         </select>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="edit-flag-type">{{_("Flag Type")}}</label>
-                    <div class="controls">
-                        <select id="edit-flag-type" name="flag_type">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="edit-flag-type">{{_("Flag Type")}}</label>
+                    <div class="col-sm-9">
+                        <select class="form-select" id="edit-flag-type" name="flag_type">
                             {% for item in FLAG_TYPES %}
                                 <option id="edit-type-{{item}}" class="typeoption" value="{{ item }}">
                                     {{ item }}
@@ -345,21 +345,21 @@
                         </select>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="flag-value">{% if options.banking %}{{_("Reward")}}{% else %}{{_("Points")}}{% end %}</label>
-                    <div class="controls">
-                        <input id="flag-value" name="value" type="number" placeholder="{% if options.banking %}($) {% end %}Reward Value" />
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="flag-value">{% if options.banking %}{{_("Reward")}}{% else %}{{_("Points")}}{% end %}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="flag-value" name="value" type="number" placeholder="{% if options.banking %}($) {% end %}Reward Value" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="flag-description">{{_("Description")}}</label>
-                    <div class="controls">
-                        <textarea rows="4" class="toolbar" id="flag-description" name="description" type="text" placeholder="{{_('Description')}}"></textarea>
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="flag-description">{{_("Description")}}</label>
+                    <div class="col-sm-9">
+                        <textarea rows="4" class="toolbar form-control" id="flag-description" name="description" type="text" placeholder="{{_('Description')}}"></textarea>
                     </div>
                 </div>
-                <div id="casegroup" class="control-group">
-                    <label class="control-label" for="case-sensitive">{{_("Case-Sensitive")}}</label>
-                    <div class="controls">
+                <div id="casegroup" class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="case-sensitive">{{_("Case-Sensitive")}}</label>
+                    <div class="col-sm-9">
                         <input id="flag-case-sensitive" name="case-sensitive" type="hidden" value=1 />
                         <div id="case-button" class="btn-group" data-bs-toggle="buttons-radio"
                             rel="popover"
@@ -376,30 +376,30 @@
                         </div>
                     </div>
                 </div>
-                <div id="flagtokengroup" class="control-group">
-                    <label class="control-label" for="flag-token">{{_("Token")}}</label>
-                    <div class="controls">
-                        <input id="flag-token" name="token" type="text" maxlength="256" placeholder="{{_('Token Value')}}" />
+                <div id="flagtokengroup" class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="flag-token">{{_("Token")}}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="flag-token" name="token" type="text" maxlength="256" placeholder="{{_('Token Value')}}" />
                     </div>
                 </div>
-                <div id="testflaggroup" class="control-group">
-                    <label class="control-label" for="test_token">{{_("Test Flag")}}</label>
-                    <div class="controls" style="position:relative;">
+                <div id="testflaggroup" class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="test_token">{{_("Test Flag")}}</label>
+                    <div class="col-sm-9" style="position:relative;">
                         <span style="position: absolute; left: 230px; top: 3px; font-size: 175%;">
                             <i id="testtrue" class="fa fa-check" style="color: green; display: none;"></i>
                             <i id="testfalse" class="fa fa-times" style="color: red; display: none;"></i>
                         </span>
-                            <input id="test-token" name="test_token" type="text" placeholder="{{_('Enter a Matching Flag')}}" autocomplete="off"
+                            <input class="form-control" id="test-token" name="test_token" type="text" placeholder="{{_('Enter a Matching Flag')}}" autocomplete="off"
                                 rel="popover"
                                 data-bs-title="{{_('Token')}}"
                                 data-bs-content="{{ _('This is a test flag/string the user could input for credit.')}}" />
                     </div>
                 </div>
-                <div id="choicegroup" class="control-group" style="margin-bottom: 10px;">
-                    <label class="control-label" for="token" style="margin-left: -20px;">{{_("Multiple Choice") }}</label>
-                    <div class="controls">
-                        <div class="input-group control-group after-add-more" style="position: relative; margin-bottom: 10px;">
-                            <input type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" required /><input type="text" name="choice" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
+                <div id="choicegroup" class="row mb-3" style="margin-bottom: 10px;">
+                    <label class="col-sm-3 col-form-label" for="token" style="margin-left: -20px;">{{_("Multiple Choice") }}</label>
+                    <div class="col-sm-9">
+                        <div class="input-group row mb-3 after-add-more" style="position: relative; margin-bottom: 10px;">
+                            <input class="form-check-input" type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" required /><input type="text" name="choice" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
                             <div class="input-group-btn" style="position: absolute; left: 228px; top: 0px;"> 
                                 <button class="btn btn-success add-more" type="button"style="padding: 4px 10px 0px; vertical-align: middle;"><i class="fa fa-plus" style="font-size: 160%;"></i></button>
                             </div>
@@ -408,24 +408,24 @@
                 </div>
                  <!-- Copy Fields -->
                 <div class="copy hide">
-                    <div class="choice-control-group input-group" style="margin-bottom: 10px; position: relative;">
-                        <input type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" /><input type="text" name="choice" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
+                    <div class="choice-row mb-3 input-group" style="margin-bottom: 10px; position: relative;">
+                        <input class="form-check-input" type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" /><input type="text" name="choice" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
                         <div class="input-group-btn" style="position: absolute; left: 228px; top: 0px;"> 
                             <button class="btn btn-danger remove" type="button" style="padding: 3px 10px 1px; vertical-align: middle;"><i class="fa fa-times" style="font-size: 160%;"></i></button>
                         </div>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="edit-flag-lock">{{_("Dependent Flag")}}</label>
-                    <div class="controls">
-                        <select id="edit-flag-lock" name="lock_uuid"></select>
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="edit-flag-lock">{{_("Dependent Flag")}}</label>
+                    <div class="col-sm-9">
+                        <select class="form-select" id="edit-flag-lock" name="lock_uuid"></select>
                     </div>
                 </div>
                 {% if options.story_mode %}
-                <div class="control-group">
-                    <label class="control-label" for="flag-capture_message">{{_("Capture Message")}}</label>
-                    <div class="controls">
-                        <textarea rows="4" id="flag-capture_message" name="capture_message" placeholder="({{_('Optional')}}">
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="flag-capture_message">{{_("Capture Message")}}</label>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" rows="4" id="flag-capture_message" name="capture_message" placeholder="({{_('Optional')}}">
                         </textarea>
                     </div>
                 </div>
@@ -472,22 +472,22 @@
             <form id="edit-hint-form" class="form-horizontal" method="post" action="/admin/edit/hint">
                 {% raw xsrf_form_html() %}
                 <input id="hint-uuid" name="uuid" value="" type="hidden" />
-                <div class="control-group">
-                    <label class="control-label" for="hint-price">{% if options.banking %}{{_("Price")}}{% else %}{{_("Cost")}}{% end %}</label>
-                    <div class="controls">
-                        <input id="hint-price" name="price" type="text" placeholder="{% if options.banking %}${% end %}" />
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="hint-price">{% if options.banking %}{{_("Price")}}{% else %}{{_("Cost")}}{% end %}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="hint-price" name="price" type="text" placeholder="{% if options.banking %}${% end %}" />
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="hint-description">{{_("Description")}}</label>
-                    <div class="controls">
-                        <textarea rows="4" class="toolbar" id="hint-description" name="description" type="text" maxlength="4096" placeholder="{{_('Description')}}"></textarea>
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="hint-description">{{_("Description")}}</label>
+                    <div class="col-sm-9">
+                        <textarea rows="4" class="toolbar form-control" id="hint-description" name="description" type="text" maxlength="4096" placeholder="{{_('Description')}}"></textarea>
                     </div>
                 </div>
-                <div class="control-group">
-                    <label class="control-label" for="hint-flag_uuid">{{_("Flag")}}</label>
-                    <div class="controls">
-                        <select id="hint-flag_uuid" name="hint-flag_uuid"></select>
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="hint-flag_uuid">{{_("Flag")}}</label>
+                    <div class="col-sm-9">
+                        <select class="form-select" id="hint-flag_uuid" name="hint-flag_uuid"></select>
                     </div>
                 </div>
             </form>
@@ -535,16 +535,16 @@
         <form id="add-ip-address-form" class="form-horizontal" method="post" action="/admin/edit/ip">
             {% raw xsrf_form_html() %}
             <input id="add-ip-address-uuid" name="box_uuid" type="hidden" />
-            <div class="control-group">
-                <label class="control-label" for="ip-address">{{_("New IP Address")}}</label>
-                <div class="controls">
-                    <input autofocus id="ip-address" name="ip_address" type="text" placeholder="192.168.1.1" />
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="ip-address">{{_("New IP Address")}}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" autofocus id="ip-address" name="ip_address" type="text" placeholder="192.168.1.1" />
                 </div>
             </div>
-            <div class="control-group">
-                <div class="controls">
+            <div class="row mb-3">
+                <div class="col-sm-9">
                     <label class="checkbox">
-                        <input name="visible" value="true" type="checkbox" checked> {{_("Visible to Players")}}
+                        <input class="form-check-input" name="visible" value="true" type="checkbox" checked> {{_("Visible to Players")}}
                     </label>
                 </div>
             </div>
@@ -674,10 +674,10 @@
                 <input type="hidden" id="answer-user-uuid" name="user_uuid" value="" />
                 <input type="hidden" id="answer-token" name="answer_token" value="" />
                 <p>
-                    <input id="acceptanswer" name="accept_answer" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> {{ _("Add the answer as an acceptable flag token") }}.
+                    <input class="form-check-input" id="acceptanswer" name="accept_answer" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> {{ _("Add the answer as an acceptable flag token") }}.
                 </p>
                 <p id="pointrestore">
-                    <input name="point_restore" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> 
+                    <input class="form-check-input" name="point_restore" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> 
                     {{ _("If not captured, award flag and") }} {% if options.banking %}{{ _("money") }}{% else %}{{ _("points") }}{% end %}. 
                     {% if options.penalize_flag_value %}{{ _("Restore the penalty cost") }}.{% end %}
                 </p>

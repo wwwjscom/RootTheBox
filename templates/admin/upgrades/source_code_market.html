@@ -17,22 +17,22 @@
         <form id="add-source-code-form" class="form-horizontal" action="/admin/upgrades/source_code_market/add" method="post" enctype="multipart/form-data">
             {% raw xsrf_form_html() %}
             <input id="add-source-code-uuid" type="hidden" name="box_uuid" value="" />
-            <div class="control-group">
-                <label class="control-label" for="price">{% if options.banking %}{{ _("Price") }}{% else %}{{ _("Cost") }}{% end %}</label>
-                <div class="controls">
-                    <input autofocus required id="price" name="price" type="text" pattern="[0-9]+" placeholder="{% if options.banking %}{{ _('Price') }} ({{_('$')}}){% else %}{{ _('Cost') }}{% end %}">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="price">{% if options.banking %}{{ _("Price") }}{% else %}{{ _("Cost") }}{% end %}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" autofocus required id="price" name="price" type="text" pattern="[0-9]+" placeholder="{% if options.banking %}{{ _('Price') }} ({{_('$')}}){% else %}{{ _('Cost') }}{% end %}">
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="description">{{_("Description")}}</label>
-                <div class="controls">
-                    <input required id="description" name="description" type="text" placeholder="{{_('Description')}}">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="description">{{_("Description")}}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" required id="description" name="description" type="text" placeholder="{{_('Description')}}">
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="source_archive">{{_("Source Code Archive")}}</label>
-                <div class="controls">
-                    <input id="source_archive" name="source_archive" type="file">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="source_archive">{{_("Source Code Archive")}}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" id="source_archive" name="source_archive" type="file">
                 </div>
             </div>
         </form>

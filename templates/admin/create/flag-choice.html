@@ -34,19 +34,19 @@
                     {% raw xsrf_form_html() %}
                     <input id="flagtype" type="hidden" value="choice" />
                     <input id="choices" type="hidden" name="choices" />
-                    <div class="control-group">
-                        <label class="control-label" for="flag_name">{{_("Flag Name")}}</label>
-                        <div class="controls">
-                            <input autofocus id="flag-name" maxlength="64" name="flag_name" type="text" placeholder="({{_('Optional')}})"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="flag_name">{{_("Flag Name")}}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" autofocus id="flag-name" maxlength="64" name="flag_name" type="text" placeholder="({{_('Optional')}})"
                                     rel="popover"
                                     data-bs-title="{{_('Flag Name')}}"
                                     data-bs-content="{{_('This is what you want the flag to be displayed as.  Leave blank to be named automatically by order #.')}}" />
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="box_uuid">{{_("Box")}}</label>
-                        <div class="controls">
-                            <select id="box-uuid" name="box_uuid"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="box_uuid">{{_("Box")}}</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" id="box-uuid" name="box_uuid"
                                     rel="popover"
                                     data-bs-title="{{_('Box')}}"
                                     data-bs-content="{{_('This is the box the flag is located on.')}}">
@@ -59,19 +59,19 @@
                             </select>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="reward">{% if options.banking %}{{_("Reward")}}{% else %}{{_("Points")}}{% end %}</label>
-                        <div class="controls">
-                            <input required id="reward" name="reward" type="number" pattern="[0-9]+" placeholder="{% if options.banking %}{{_('$')}} {{_('Reward')}}{% else %}{{_('Points')}}{% end %}"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="reward">{% if options.banking %}{{_("Reward")}}{% else %}{{_("Points")}}{% end %}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" required id="reward" name="reward" type="number" pattern="[0-9]+" placeholder="{% if options.banking %}{{_('$')}} {{_('Reward')}}{% else %}{{_('Points')}}{% end %}"
                                    rel="popover"
                                    data-bs-title="{% if options.banking %}{{_('Reward')}}{% else %}{{_('Points')}}{% end %}"
                                    data-bs-content="{{_('This is the amount awarded for capturing the flag.')}}">
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="description">{{_("Description")}}</label>
-                        <div class="controls">
-                            <textarea required class="toolbar" id="description" name="description" maxlength="4096" rows="5" type="text" placeholder="{{_('Description')}}"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="description">{{_("Description")}}</label>
+                        <div class="col-sm-9">
+                            <textarea required class="toolbar form-control" id="description" name="description" maxlength="4096" rows="5" type="text" placeholder="{{_('Description')}}"
                                     rel="popover"
                                     data-bs-title="{{_('Description')}}"
                                     data-bs-html="true"
@@ -79,11 +79,11 @@
                             </textarea>
                         </div>
                     </div>
-                    <div class="control-group" style="margin-bottom: 10px;">
-                        <label class="control-label" for="token" style="margin-left: -20px;">{{_("Multiple Choice")}}</label>
-                        <div class="controls">
-                                <div class="input-group control-group after-add-more" style="position: relative; margin-bottom: 10px;">
-                                    <input type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" required /><input type="text" name="addmore[]" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
+                    <div class="row mb-3" style="margin-bottom: 10px;">
+                        <label class="col-sm-3 col-form-label" for="token" style="margin-left: -20px;">{{_("Multiple Choice")}}</label>
+                        <div class="col-sm-9">
+                                <div class="input-group row mb-3 after-add-more" style="position: relative; margin-bottom: 10px;">
+                                    <input class="form-check-input" type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" required /><input type="text" name="addmore[]" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
                                     <div class="input-group-btn" style="position: absolute; left: 228px; top: 0px;"> 
                                         <button class="btn btn-success add-more" type="button"style="padding: 4px 10px 0px; vertical-align: middle;"><i class="fa fa-plus" style="font-size: 160%;"></i></button>
                                     </div>
@@ -91,17 +91,17 @@
                             <input required id="token" name="token" type="hidden" placeholder="{{_('Multiple Choice Flag')}}" autocomplete="off">
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="edit-flag-lock">{{_("Dependent Flag")}}</label>
-                        <div class="controls">
-                            <select id="edit-flag-lock" name="lock_uuid"></select>
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="edit-flag-lock">{{_("Dependent Flag")}}</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" id="edit-flag-lock" name="lock_uuid"></select>
                         </div>
                     </div>
                     {% if options.story_mode %}
-                    <div class="control-group">
-                        <label class="control-label" for="capture-message">{{_("Capture Message")}}</label>
-                        <div class="controls">
-                            <textarea id="capture-message" name="capture_message" type="text" placeholder="({{_('Optional')}})"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="capture-message">{{_("Capture Message")}}</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" id="capture-message" name="capture_message" type="text" placeholder="({{_('Optional')}})"
                                     rel="popover"
                                     data-bs-title="{{_('Capture Message')}}"
                                     data-bs-content="{{_('This is the message displayed to the user once the flag is captured.')}}" >
@@ -109,8 +109,8 @@
                         </div>
                     </div>
                     {% end %}
-                    <div class="control-group">
-                        <div class="controls">
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
                             <button id="createflag" class="btn btn-primary" type="submit">{{_("Create Flag")}}</button>
                         </div>
                     </div>
@@ -118,8 +118,8 @@
             </div>
             <!-- Copy Fields -->
             <div class="copy hide">
-                <div class="choice-control-group input-group" style="margin-bottom: 10px; position: relative;">
-                    <input type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" /><input type="text" name="addmore[]" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
+                <div class="choice-row mb-3 input-group" style="margin-bottom: 10px; position: relative;">
+                    <input class="form-check-input" type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" /><input type="text" name="addmore[]" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
                     <div class="input-group-btn" style="position: absolute; left: 228px; top: 0px;"> 
                         <button class="btn btn-danger remove" type="button" style="padding: 3px 10px 1px; vertical-align: middle;"><i class="fa fa-times" style="font-size: 160%;"></i></button>
                     </div>

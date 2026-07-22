@@ -22,15 +22,15 @@
         <form id="edit-category-item-form" class="form-horizontal" action="/admin/edit/category" method="post">
             {% raw xsrf_form_html() %}
             <input type="hidden" id="edit-category-item-uuid" name="uuid" value="" />
-            <div class="control-group">
-                <label class="control-label" for="category">{{ _("Category Name") }}</label>
-                <div class="controls">
-                    <input autofocus id="edit-category-item-name" name="category" maxlength="24" minlength="3" type="text" placeholder="Category" />
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="category">{{ _("Category Name") }}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" autofocus id="edit-category-item-name" name="category" maxlength="24" minlength="3" type="text" placeholder="Category" />
                 </div>
             </div>
-            <div class="control-group">
-                <div class="controls">
-                    <textarea autofocus id="edit-category-description" name="category_description" maxlength="4096" type="text" placeholder="{{_('Optional')}} {{_('Description')}}"
+            <div class="row mb-3">
+                <div class="col-sm-9">
+                    <textarea class="form-control" autofocus id="edit-category-description" name="category_description" maxlength="4096" type="text" placeholder="{{_('Optional')}} {{_('Description')}}"
                            data-bs-title="{{_('Description')}}">
                     </textarea>
                 </div>

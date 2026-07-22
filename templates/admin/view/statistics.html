@@ -100,10 +100,10 @@
                 <input type="hidden" id="answer-user-uuid" name="user_uuid" value="" />
                 <input type="hidden" id="answer-token" name="answer_token" value="" />
                 <p>
-                    <input id="acceptanswer" name="accept_answer" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> {{ _("Add the answer as an acceptable flag token") }}.
+                    <input class="form-check-input" id="acceptanswer" name="accept_answer" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> {{ _("Add the answer as an acceptable flag token") }}.
                 </p>
                 <p id="pointrestore">
-                    <input name="point_restore" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> 
+                    <input class="form-check-input" name="point_restore" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> 
                     {{ _("If not captured, award flag and") }} {% if options.banking %}{{ _("money") }}{% else %}{{ _("points") }}{% end %}.
                     {% if options.penalize_flag_value %}{{ _("Restore the penalty cost") }}.{% end %}
                 </p>

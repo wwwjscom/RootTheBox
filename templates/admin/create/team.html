@@ -68,36 +68,36 @@
     <div class="card card-body">
         <form class="form-horizontal" action="/admin/create/team" method="post" enctype="multipart/form-data">
             {% raw xsrf_form_html() %}
-            <div class="control-group">
-                <label class="control-label" for="team_name">{{_("Team Name")}}</label>
-                <div class="controls">
-                    <input autofocus required id="team-name" name="team_name" maxlength="24" type="text" placeholder="{{_('Team Name')}}"
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="team_name">{{_("Team Name")}}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" autofocus required id="team-name" name="team_name" maxlength="24" type="text" placeholder="{{_('Team Name')}}"
                             rel="popover"
                             data-bs-title="{{_('New Team Name')}}"
                             data-bs-content="{{_('Choose a name for your new team!')}} [3-24 {{_('Characters')}}]" >
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="motto">{{_("Motto")}}</label>
-                <div class="controls">
-                    <input id="motto" name="motto" maxlength="32" type="text" placeholder="{{_('Team Motto')}}"
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="motto">{{_("Motto")}}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" id="motto" name="motto" maxlength="32" type="text" placeholder="{{_('Team Motto')}}"
                            rel="popover"
                            data-bs-title="{{_('Team Motto')}}"
                            data-bs-content="{{_('What is your teams motto?')}} [Max: 32 {{_('Characters')}}]">
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="avatar">{{_("Avatar")}}</label>
-                <div class="controls">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="avatar">{{_("Avatar")}}</label>
+                <div class="col-sm-9">
                         <a id="uploadbutton" class="btn btn-primary" href="#">{{_("Upload Avatar")}}</a>
-                        <input id="team-avatar" name="avatar" type="file" style="display: none;"/>
+                        <input class="form-control" id="team-avatar" name="avatar" type="file" style="display: none;"/>
                         <input id="team_avatar_select" name="team_avatar_select" type="hidden" />
                         {% if len(avatars) > 0 %}&nbsp;&nbsp;<a data-bs-toggle="modal" class="btn btn-primary" href="#change-team-avatar-modal"> {{_("Choose Avatar")}} </a>{% end %}
                         <div id="avatarfilename" style="padding: 5px;"></div>
                 </div>
             </div>
-            <div class="control-group">
-                <div class="controls">
+            <div class="row mb-3">
+                <div class="col-sm-9">
                     <button class="btn btn-primary" type="submit">{{_("Create Team")}}</button>
                 </div>
             </div>

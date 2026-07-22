@@ -54,10 +54,10 @@
                 {% raw xsrf_form_html() %}
                 <input id="capture-text-flag-uuid" name="uuid" value="" type="hidden" />
                 <br />
-                <div class="control-group">
-                    <label class="control-label" for="flag-token">{{ _("Flag") }}</label>
-                    <div class="controls">
-                        <input autofocus required id="flag-token" name="token" type="text" placeholder="{{ _('Flag') }}" autocomplete="off"{% if level_submission_timer_expired %} disabled{% end %} />
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="flag-token">{{ _("Flag") }}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" autofocus required id="flag-token" name="token" type="text" placeholder="{{ _('Flag') }}" autocomplete="off"{% if level_submission_timer_expired %} disabled{% end %} />
                     </div>
                 </div>
             </form>
@@ -101,11 +101,11 @@
             <form id="capture-file-flag-form" class="form-horizontal" method="post" action="/user/missions/boxes?uuid={{ box.uuid }}" enctype="multipart/form-data" >
                 {% raw xsrf_form_html() %}
                 <input autofocus id="capture-file-flag-uuid" name="uuid" type="hidden" />
-                <div class="control-group">
+                <div class="row mb-3">
                     <br />
-                    <label class="control-label" for="flag-file">{{ _("Flag") }}</label>
-                    <div class="controls">
-                        <input id="flag-file" name="flag" type="file"{% if level_submission_timer_expired %} disabled{% end %} />
+                    <label class="col-sm-3 col-form-label" for="flag-file">{{ _("Flag") }}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="flag-file" name="flag" type="file"{% if level_submission_timer_expired %} disabled{% end %} />
                     </div>
                 </div>
             </form>
@@ -318,10 +318,10 @@
                 {% raw xsrf_form_html() %}
                 <input id="capture-text-flag-box-box-id" name="box_id" value="{{ box.id }}" type="hidden" />
                 <h4>{{ _("Submit a Flag") }}</h4>
-                <div class="control-group">
-                    <label class="control-label" for="capture-text-flag-box-token">{{ _("Flag") }}</label>
-                    <div class="controls">
-                        <input autofocus required id="capture-text-flag-box-token" name="token" type="text" placeholder="{{ _('Flag') }}" autocomplete="off" size="70"{% if level_submission_timer_expired %} disabled{% end %} />
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="capture-text-flag-box-token">{{ _("Flag") }}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" autofocus required id="capture-text-flag-box-token" name="token" type="text" placeholder="{{ _('Flag') }}" autocomplete="off" size="70"{% if level_submission_timer_expired %} disabled{% end %} />
                         <button id="capture-text-flag-box-submit" class="btn btn-primary" type="submit"{% if level_submission_timer_expired %} disabled{% end %}>
                             {{ _("Submit") }}
                         </button>

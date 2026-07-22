@@ -22,10 +22,10 @@
         <form id="edit-market-item-form" class="form-horizontal" action="/admin/edit/market_item" method="post">
             {% raw xsrf_form_html() %}
             <input type="hidden" id="edit-market-item-uuid" name="item_uuid" value="" />
-            <div class="control-group">
-                <label class="control-label" for="price">{{ _("Item Cost") }}</label>
-                <div class="controls">
-                    <input required pattern="[0-9]+" id="edit-market-item-price" name="price" type="text" placeholder="{{ _('Item Price')}})">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="price">{{ _("Item Cost") }}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" required pattern="[0-9]+" id="edit-market-item-price" name="price" type="text" placeholder="{{ _('Item Price')}})">
                 </div>
             </div>
         </form>

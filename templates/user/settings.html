@@ -33,10 +33,10 @@
                         {{ _("Submit") }}
                     </button>
                 </div>
-                <div class="control-group" style="vertical-align: middle;">
-                    <label class="control-label" for="team_avatar">{{ _("Upload Avatar File") }} - w500 x h250</label>
-                    <div class="controls" style="display: inline;">
-                        <input type="file" name="team_avatar" id="team_avatar" accept="image/bmp,image/jpeg,image/gif,image/png" style="color:white;" />
+                <div class="row mb-3" style="vertical-align: middle;">
+                    <label class="col-sm-3 col-form-label" for="team_avatar">{{ _("Upload Avatar File") }} - w500 x h250</label>
+                    <div class="col-sm-9" style="display: inline;">
+                        <input class="form-control" type="file" name="team_avatar" id="team_avatar" accept="image/bmp,image/jpeg,image/gif,image/png" style="color:white;" />
                         <input type="hidden" name="team_avatar_select" id="team_avatar_select" />
                     </div>
 
@@ -45,7 +45,7 @@
                 {% if len(avatars) > 0 %}
                 <div style="border-top: solid 1px rgb(92, 92, 92); margin-top: 20px; margin-bottom: 20px;"></div>
                 <span style="float: right; padding-right: 10px; margin-top: -15px; font-size: small;"><i class="fa fa-certificate"></i> {{ _("indicates use by another") }} {% if options.teams %}{{ _("team") }}{% else %}{{ _("player") }}{% end %}</span>
-                <label class="control-label" for="team_avatar">{{ _("Or Choose Existing") }}</label>
+                <label class="col-sm-3 col-form-label" for="team_avatar">{{ _("Or Choose Existing") }}</label>
                     {% for avatar in avatars[::3] %}
                         <div class="row">
                             <div class="col-md-3" style="position: relative;">
@@ -95,10 +95,10 @@
                         {{ _("Submit") }}
                     </button>
                 </div>
-                <div class="control-group" style="vertical-align: middle;">
-                    <label class="control-label" for="user_avatar">{{ _("Upload Avatar File") }} - w500 x h250</label>
-                    <div class="controls" style="display: inline;">
-                        <input type="file" name="user_avatar" accept="image/bmp,image/jpeg,image/gif,image/png" id="user_avatar" style="color:white;" />
+                <div class="row mb-3" style="vertical-align: middle;">
+                    <label class="col-sm-3 col-form-label" for="user_avatar">{{ _("Upload Avatar File") }} - w500 x h250</label>
+                    <div class="col-sm-9" style="display: inline;">
+                        <input class="form-control" type="file" name="user_avatar" accept="image/bmp,image/jpeg,image/gif,image/png" id="user_avatar" style="color:white;" />
                         <input type="hidden" name="user_avatar_select" id="user_avatar_select" />
                     </div>
 
@@ -107,7 +107,7 @@
                 {% if len(avatars) > 0 %}
                 <div style="border-top: solid 1px rgb(92, 92, 92); margin-top: 20px; margin-bottom: 20px;"></div>
                 <span style="float: right; padding-right: 10px; margin-top: -15px; font-size: small;"><i class="fa fa-certificate"></i> {{ _("indicates use by another player") }}</span>
-                <label class="control-label" for="user_avatar">{{ _("Or Choose Existing") }}</label>
+                <label class="col-sm-3 col-form-label" for="user_avatar">{{ _("Or Choose Existing") }}</label>
                     {% for avatar in avatars[::3] %}
                         <div class="row">
                             <div class="col-md-3" style="position: relative;">
@@ -171,8 +171,8 @@
         <div class="row">
             {% if user.team is not None %}
             <div class="col-md-3 card card-body" style="width: 260px; padding-bottom: 23px; padding-right: 28px; ">
-                <div class="control-group" style="float:right; margin-right: -8px;">
-                    <div class="controls">
+                <div class="row mb-3" style="float:right; margin-right: -8px;">
+                    <div class="col-sm-9">
                         <a data-bs-toggle="modal" class="btn btn-primary" href="#change-team-avatar-modal"> {{ _("Change") }} </a>
                     </div>
                 </div>
@@ -188,8 +188,8 @@
             {% if options.teams or user.team is None %}
             <div class="col-md-3 card card-body" style="width: 260px; padding-bottom: 23px; padding-right: 28px; ">
 
-                <div class="control-group" style="float:right; margin-right: -8px;">
-                    <div class="controls">
+                <div class="row mb-3" style="float:right; margin-right: -8px;">
+                    <div class="col-sm-9">
                         <a data-bs-toggle="modal" class="btn btn-primary" href="#change-user-avatar-modal"> {{ _("Change") }} </a>
                     </div>
                 </div>
@@ -205,14 +205,14 @@
                     <form action="/user/settings/motto" method="post">
                         {% raw xsrf_form_html() %}
                         <legend>{{ _("Change") }} {{ _("Motto") }}</legend>
-                        <div class="control-group" style="margin-top: 0px; margin-bottom: 40px;">
-                            <label class="control-label" for="motto">{{ _("Motto") }}</label>
-                            <div class="controls">
-                                <input id="motto" name="motto" maxlength="32" type="text" placeholder="{{ _('Motto') }}" value="{{ user.team.motto }}" />
+                        <div class="row mb-3" style="margin-top: 0px; margin-bottom: 40px;">
+                            <label class="col-sm-3 col-form-label" for="motto">{{ _("Motto") }}</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="motto" name="motto" maxlength="32" type="text" placeholder="{{ _('Motto') }}" value="{{ user.team.motto }}" />
                             </div>
                         </div>
-                        <div class="control-group" style="float: right;">
-                            <div class="controls">
+                        <div class="row mb-3" style="float: right;">
+                            <div class="col-sm-9">
                                 <button class="btn btn-primary" type="submit"> {{ _("Change") }} {{ _("Motto") }} </button>
                             </div>
                         </div>
@@ -224,10 +224,10 @@
                 <form action="/user/settings/theme" method="post">
                     {% raw xsrf_form_html() %}
                     <legend>{{ _("Change") }} {{ _("Theme") }}</legend>
-                    <div class="control-group" style="margin-top: 0px; margin-bottom: 40px;">
-                        <label class="control-label" for="theme_uuid">{{ _("Select a Theme") }}</label>
-                        <div class="controls">
-                            <select name="theme_uuid">
+                    <div class="row mb-3" style="margin-top: 0px; margin-bottom: 40px;">
+                        <label class="col-sm-3 col-form-label" for="theme_uuid">{{ _("Select a Theme") }}</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" name="theme_uuid">
                                 <option value="{{ current_theme.uuid }}">{{ current_theme.name }}</option>
                                 {% for theme in Theme.all() %}
                                     {% if current_theme != theme %}
@@ -237,8 +237,8 @@
                             </select>
                         </div>
                     </div>
-                    <div class="control-group" style="float: right;">
-                        <div class="controls">
+                    <div class="row mb-3" style="float: right;">
+                        <div class="col-sm-9">
                             <button class="btn btn-primary" type="submit"> {{ _("Change") }} {{ _("Theme") }} </button>
                         </div>
                     </div>
@@ -254,14 +254,14 @@
                         <i class="fa fa-mail"></i>
                         {{ _("Email") }}
                     </legend>
-                    <label class="control-label" for="email">{{ _("Email") }}</label>
-                    <div class="control-group">
-                        <div class="controls">
-                            <input required type="text" name="email" id="email" placeholder="{{ _('Email') }}" value="{{ user.email }}" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" />
+                    <label class="col-sm-3 col-form-label" for="email">{{ _("Email") }}</label>
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
+                            <input class="form-control" required type="text" name="email" id="email" placeholder="{{ _('Email') }}" value="{{ user.email }}" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" />
                         </div>
                     </div>
-                    <div class="control-group">
-                        <div class="controls">
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
                             <button class="btn btn-primary" type="submit"> {{ _("Update Email") }} </button>
                         </div>
                     </div>
@@ -277,26 +277,26 @@
                         <i class="fa fa-lock"></i>
                         {{ _("Login Password") }}
                     </legend>
-                    <div class="control-group">
-                        <label class="control-label" for="old_password">{{ _("Old Password") }}</label>
-                        <div class="controls">
-                            <input required type="password" name="old_password" id="old_password" placeholder="{{ _('Old Password') }}" />
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="old_password">{{ _("Old Password") }}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" required type="password" name="old_password" id="old_password" placeholder="{{ _('Old Password') }}" />
                         </div>
                     </div>
-                    <label class="control-label" for="new_password">{{ _("New Password") }}</label>
-                    <div class="control-group">
-                        <div class="controls">
-                            <input required type="password" name="new_password" id="new_password" placeholder="{{ _('New Password') }}" minlength="{{ options.min_user_password_length }}" />
+                    <label class="col-sm-3 col-form-label" for="new_password">{{ _("New Password") }}</label>
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
+                            <input class="form-control" required type="password" name="new_password" id="new_password" placeholder="{{ _('New Password') }}" minlength="{{ options.min_user_password_length }}" />
                         </div>
                     </div>
-                    <label class="control-label" for="new_password2">{{ _("Confirm New Password") }}</label>
-                    <div class="control-group">
-                        <div class="controls">
-                            <input required type="password" name="new_password2" id="new_password2" placeholder="{{ _('Confirm Password') }}" minlength="{{ options.min_user_password_length }}" />
+                    <label class="col-sm-3 col-form-label" for="new_password2">{{ _("Confirm New Password") }}</label>
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
+                            <input class="form-control" required type="password" name="new_password2" id="new_password2" placeholder="{{ _('Confirm Password') }}" minlength="{{ options.min_user_password_length }}" />
                         </div>
                     </div>
-                    <div class="control-group">
-                        <div class="controls">
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
                             <button class="btn btn-primary" type="submit"> {{ _("Update Password") }} </button>
                         </div>
                     </div>
@@ -315,20 +315,20 @@
                                 <i class="fa fa-lock"></i>
                                 {{ _("Bank Password") }}
                             </legend>
-                            <div class="control-group">
-                                <label class="control-label" for="old-password">
+                            <div class="row mb-3">
+                                <label class="col-sm-3 col-form-label" for="old-password">
                                     {{ _("Current Bank Password") }}
                                 </label>
-                                <div class="controls">
-                                    <input required id="old-password" type="password" name="old_bpassword" placeholder="{{ _('Old Password') }}" />
+                                <div class="col-sm-9">
+                                    <input class="form-control" required id="old-password" type="password" name="old_bpassword" placeholder="{{ _('Old Password') }}" />
                                 </div>
                             </div>
-                            <div class="control-group">
-                                <label class="control-label" for="new_bpassword">
+                            <div class="row mb-3">
+                                <label class="col-sm-3 col-form-label" for="new_bpassword">
                                     {{ _("New Bank Password") }}
                                 </label>
-                                <div class="controls">
-                                    <input required type="password" name="new_bpassword" id="new_bpassword" placeholder="{{ _('New Password') }}" />
+                                <div class="col-sm-9">
+                                    <input class="form-control" required type="password" name="new_bpassword" id="new_bpassword" placeholder="{{ _('New Password') }}" />
                                 </div>
                             </div>
                         </div>
@@ -340,8 +340,8 @@
                         {% end %}
                     </div>
                     <div class="row" style="margin-left: 0px;">
-                        <div class="control-group">
-                            <div class="controls">
+                        <div class="row mb-3">
+                            <div class="col-sm-9">
                                 <button class="btn btn-primary" type="submit">
                                     {{ _("Update Bank Password") }}
                                 </button>

@@ -42,8 +42,8 @@
                 <div style="display: table-cell; width: 50%; border-right: 1px solid gray">
                     <form class="form-horizontal" action="/admin/reset" method="post">
                         {% raw xsrf_form_html() %}
-                        <div class="control-group">
-                            <div class="controls" style="margin-left: 70px;">
+                        <div class="row mb-3">
+                            <div class="col-sm-9" style="margin-left: 70px;">
                                 <h3>{{ _("Reset Actions") }}</h3>
                                 <h5>{{ _("Keeps teams / players and resets the game to start.") }}<br><br></h5>
                                 <ul>
@@ -65,8 +65,8 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="control-group">
-                            <div class="controls"  style="margin-left: 70px;">
+                        <div class="row mb-3">
+                            <div class="col-sm-9"  style="margin-left: 70px;">
                                 <button class="btn btn-primary" onclick="clicked(event)" type="submit">{{ _("Reset Game") }}</button>
                             </div>
                         </div>
@@ -75,8 +75,8 @@
                 <div style="display: table-cell;width: 50%;">
                     <form class="form-horizontal" action="/admin/resetdelete" method="post">
                         {% raw xsrf_form_html() %}
-                        <div class="control-group">
-                            <div class="controls" style="margin-left: 70px;">
+                        <div class="row mb-3">
+                            <div class="col-sm-9" style="margin-left: 70px;">
                                 <h3>{{ _("Delete Actions") }}</h3>
                                 <h5>{{ _("Deletes teams / players and resets the game to start.") }}<br><br></h5>
                                 <ul>
@@ -87,8 +87,8 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="control-group">
-                            <div class="controls" style="margin-left: 70px;">
+                        <div class="row mb-3">
+                            <div class="col-sm-9" style="margin-left: 70px;">
                                 <button class="btn btn-danger" onclick="clicked(event)" type="submit">{{ _("Delete") }} {% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %}</button>
                             </div>
                         </div>

@@ -39,12 +39,12 @@
             <div>
                 <input type="hidden" name="uuid" value="{{uuid}}" />
                 <input type="hidden" name="token" value="{{token}}" />
-                <input class="input-block-level" required id="pass1" name="pass1" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Password') }}" type="password"
+                <input class="w-100 form-control" required id="pass1" name="pass1" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Password') }}" type="password"
                     autocomplete="off"
                     rel="popover"
                     data-bs-title="{{_('Password')}}"
                     data-bs-content="{{_('Enter a complex password of')}} {{ options.min_user_password_length }}+ {{_('Characters')}}" />
-                <input class="input-block-level" required id="pass2" name="pass2" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Confirm Password') }}" type="password"
+                <input class="w-100 form-control" required id="pass2" name="pass2" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Confirm Password') }}" type="password"
                     autocomplete="off"
                     rel="popover"
                     data-bs-title="{{_('Confirm Password')}}"

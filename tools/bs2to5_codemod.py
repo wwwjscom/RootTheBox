@@ -45,6 +45,17 @@ CLASS_SUBS = [
     (re.compile(r"\bbtn-inverse\b"), "btn-dark"),
     # alerts
     (re.compile(r"\balert-error\b"), "alert-danger"),
+    # forms (BS2 horizontal-form scaffolding -> BS5 grid). control-group becomes a
+    # grid row; control-label/controls become the 3/9 columns. All RTB control-
+    # groups live in .form-horizontal forms (bar 2 minor sidebar forms, tuned by
+    # hand), so the horizontal mapping is correct.
+    (re.compile(r"\bcontrol-group\b"), "row mb-3"),
+    (re.compile(r"\bcontrol-label\b"), "col-sm-3 col-form-label"),
+    (re.compile(r"\bcontrols\b"), "col-sm-9"),
+    (re.compile(r"\bhelp-inline\b"), "form-text"),
+    (re.compile(r"\binput-block-level\b"), "w-100"),
+    # (.form-horizontal is left in place; BS5 defines no such class, so it is inert
+    #  and the grid columns above do the layout.)
     # wells -> cards
     (re.compile(r"\bwell-small\b"), "card card-body"),
     (re.compile(r"\bwell-large\b"), "card card-body"),
@@ -83,6 +94,60 @@ ALERT_DISMISS_RE = re.compile(
     r"""<a\s+class="close"\s+data-bs-dismiss="alert"[^>]*>\s*&times;\s*</a>""",
     re.DOTALL,
 )
+
+
+# Form controls need a BS5 class to pick up styling (BS2 styled bare inputs).
+FORM_TAG_RE = re.compile(
+    r"<(?P<tag>input|select|textarea)\b(?P<attrs>[^>]*?)(?P<slash>\s*/?)>",
+    re.IGNORECASE | re.DOTALL,
+)
+TYPE_RE = re.compile(r"""type\s*=\s*(["'])(?P<t>.*?)\1""", re.IGNORECASE)
+TAG_CLASS_RE = re.compile(r"""class\s*=\s*(?P<q>["'])(?P<val>.*?)(?P=q)""", re.IGNORECASE | re.DOTALL)
+# input types that are NOT text-like form controls
+_SKIP_TYPES = {"hidden", "submit", "button", "reset", "image"}
+_CHECK_TYPES = {"radio", "checkbox"}
+
+
+def _form_class_for(tag, attrs):
+    if tag == "select":
+        return "form-select"
+    if tag == "textarea":
+        return "form-control"
+    # input: decide by type
+    m = TYPE_RE.search(attrs)
+    itype = (m.group("t").lower() if m else "text")
+    if itype in _SKIP_TYPES:
+        return None
+    if itype in _CHECK_TYPES:
+        return "form-check-input"
+    if itype == "range":
+        return "form-range"
+    return "form-control"
+
+
+def _form_tag_sub(match):
+    tag = match.group("tag").lower()
+    attrs = match.group("attrs")
+    target = _form_class_for(tag, attrs)
+    if target is None:
+        return match.group(0)
+    cm = TAG_CLASS_RE.search(attrs)
+    if cm:
+        tokens = cm.group("val").split()
+        if any(t == target or t.startswith("form-control") or t == "form-select" or t == "form-check-input" or t == "form-range" for t in tokens):
+            return match.group(0)  # already a BS5 control (idempotent)
+        new_val = (cm.group("val").rstrip() + " " + target).strip()
+        new_attrs = (
+            attrs[: cm.start()]
+            + "class=%s%s%s" % (cm.group("q"), new_val, cm.group("q"))
+            + attrs[cm.end():]
+        )
+    else:
+        # no class attr: add one right after the tag name. `attrs` (captured
+        # between the tag name and the closing slash/>) already begins with
+        # whitespace when non-empty, so no extra separator is needed.
+        new_attrs = ' class="%s"%s' % (target, attrs)
+    return "<%s%s%s>" % (match.group("tag"), new_attrs, match.group("slash"))
 
 
 def _alert_dismiss_sub(match):
@@ -128,6 +193,8 @@ def transform_text(text):
         text = text.replace(old, new)
     # 3) dismissible alerts: .alert-dismissible + BS5 .btn-close
     text = ALERT_DISMISS_RE.sub(_alert_dismiss_sub, text)
+    # 4) form controls: add BS5 form-control/form-select/form-check-input classes
+    text = FORM_TAG_RE.sub(_form_tag_sub, text)
     return text
 
 

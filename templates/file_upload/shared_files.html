@@ -56,9 +56,9 @@
                     {% raw xsrf_form_html() %}
                     <fieldset>
                         <label for="files">{{ _("File") }} ({{ _("Max") }} 50Mb)</label>
-                        <input required id="files" name="files" multiple="multiple" type="file" />
+                        <input class="form-control" required id="files" name="files" multiple="multiple" type="file" />
                         <label for="description">{{ _("Description") }}</label>
-                        <textarea id="description" name="description" type="text" placeholder="{{ _('File Description') }}">
+                        <textarea class="form-control" id="description" name="description" type="text" placeholder="{{ _('File Description') }}">
                         </textarea>
                     </fieldset>
                     <button class="btn">

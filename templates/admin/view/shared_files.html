@@ -57,16 +57,16 @@
             <div class="card card-body">
                 <form id="share-file" action="/user/share/files" method="post" enctype="multipart/form-data">
                     {% raw xsrf_form_html() %}
-                    <div class="control-group">
+                    <div class="row mb-3">
                         <h4>
                             {% if options.teams %}{{_("Team")}}{% else %}{{_("Player")}}{% end %} {{ _("File")}} {{ _("Upload") }}
                         </h4>
                         <table style="width: 100%"> 
                         <tr>
                             <td>
-                                <label class="control-label" for="team-uuid">{% if options.teams %}{{_("Team")}}{% else %}{{_("Player")}}{% end %}</label>
-                                <div class="controls">
-                                    <select id="team-uuid" name="team_uuid">
+                                <label class="col-sm-3 col-form-label" for="team-uuid">{% if options.teams %}{{_("Team")}}{% else %}{{_("Player")}}{% end %}</label>
+                                <div class="col-sm-9">
+                                    <select class="form-select" id="team-uuid" name="team_uuid">
                                         <option value="all">All</option>
                                         {% for team in teams %}
                                             <option value="{{ team.uuid }}">{{ team.name }}</option>
@@ -77,12 +77,12 @@
                             <td>
                                 <fieldset>
                                     <label for="files">{{ _("File") }} ({{ _("Max") }} 50Mb)</label>
-                                    <input required id="files" name="files" multiple="multiple" type="file" />
+                                    <input class="form-control" required id="files" name="files" multiple="multiple" type="file" />
                                 </fieldset>
                             </td>
                             <td>
                                 <label for="description">{{ _("Description") }}</label>
-                                <textarea id="description" name="description" type="text" placeholder="{{ _('File Description') }}">
+                                <textarea class="form-control" id="description" name="description" type="text" placeholder="{{ _('File Description') }}">
                                 </textarea>
                             </td>
                         </tr>

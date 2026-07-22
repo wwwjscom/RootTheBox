@@ -25,20 +25,20 @@
             {{ _("Set the game countdown timer") }}:
         </p>
         <p>
-            <label><input name="timer_mode" type="radio" value="duration" checked> {{ _("Duration") }}</label>
-            <input id="timer-hours" name="timer_hours" style="width: 50px;" type="number" min="0" value="0" /> {{ _("Hours") }}
-            <input id="timer-minutes" name="timer_minutes" style="width: 50px;" type="number" min="0" value="30" /> {{ _("Minutes") }}
+            <label><input class="form-check-input" name="timer_mode" type="radio" value="duration" checked> {{ _("Duration") }}</label>
+            <input class="form-control" id="timer-hours" name="timer_hours" style="width: 50px;" type="number" min="0" value="0" /> {{ _("Hours") }}
+            <input class="form-control" id="timer-minutes" name="timer_minutes" style="width: 50px;" type="number" min="0" value="30" /> {{ _("Minutes") }}
         </p>
         <p>
-            <label><input name="timer_mode" type="radio" value="absolute"> {{ _("Absolute time") }}</label>
-            <input id="timer-absolute" type="datetime-local" disabled />
+            <label><input class="form-check-input" name="timer_mode" type="radio" value="absolute"> {{ _("Absolute time") }}</label>
+            <input class="form-control" id="timer-absolute" type="datetime-local" disabled />
             <input id="timer-absolute-epoch" name="timer_absolute_epoch" type="hidden" />
         </p>
         <p>
-            <input name="hide_scoreboard" type="checkbox" style="margin-top: -5px; margin-right: 5px;"> {{ _("Hide scoreboard during countdown") }}.
+            <input class="form-check-input" name="hide_scoreboard" type="checkbox" style="margin-top: -5px; margin-right: 5px;"> {{ _("Hide scoreboard during countdown") }}.
         </p>
         <p>
-            <input name="stop_timer" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> {{ _("Stop the game after timer ends") }}.
+            <input class="form-check-input" name="stop_timer" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> {{ _("Stop the game after timer ends") }}.
         </p>
     </div>
 
@@ -68,7 +68,7 @@
         <div style="margin-left: 50px; vertical-align: middle;">
             <p>
                 {{ _("Send a global notification to all players") }}:
-            </p><textarea name="message" rows="10" cols="30" style="width: 425px;"></textarea>
+            </p><textarea class="form-control" name="message" rows="10" cols="30" style="width: 425px;"></textarea>
         </div>
             
         </form>
@@ -201,8 +201,8 @@
                 <hr />
                 <form action="/admin/ban/config" method="post">
                     {% raw xsrf_form_html() %}
-                    <div class="control-group">
-                        <div class="controls">
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
                             <input id="automatic-ban" name="automatic_ban" type="hidden" value="{{ str(handler.application.settings['automatic_ban']).lower() }}" />
                             <div id="automatic-ban-button" class="btn-group" data-bs-toggle="buttons-radio">
                                 <button id="automatic-ban-enable" type="button" class="btn btn-success">
@@ -216,14 +216,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="threshold-size">{{ _("Threshold") }}</label>
-                        <div class="controls">
-                            <input id="threshold-size" type="text" name="threshold_size" value="{{ handler.application.settings['blacklist_threshold'] }}" />
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="threshold-size">{{ _("Threshold") }}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" id="threshold-size" type="text" name="threshold_size" value="{{ handler.application.settings['blacklist_threshold'] }}" />
                         </div>
                     </div>
-                    <div class="control-group">
-                        <div class="controls">
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
                             <button class="btn btn-primary" type="submit">
                                 <i class="fa fa-save"></i>
                                 {{ _("Save") }}
@@ -272,8 +272,8 @@
     </div>
     {% end %}
     <div class="col-md-8 card card-body">
-        <div class="control-group" style="float: right; padding-top: 20px;">
-                <div class="controls">
+        <div class="row mb-3" style="float: right; padding-top: 20px;">
+                <div class="col-sm-9">
                     <button class="btn btn-primary" data-bs-toggle="modal" href="#message-modal" type="button">
                         {{ _("Create Notification") }}
                     </button>

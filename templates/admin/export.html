@@ -29,7 +29,7 @@
             <input id="users" name="users" type="hidden" value="false">
             <!--
             <h4>What do you want to export?</h4>
-            <div class="control-group">
+            <div class="row mb-3">
                 <div class="btn-group" data-bs-toggle="buttons-checkbox">
                     <button id="export-game-objects-button" type="button" class="btn btn-primary active">
                         Game Objects
@@ -39,10 +39,10 @@
             -->
             <h3>&nbsp;&nbsp;{{ _("Export Game Objects") }}</h3>
             <hr />
-            <input style="margin-bottom: 4px" type="checkbox" name="game_config" value="true" checked="checked"> {{ _("Include gameplay settings (such as those under ") }} <a href='/admin/configuration'>{{ _("configuration") }}</a>{{ _(") and logos in export.") }}
+            <input class="form-check-input" style="margin-bottom: 4px" type="checkbox" name="game_config" value="true" checked="checked"> {{ _("Include gameplay settings (such as those under ") }} <a href='/admin/configuration'>{{ _("configuration") }}</a>{{ _(") and logos in export.") }}
             <br /><br />
-            <div class="control-group">
-                <div class="controls">
+            <div class="row mb-3">
+                <div class="col-sm-9">
                     <button class="btn btn-primary" type="submit">
                         <i class="fa fa-download"></i>
                         {{ _("Download File") }}
