@@ -281,12 +281,12 @@ _(Update as branches land.)_
       dead `admin` var in `UserHandlers`. Added `.pre-commit-config.yaml` and
       `.github/workflows/lint.yml` (ruff check + format --check), both pinned to
       ruff 0.15.22 to match the uv.lock dev group. Suite still 117 passed.
-- [~] 2.1 Patch-bump vendored frontend libs — **split into 2.1a (JS libs, done)
-      and 2.1b (Bootstrap, deferred)** once the survey showed one line item bundled
-      four upgrades of wildly different risk. Bootstrap is deeply coupled to markup
+- [x] 2.1 Patch-bump vendored frontend libs — **split into 2.1a (JS libs) and
+      2.1b (Bootstrap)** once the survey showed one line item bundled four
+      upgrades of wildly different risk. Bootstrap was deeply coupled to markup
       (129 `spanN` grids, 72 `btn-mini/small`, 19 `row-fluid`, 16 Bootswatch v2
-      theme CSS files, BS-JS modals ×59 / dropdowns ×14), so a BS2→major migration
-      is a template-wide rewrite, not a patch-bump.
+      theme CSS files, BS-JS modals ×59 / dropdowns ×14), so the BS2→5 migration
+      was a template-wide rewrite, not a patch-bump.
   - [x] 2.1a JS library bumps (branch `feature/phase2.1a-js-libs`) — removed
         **dead** Backbone 1.0.0 + Underscore 1.6.0 (zero app usage — the only
         `_(...)` hits are i18n gettext; clears Underscore CVE-2021-23358),
@@ -304,12 +304,11 @@ _(Update as branches land.)_
         SQLAlchemy-2.0 500 — `Notification.admin()` returned a `Query`, negative-
         sliced in `admin/home.html`; fixed separately on branch
         `fix/admin-home-notification-slice`, out of scope for this frontend branch.)
-  - [~] 2.1b Bootstrap 2 → **5.3.3** (branch `feature/phase2.1b-bootstrap5`, off
-        develop). Staged — the CSS swap is atomic, so the app is mid-migration
-        (navbar/alerts done; forms/modals/themes pending) until it lands. Theme
-        decision: **curate to the 8 Bootswatch-5 themes + default**, drop the 4
-        with no BS5 equivalent (amelia/readable/spruce/geocities → fall back to
-        default), port 386 + cyberpunk as custom. Commits so far:
+  - [x] 2.1b Bootstrap 2 → **5.3.3** (branch `feature/phase2.1b-bootstrap5`, off
+        develop). Theme decision: **curate to the 8 Bootswatch-5 themes + default**,
+        drop the 4 with no BS5 equivalent (amelia/readable/spruce/geocities →
+        existing users on them reassigned to default via migration), port 386 +
+        cyberpunk as custom. Commits:
     - [x] (1) Scaffold — vendor BS5.3.3 bundle (Popper incl.) + BS5 default/Cyborg
           themes; remove BS2 `bootstrap.min.js` + `bootstrap-responsive.css`; add
           `libs/bs5-jquery-bridge.js` re-exposing `$.fn.modal/popover/tooltip/…`
@@ -339,11 +338,58 @@ _(Update as branches land.)_
           (0 skips). CSS orders the header close-button right. Caught+fixed a regex
           bug where a template tag containing `>` in a modal's style attr split the
           opening tag. Verified: Edit Category modal opens with full BS5 structure.
-    - [ ] Remaining: **per-page layout fixes** (BS2 float grids that don't reflow
-          under BS5 flex — the admin dashboard's two-column `col-md-3` sidebar +
-          `col-md-8` sibling panels is the worst case; content is present but drops
-          below the sidebar), dynamic grid vars (`{% set wellspan %}` scoreboard),
-          `.hide` cleanup, and **theme ports** (8 Bootswatch-5 + 386/cyberpunk +
-          seed-list curation + DB migration for dropped themes).
+    - [x] (7) Per-page layout fix — `admin/home.html`'s outer `.row` held a tall
+          `col-md-3` sidebar plus 6 `col-md-8` sibling panels (warnings/
+          notifications/failed-logins/banned-IPs); under BS5 flex (unlike BS2
+          floats) each `col-md-8` sibling wraps once the row's cumulative width
+          passes 100%, dropping every panel below the sidebar and leaving a big
+          empty gap. Wrapped the siblings in one `col-md-9` column. Audited
+          scoreboard/user/admin-view/missions pages for the same shape — no
+          others had it (their multi-column rows are avatar/box-selector grids
+          that intentionally wrap in threes, or already summed to ≤12 columns).
+    - [x] (8) Dynamic grid vars — `{% set wellspan="spanN" %}` in
+          `scoreboard/summary.html` / `projector.html` (skipped by the codemod
+          since it only rewrites plain-text class values, not template-tag string
+          literals) converted to `col-md-N` directly in the `{% set %}`.
+    - [x] (9) Leftover BS2 class/component cleanup — grepped the whole tree;
+          several were real regressions, not just cosmetic drift: `.hide`→`.d-none`
+          (BS5 dropped `.hide`, so a multi-choice-flag JS template row was
+          rendering visible by default instead of staying hidden until cloned);
+          `.pagination` div>ul>li>a → BS5 `ul.pagination>li.page-item>a.page-link`
+          (was a bare bullet list, zero styling); `.label label-warning`→
+          `.badge.text-bg-warning`; BS2 `.accordion-group/-heading/-toggle/-inner`→
+          BS5 `.accordion-item`/`<h2 class="accordion-header">`/`.accordion-button
+          collapsed`/`.accordion-body` in the file-share list; 4 decorative
+          "mini navbar" headers (pastebin fragments + scoreboard/history, not the
+          real site nav already rewritten in commit 3) → the same navbar/
+          navbar-nav/nav-item/nav-link pattern — the history.html one was a real
+          bug: `.nav-collapse collapse` is plain `.collapse` under BS5, which
+          defaults to `display:none`, so its view-toggle buttons were fully
+          invisible; `scoreboard/projector.html`'s page-local dark-theme
+          `<style>` override targeted stale `.navbar-fixed-top`/`.well` selectors
+          post-codemod, so the projector page had stopped hiding the nav bar and
+          applying its dark theme — fixed to `.fixed-top`/`.card-body`.
+    - [x] (10)+(11) Theme curation — vendored the 8 Bootswatch 5.3.3 themes from
+          the CDN (cyborg + default were already done in commit 1); deleted the 4
+          dropped themes' CSS; ported 386 and cyberpunk to BS5 as thin skins
+          layered on the vendored `bootstrap.min.css` base (`@import`) rather than
+          re-implementing Bootstrap 2's grid/component CSS — only each theme's
+          distinctive color/font/shadow rules were carried over, re-targeted at
+          BS5 selectors. (386's actual palette is a DOS "blue screen" look — navy
+          background, grey/yellow/cyan/magenta accents — not literally
+          green-on-black despite the "retro green terminal" shorthand; preserved
+          faithfully.) Updated `setup/bootstrap.py`'s `css_files`. Fixed
+          `User.theme_id`'s hardcoded `default=3` (relied on Cyborg landing at
+          Theme id 3 via insertion order, which the Amelia removal silently
+          breaks) to resolve `Theme.by_name(options.default_theme)` at
+          insert time instead. **DB migration** `b2c3d4e5f6a7`: reassigns any
+          user on a dropped theme to Cyborg, then deletes the 4 dropped
+          Theme/theme_file rows; also updates 386's theme_file rows from the old
+          386.css/386.responsive.css to the new consolidated 386.min.css.
+          Verified against a real populated dev DB (clean upgrade, idempotent
+          re-run, correct end state); no downgrade (irreversible data migration,
+          same convention as `ffe623ae412`).
+    - Verified throughout via headless Chromium screenshots + 0 console errors;
+      full test suite 119 passed unaffected.
 - [ ] 2.2 Frontend build pipeline
 - [ ] 2.3 (Optional) framework modernization
