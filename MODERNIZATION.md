@@ -391,5 +391,40 @@ _(Update as branches land.)_
           same convention as `ffe623ae412`).
     - Verified throughout via headless Chromium screenshots + 0 console errors;
       full test suite 119 passed unaffected.
+    - [x] (12) Parity audit (WIP commit `65d9c3cf`). This was an attempt to match
+          Bootstrap 2's pixel-level look on the player pages and admin dashboard.
+          **Abandoned (decision 2026-10-09).** Recreating Bootstrap 2's
+          fixed-width float grid on top of Bootstrap 5 needed hard-coded pixel
+          corrections that were only right at one window width, `!important`
+          overrides, and a hand-written override section inside the minified
+          vendor theme. The roadmap goal was "features unchanged", not "pixels
+          unchanged". 2.1b closes as **functionally complete**; the visual work
+          moves to 2.1c.
+    - Also on this branch: Keycloak/OIDC single sign-on (`210cb22e`). It is an
+      unrelated feature that was built on top of this branch and ships with it.
+  - [ ] 2.1c Visual refresh (branch `feature/phase2.1c-visual-refresh`, off
+        develop). The goal is a clean, standard Bootstrap 5 design, not a copy
+        of Bootstrap 2. Decisions made:
+    - **Ship a single theme for now.** Drop the curated Bootswatch, 386 and
+      cyberpunk themes. Keep the Theme model and table so more themes can be
+      added later, and hide the theme picker while only one theme exists.
+      Near the end of the upgrade, add themes inspired by the originals'
+      colors, layouts, fonts and design principles. These will not be
+      pixel-for-pixel remakes.
+    - The default stays dark, keeping the CTF "hacker" feel. There is no
+      company branding or logo.
+    - Strip the 2.1b(12) parity overrides: the Bootstrap 2 recreation section
+      in `cyborg.min.css`, the pixel hacks in `pages/admin/home.css`, the
+      `BS5-*-PARITY.md` notes and `dev-tools/bs-parity`. Keep the genuine bug
+      fixes in that commit, such as the missing `col-md-11` that caused
+      horizontal scrolling.
+    - Put the design values (colors, type, spacing, radius) in one place using
+      Bootstrap 5.3 CSS variables and `data-bs-theme`. No build pipeline is
+      needed for this.
+    - Rework pages the standard Bootstrap 5 way, most-used first. Players:
+      login/onboarding, missions/box, scoreboard, user home. Admins: dashboard,
+      game objects. Everything else only needs to look acceptable.
+    - Done when pages work at any window width, look consistent, and nothing
+      is broken. Matching old screenshots is not a goal.
 - [ ] 2.2 Frontend build pipeline
 - [ ] 2.3 (Optional) framework modernization
