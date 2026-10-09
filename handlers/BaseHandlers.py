@@ -43,6 +43,7 @@ from libs.SecurityDecorators import *
 from libs.Sessions import MemcachedConnect, MemcachedSession
 from libs.WebhookHelpers import *
 from models import chatsession, dbsession
+from models.Theme import Theme
 from models.User import User
 
 
@@ -96,6 +97,24 @@ class BaseHandler(RequestHandler):
         if self.config.ssl:
             flags["Secure"] = True
         self.set_secure_cookie("session_id", self.session.session_id, **flags)
+
+    def start_user_session(self, user):
+        """Record the login and start an authenticated session for user"""
+        user.last_login = datetime.datetime.now()
+        user.logins = (user.logins or 0) + 1
+        self.dbsession.add(user)
+        self.dbsession.commit()
+        self.start_session()
+        theme = Theme.by_id(user.theme_id)
+        if user.team is not None:
+            self.session["team_id"] = int(user.team.id)
+        self.session["user_id"] = int(user.id)
+        self.session["user_uuid"] = user.uuid
+        self.session["handle"] = user.handle
+        self.session["theme"] = [str(f) for f in theme.files]
+        self.session["theme_id"] = int(theme.id)
+        self.session["menu"] = "admin" if user.is_admin() else "user"
+        self.session.save()
 
     def add_content_policy(self, src, policy):
         """Add to the existing CSP header"""

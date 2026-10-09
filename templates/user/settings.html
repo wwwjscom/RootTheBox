@@ -254,6 +254,7 @@
             </div>
             {% end %}
         </div>
+        {% if options.auth != "oidc" %}
         <div class="row" style="margin-left: 0px; margin-right: 20px;">
             <div class="card card-body">
                 <form class="form-horizontal" action="/user/settings/email" method="post" autocomplete="off">
@@ -276,6 +277,7 @@
                 </form>
             </div>
         </div>
+        {% end %}
         {% if options.auth == "db" %}
         <div class="row" style="margin-left: 0px; margin-right: 20px;">
             <div class="card card-body">

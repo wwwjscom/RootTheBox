@@ -96,6 +96,8 @@ class User(DatabaseObject):
     _notes = Column(Unicode(512))
     _expire = Column(DateTime, default=None, nullable=True)
     money = Column(Integer, default=0, nullable=False)
+    # Stable OIDC 'sub' claim linking this account to the identity provider.
+    oidc_subject = Column(String(255), unique=True, index=True, nullable=True)
 
     theme_id = Column(Integer, ForeignKey("theme.id"), default=_default_theme_id, nullable=False)
 
@@ -148,6 +150,13 @@ class User(DatabaseObject):
     def by_uuid(cls, _uuid):
         """Return and object based on a uuid"""
         return dbsession.query(cls).filter_by(uuid=str(_uuid)).first()
+
+    @classmethod
+    def by_oidc_subject(cls, subject):
+        """Return the user linked to an OIDC subject ('sub' claim)"""
+        if not subject:
+            return None
+        return dbsession.query(cls).filter_by(oidc_subject=str(subject)).first()
 
     @classmethod
     def by_email(cls, email):

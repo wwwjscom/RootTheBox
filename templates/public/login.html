@@ -32,6 +32,12 @@
                 </div>
             {% end %}
         {% end %}
+        {% if options.auth == "oidc" %}
+        <a class="btn btn-primary" href="/login">
+            <i class="fa fa-sign-in"></i>
+            {{ _("Sign in with SSO") }}
+        </a>
+        {% else %}
         {% raw xsrf_form_html() %}
         <input name="account" type="text" class="w-100 form-control" placeholder="{{ _('Handle') }}" autofocus>
         <input name="password" type="password" class="w-100 form-control" placeholder="{{ _('Password') }}" autocomplete="off">
@@ -45,6 +51,7 @@
         </button>
         {% if len(options.mail_host) > 0 %}
         <a href="/reset" style="float: right;">{{ _('Forgot Password') }}</a>
+        {% end %}
         {% end %}
     </form>
 </div> <!-- /container -->

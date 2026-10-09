@@ -23,6 +23,8 @@ dependencies = [
     # Passwords / crypto helpers.
     "pbkdf2",
     "msal",
+    # OIDC ID token validation (JWKS / RS256) for auth = "oidc".
+    "pyjwt[crypto]>=2.8",
     # Parsing / validation / networking.
     "python-dateutil",
     "defusedxml",

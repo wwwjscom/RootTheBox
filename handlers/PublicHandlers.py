@@ -318,24 +318,7 @@ class LoginHandler(BaseHandler):
         logging.info(
             "Successful login: %s from %s" % (user.handle, self.request.remote_ip)
         )
-        user.last_login = datetime.now()
-        user.logins += 1
-        self.dbsession.add(user)
-        self.dbsession.commit()
-        self.start_session()
-        theme = Theme.by_id(user.theme_id)
-        if user.team is not None:
-            self.session["team_id"] = int(user.team.id)
-        self.session["user_id"] = int(user.id)
-        self.session["user_uuid"] = user.uuid
-        self.session["handle"] = user.handle
-        self.session["theme"] = [str(f) for f in theme.files]
-        self.session["theme_id"] = int(theme.id)
-        if user.is_admin():
-            self.session["menu"] = "admin"
-        else:
-            self.session["menu"] = "user"
-        self.session.save()
+        self.start_user_session(user)
 
     def failed_login(self):
         """Called if username/password is invalid"""

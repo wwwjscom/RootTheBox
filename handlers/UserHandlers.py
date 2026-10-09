@@ -27,11 +27,12 @@ This file contains code for managing user accounts
 import json
 import logging
 import urllib.request as urlrequest
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 
 import tornado
 from tornado.options import options
 
+from libs import OIDCClient
 from libs.EventManager import EventManager
 from libs.SecurityDecorators import authenticated
 from libs.UpdateCheckHelpers import (
@@ -240,6 +241,9 @@ class SettingsHandler(BaseHandler):
 
     def post_email(self, *args, **kwargs):
         """Change user email"""
+        if options.auth == "oidc":
+            self.render_page(errors=["Email is managed by your identity provider."])
+            return
         user = self.get_current_user()
         user.email = self.get_argument("email", "")
         self.dbsession.add(user)
@@ -353,9 +357,20 @@ class LogoutHandler(BaseHandler):
 
     def post(self, *args, **kwargs):
         """Clears cookies and session data"""
+        id_token = None
         if self.session is not None:
             user = self.get_current_user()
+            id_token = self.session.get("id_token")
             EventManager.instance().deauth(user)
             self.session.delete()
         self.clear_all_cookies()
-        self.redirect("/")
+        self.redirect(self.idp_logout_url(id_token) or "/")
+
+    def idp_logout_url(self, id_token):
+        """With OIDC, also end the identity provider's session"""
+        if options.auth != "oidc" or not options.oidc_logout:
+            return None
+        site = urlparse(options.oidc_redirect_url)
+        return OIDCClient.end_session_url(
+            id_token, "%s://%s/" % (site.scheme, site.netloc)
+        )

@@ -42,7 +42,7 @@ if (
     options.setup.lower().startswith("dev")
     or options.setup.lower().startswith("docker")
     or options.tests
-    or options.auth.lower() == "azuread"
+    or options.auth.lower() in ("azuread", "oidc")
 ):
     admin_handle = "admin"
     password = "rootthebox"
