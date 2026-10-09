@@ -20,14 +20,15 @@
 {% from models.Hint import Hint %}
 {% from tornado.options import options %}
 {% set team = user.team %}
-<div class="row">
+<div class="row user-home">
     <div class="col-md-6">
         <div class="row">
             <div class="col-md-11 offset-md-1 card card-body">
+                <div class="d-flex justify-content-between align-items-start">
                 <h2 style="padding-bottom: 8px;">
-                    <i class="fa fa-user"></i> {{ user.handle }} 
+                    <i class="fa fa-user"></i> {{ user.handle }}
                 </h2>
-                <span style="float: right; margin-top: -63px; text-align: center;">
+                <span style="text-align: center;">
                     <table>
                         <tr>
                             {% if options.teams %}<td>{{ _("Player Score") }}</td>{% end %}{% if scoreboard_visible %}<td style="padding-left: 20px;">Rank</td>{% end %}
@@ -37,6 +38,7 @@
                         </tr>
                     </table>
                 </span>
+                </div>
                 <center>
                     {% if options.teams or not team %}
                         <img src="/avatars/{{ user.avatar }}" class="img-polaroid" />
@@ -274,7 +276,7 @@
                     {% if level.description %}<h4 class="levelheader">({{ level.description }})<h4>{% end %}
                     {% if len(team.level_flags(level.number)) != 0 %}
                         <div class="progress" style="height: 8px; margin-bottom: 15px; background-color: #424242;">
-                            <div class="bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}">
+                            <div class="progress-bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}">
                             </div>
                         </div>
                     {% end %}
@@ -300,18 +302,18 @@
                                         </h5>
                                     </a>
                                 </div>
-                                {% set flagcount=0 %} 
-                                {% for index, flag in enumerate(sorted(box.flags)) %} 
-                                    {% if flag in team.flags %} 
+                                {% set flagcount=0 %}
+                                {% for index, flag in enumerate(sorted(box.flags)) %}
+                                    {% if flag in team.flags %}
                                         {% set flagcount += 1 %}
-                                    {% end %} 
+                                    {% end %}
                                 {% end %}
                                 <div class="col-md-8" style="padding-top: 6px;">
                                     <table style="width: 100%; margin: 0 3px;"><tr>
-                                    {% for index, flag in enumerate(sorted(box.flags)) %} 
+                                    {% for index, flag in enumerate(sorted(box.flags)) %}
                                         <td style="padding: 0 3px;">
                                             <div class="progress" style="height: 8px; background-color: #424242;" title="{{ flag.name }}">
-                                                <div class="bar minibar" style="width: {% if flag in team.flags %}100{% else %}0{% end %}%;"></div>
+                                                <div class="progress-bar minibar" style="width: {% if flag in team.flags %}100{% else %}0{% end %}%;"></div>
                                             </div>
                                         </td>
                                     {% end %}
@@ -361,7 +363,7 @@
                         {% if level.description %}<h4 class="levelheader">({{ level.description }})<h4>{% end %}
                         {% if len(team.level_flags(level.number)) != 0 %}
                             <div class="progress" style="height: 8px; margin-bottom: 15px; background-color: #424242;">
-                                <div class="bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}">
+                                <div class="progress-bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}">
                                 </div>
                             </div>
                         {% end %}
@@ -398,7 +400,7 @@
                                         {% for index, flag in enumerate(sorted(box.flags)) %} 
                                             <td style="padding: 0 3px;">
                                                 <div class="progress" style="height: 8px; background-color: #424242;" title="{{ flag.name }}">
-                                                    <div class="bar minibar" style="width: {% if flag in user.flags %}100{% else %}0{% end %}%;"></div>
+                                                    <div class="progress-bar minibar" style="width: {% if flag in user.flags %}100{% else %}0{% end %}%;"></div>
                                                 </div>
                                             </td>
                                         {% end %}

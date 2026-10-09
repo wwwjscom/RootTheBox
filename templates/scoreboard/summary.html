@@ -6,6 +6,7 @@
 <script src="/static/js/pages/scoreboard/summary.js"></script>
 <script src="/static/js/pages/missions/view.js"></script>
 <link href="/static/css/pages/public/summary.css" rel="stylesheet" />
+<link href="/static/css/pages/scoreboard/summary.css" rel="stylesheet" />
 {% end %}
 
 {% block title %}{{ _("Scoreboard") }}{% end %}
@@ -14,6 +15,7 @@
     {% from tornado.options import options %}
     {% from math import ceil %}
     {% if not hide_scoreboard %}
+    <div class="scoreboard-summary">
     <div class="row">
         <div style="float:right; margin-top: -15px; margin-right: 4.75%;">
             {% set pcount = ceil(teamcount / display) %}
@@ -124,6 +126,7 @@
             {% end %}
         </div>
         {% end %}
+    </div>
     </div>
     {% else %}
     <h1 id="timercount_hidescoreboard" class="timercount"></h1>

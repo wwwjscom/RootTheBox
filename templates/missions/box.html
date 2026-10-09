@@ -5,6 +5,7 @@
 {% block header %}
 <link rel="stylesheet" href="/static/css/jstree.css" />
 <link rel="stylesheet" href="/static/css/icons.css" />
+<link rel="stylesheet" href="/static/css/pages/missions/box.css" />
 <script src="/static/js/pages/missions/view.js"></script>
 <script src="/static/js/pages/missions/box.js"></script>
 <script src="/static/js/libs/commonmark.min.js"></script>
@@ -208,7 +209,7 @@
 
 {% block content %}
     <!-- Visible -->
-    <div class="container">
+    <div class="container missions-box">
         {% if level.review_mode %}
         <div class="alert alert-warning">
             <i class="fa fa-eye"></i>&nbsp;<strong>{{ _("Review Mode") }}</strong> &mdash; {{ _("Flag submissions are accepted but no points are awarded") }}
@@ -331,7 +332,7 @@
         {% end %}
         {% if flagcount != 0 and len(box.flags) != 0 %}
             <div class="progress" style="height: 8px;; background-color: #424242;">
-                <div class="bar minibar" style="width: {{ ( flagcount /  float(len(box.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box.flags) }}">
+                <div class="progress-bar minibar" style="width: {{ ( flagcount /  float(len(box.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box.flags) }}">
                 </div>
             </div>
         {% end %}

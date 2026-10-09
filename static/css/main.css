@@ -21,6 +21,18 @@ body {
 .modal-header > h5 {
     margin: 0;
 }
+/* Form-horizontal labels: BS2's .control-label floated right-aligned in a
+   fixed 160px gutter beside its input column; BS5's .col-form-label defaults
+   to left-aligned with small padding, so every settings/create/config form
+   lost its label alignment in the migration. This is layout, not color/theme,
+   so it lives here (main.css) rather than the Cyborg-only theme file. */
+.form-horizontal .col-form-label {
+    float: left;
+    width: 160px;
+    padding-top: 5px;
+    text-align: right;
+    line-height: 20px;
+}
 footer {
     font-size: 75%;
     position: fixed;
@@ -28,10 +40,28 @@ footer {
     width: 100%;
 }
 .footernav {
+    /* BS2's ".navbar-inner" gave the footer bar its own dark surface, border,
+       and min-height; that class isn't used in the BS5 markup, so the bar
+       collapsed to a single text line. Restore the original bar geometry
+       (min-height 50px, content-box, 1px border) so the pinned footer's
+       visible height (~52px) matches the original. */
     padding: 5px 20px;
+    min-height: 50px;
+    box-sizing: content-box;
+    border: 1px solid #000;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+    background-color: #020202;
 }
+/* BS2's own reset CSS made every <img> responsive by default
+   (`img{max-width:100%}`); BS5 dropped that global default (you opt in per
+   image with `.img-fluid` instead). This 500px value was always meant as a
+   cap, not a forced width -- restore max-width/height:auto so it shrinks
+   inside a narrower container instead of overflowing it. */
 .img-polaroid {
     width: 500px;
+    max-width: 100%;
+    height: auto;
 }
 .shortcolumn {
     width: 1px;

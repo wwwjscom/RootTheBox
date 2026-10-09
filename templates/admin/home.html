@@ -95,9 +95,9 @@
 {% from models.Notification import Notification %}
 {% from tornado.options import options %}
 {% from libs.GameState import registration_seconds_remaining %}
-<div class="row">
+<div class="row admin-dashboard">
     <div class="row">
-        <div class="offset-md-1">
+        <div class="col-md-11 offset-md-1">
             <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-right: 150px;"></h3>
             <h1>
                 <i class="fa fa-home"></i>
@@ -243,7 +243,7 @@
             
         </div>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-8">
     {% if user.validate_password("rootthebox") %}
     <div class="alert alert-warning alert-dismissible">
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -281,17 +281,15 @@
     </div>
     {% end %}
     <div class="card card-body">
-        <div class="row mb-3" style="float: right; padding-top: 20px;">
-                <div class="col-sm-9">
-                    <button class="btn btn-primary" data-bs-toggle="modal" href="#message-modal" type="button">
-                        {{ _("Create Notification") }}
-                    </button>
-                </div>
+        <div class="d-flex justify-content-between align-items-center mb-0">
+            <h3 id="notifications-title" class="mb-0">
+                <i class="fa fa-envelope"></i>
+                {{ _("Notifications") }}
+            </h3>
+            <button class="btn btn-primary" data-bs-toggle="modal" href="#message-modal" type="button">
+                {{ _("Create Notification") }}
+            </button>
         </div>
-        <h3 id="notifications-title">
-            <i class="fa fa-envelope"></i>
-            {{ _("Notifications") }}
-        </h3>
         <h4 id="notifications">
             <a href="/admin/view/notifications">
                 {{ _("See All") }} &raquo;

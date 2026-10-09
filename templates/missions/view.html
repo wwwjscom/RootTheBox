@@ -3,6 +3,7 @@
 {% block title %}{{ _("Missions") }}{% end %}
 
 {% block header %}
+<link rel="stylesheet" href="/static/css/pages/missions/view.css" />
 <script src="/static/js/pages/missions/view.js"></script>
 {% end %}
 
@@ -46,7 +47,7 @@
     {% set corps = [""] %}
 {% end %}
     <!-- Visible -->
-    <div class="container">
+    <div class="container missions-view">
         <h1>{{ _("Missions") }}</h1>
         <br />
         {% if errors is not None and len(errors) != 0 %}
@@ -110,10 +111,10 @@
                     {% if team and has_level %}
                         <div class="progress" style="height: 10px; background-color: #424242;">
                         {% if len(level.flags) == 0 %}
-                            <div class="bar minibar" style="width: {{0}}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}"></div>
+                            <div class="progress-bar minibar" style="width: {{0}}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}"></div>
                         {% end %}
                         {% if len(level.flags) != 0 %}
-                            <div class="bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}"></div>
+                            <div class="progress-bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}"></div>
                         {% end %}
                         </div>
                     {% end %}
@@ -163,9 +164,9 @@
                                                 {% end %}
                                                 <div class="progress" style="height: 8px; margin-bottom: 8px; margin-right: -10px; background-color: #424242;">
                                                     {% if flagcount != 0 and len(box.flags) != 0 %}
-                                                            <div class="bar minibar" style="width: {{ ( flagcount /  float(len(box.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box.flags) }}"></div>
+                                                            <div class="progress-bar minibar" style="width: {{ ( flagcount /  float(len(box.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box.flags) }}"></div>
                                                     {% else %}
-                                                            <div class="bar minibar" style="width: 0%;"></div>
+                                                            <div class="progress-bar minibar" style="width: 0%;"></div>
                                                     {% end %}
                                                 </div>
                                             {% end %}
@@ -203,9 +204,9 @@
                                                     {% end %}
                                                     <div class="progress" style="height: 8px; margin-bottom: 8px; margin-right: -10px; background-color: #424242;" title="{% if len(box1.flags) != 0 %}{{ flagcount }} / {{ len(box1.flags) }}{% else %}0 / 0{% end %}">
                                                         {% if flagcount != 0 and len(box1.flags) != 0 %}
-                                                                <div class="bar minibar" style="width: {{ ( flagcount /  float(len(box1.flags)) ) * 100.0 }}%;"></div>
+                                                                <div class="progress-bar minibar" style="width: {{ ( flagcount /  float(len(box1.flags)) ) * 100.0 }}%;"></div>
                                                         {% else %}
-                                                                <div class="bar minibar" style="width: 0%;"></div>
+                                                                <div class="progress-bar minibar" style="width: 0%;"></div>
                                                         {% end %}
                                                     </div>
                                                 {% end %}
@@ -244,9 +245,9 @@
                                                     {% end %}
                                                     <div class="progress" style="height: 8px; margin-bottom: 8px; margin-right: -10px; background-color: #424242;">
                                                         {% if flagcount != 0 and len(box2.flags) != 0 %}
-                                                                <div class="bar minibar" style="width: {{ ( flagcount /  float(len(box2.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box2.flags) }}"></div>
+                                                                <div class="progress-bar minibar" style="width: {{ ( flagcount /  float(len(box2.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box2.flags) }}"></div>
                                                         {% else %}
-                                                                <div class="bar minibar" style="width: 0%;"></div>
+                                                                <div class="progress-bar minibar" style="width: 0%;"></div>
                                                         {% end %}
                                                     </div>
                                                 {% end %}

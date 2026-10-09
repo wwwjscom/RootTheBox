@@ -7,7 +7,14 @@ body {
   margin-top: 70px;
 }
 .form-signin {
-  max-width: 400px;
+  /* BS2's box model was content-box, so this 400px was the CONTENT width;
+     the rendered box (with the padding/border below added on top) measured
+     460px live on the original app. BS5's global `*{box-sizing:border-box}`
+     reset makes max-width the OUTER (border-box) width instead, so the same
+     "400px" value here would render as a 460px->400px shrunk, 30px-shifted
+     box. Restate it as the real outer width (400 + 29*2 padding + 1*2
+     border = 460) so the box and its centered position match BS2 again. */
+  max-width: 460px;
   padding: 19px 29px 29px;
   margin: 0 auto 20px;
 

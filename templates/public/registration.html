@@ -71,7 +71,7 @@
 {% end %}
 
 {% block content %}
-    <div class="container">
+    <div class="container registration-page">
         <h1>
             <i class="fa fa-pencil"></i>
             {{ _("Registration") }}
@@ -86,7 +86,7 @@
                 </div>
             {% end %}
         {% end %}
-        <div class="{% if len(avatars) == 0 %}col-md-8 offset-md-1 {% end %}card card-body" style="position: relative;">
+        <div class="registration-card {% if len(avatars) == 0 %}col-md-8 offset-md-1 {% end %}card card-body" style="position: relative;">
         {% if not suspend %}
             <legend>
                 {{ _("Welcome to the Scene") }}
@@ -249,7 +249,7 @@
                 {% end %}
                 <br />
                 <div class="row mb-3">
-                    <div class="col-sm-9">
+                    <div class="col-sm-9 offset-sm-3">
                         <button class="btn btn-primary" type="submit">
                             {{ _("Register Account") }}
                         </button>

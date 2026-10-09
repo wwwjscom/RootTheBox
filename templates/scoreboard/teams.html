@@ -5,6 +5,7 @@
 <script src="/static/js/pages/scoreboard/teams.js"></script>
 <script src="/static/js/pages/anchor.js"></script>
 <link href="/static/css/pages/public/summary.css" rel="stylesheet" />
+<link href="/static/css/pages/scoreboard/teams.css" rel="stylesheet" />
 {% end %}
 {% block title %}
 {% from tornado.options import options %}
@@ -16,6 +17,7 @@
 {% from models.Team import Team %}
 {% from models.GameLevel import GameLevel %}
 
+<div class="scoreboard-teams">
 <div class="row">
     {% if not hide_scoreboard %}
     <div class="col-md-2" />
@@ -133,9 +135,9 @@
                                                     {% end %}
                                                     <div class="progress" style="height: 8px; margin-bottom: 8px; background-color: #424242;" title="{% if len(GameLevel.all()) > 1 %}{{ level.name }} &ndash; {% end %}{% if len(team.level_flags(level.number)) != 0 %}{{ int(( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100) }}%{% else %}0%{% end %}">
                                                         {% if len(team.level_flags(level.number)) != 0 %}
-                                                            <div class="bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;"></div>
+                                                            <div class="progress-bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;"></div>
                                                         {% else %}
-                                                            <div class="bar minibar" style="width: 0%;"></div>
+                                                            <div class="progress-bar minibar" style="width: 0%;"></div>
                                                         {% end %}
                                                     </div>
                                                 </div>
@@ -180,5 +182,6 @@
     {% else %}
         <h1 id="timercount_hidescoreboard" class="timercount"></h1>
     {% end %}
+</div>
 </div>
 {% end %}
