@@ -1,5 +1,86 @@
-/* Scoreboard summary (templates/scoreboard/summary.html). Side-by-side
-   cards keep their own heights. */
-.scoreboard-summary > .row:last-child {
-    align-items: flex-start;
+/* Scoreboard summary (templates/scoreboard/summary.html + summary_table.html). */
+.scoreboard-summary {
+    max-width: 1320px;
+    margin: 0 auto;
+}
+.scoreboard-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.scoreboard-paging {
+    order: 3;
+    margin-left: auto;
+}
+.scoreboard-paging .page-item select {
+    border-radius: 0 var(--bs-border-radius-sm) var(--bs-border-radius-sm) 0;
+}
+.scoreboard-header h1 > .fa {
+    color: var(--rtb-accent);
+}
+
+#summary_table .rank-cell {
+    width: 3.5rem;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
+}
+#summary_table .rank-cell.rank-1 { color: #f5c542; }
+#summary_table .rank-cell.rank-2 { color: #c8d3df; }
+#summary_table .rank-cell.rank-3 { color: #d99a5b; }
+#summary_table .team-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+}
+#summary_table .team-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+}
+#summary_table .admin-player-name,
+#summary_table .team-meta {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--bs-secondary-color);
+}
+#summary_table .team-progress {
+    display: flex;
+    gap: 6px;
+    margin-top: 0.5rem;
+    min-width: 160px;
+}
+#summary_table .progress-segment {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+#summary_table .progress-segment > .fa {
+    font-size: 0.75rem;
+    color: var(--bs-secondary-color);
+}
+#summary_table .progress-segment > .fa.is-locked {
+    color: var(--rtb-border-strong);
+}
+#summary_table .progress-segment .progress {
+    flex: 1;
+    --bs-progress-height: 6px;
+}
+#summary_table .stat-cell {
+    width: 5rem;
+    text-align: center;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+#summary_table .stat-cell.is-rank-metric {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--bs-emphasis-color);
 }

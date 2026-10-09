@@ -1,5 +1,138 @@
-/* Missions list (templates/missions/view.html). Box thumbnails vary in
-   height; don't stretch shorter columns to the tallest one. */
-.missions-view .card .row {
-    align-items: flex-start;
+/* Missions list (templates/missions/view.html). */
+.missions-view {
+    max-width: 1320px;
+    margin: 0 auto;
+}
+.corp-header {
+    margin: 2rem 0 1rem;
+}
+.corp-header p {
+    color: var(--bs-secondary-color);
+    margin: 0;
+}
+.mission-level + .mission-level {
+    margin-top: 2.5rem;
+}
+.mission-level-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-bottom: 1rem;
+}
+.mission-level-header h2 {
+    font-size: 1.2rem;
+    margin: 0;
+}
+.mission-level-header h2 > .fa {
+    color: var(--bs-secondary-color);
+    margin-right: 0.15rem;
+}
+.mission-level-description {
+    margin: 0.25rem 0 0;
+    color: var(--bs-secondary-color);
+    font-size: 0.9rem;
+}
+.mission-level-progress {
+    flex: 0 1 260px;
+    font-size: 0.85rem;
+    color: var(--bs-secondary-color);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+.mission-level-progress .progress {
+    margin-top: 0.35rem;
+}
+
+.mission-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1rem;
+}
+.mission-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    background: var(--rtb-surface-raised);
+    color: var(--bs-body-color);
+    text-decoration: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.mission-card:hover,
+.mission-card:focus-visible {
+    color: var(--bs-body-color);
+    text-decoration: none;
+    border-color: var(--rtb-accent);
+    background: var(--rtb-surface-overlay);
+}
+.mission-card.is-active {
+    box-shadow: inset 0 3px 0 var(--rtb-accent);
+}
+.mission-card.is-complete {
+    box-shadow: inset 0 3px 0 var(--bs-success);
+}
+.mission-card-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+    border-bottom: 1px solid var(--bs-border-color);
+}
+.mission-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.85rem 1rem 1rem;
+}
+.mission-card-name {
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.mission-card-name > .fa {
+    color: var(--bs-secondary-color);
+}
+.mission-card-meta {
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+}
+.mission-card.is-complete .mission-card-meta {
+    color: var(--bs-success);
+}
+.mission-card-bar {
+    display: flex;
+    gap: 3px;
+    margin-top: 0.5rem;
+}
+.mission-card-bar > span {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--rtb-surface-hover);
+}
+.mission-card-bar > .is-captured {
+    background: var(--rtb-accent);
+}
+.mission-card.is-complete .mission-card-bar > .is-captured {
+    background: var(--bs-success);
+}
+
+.mission-locked {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px dashed var(--rtb-border-strong);
+    border-radius: var(--bs-border-radius-lg);
+    color: var(--bs-secondary-color);
+}
+.mission-locked strong {
+    color: var(--bs-body-color);
 }

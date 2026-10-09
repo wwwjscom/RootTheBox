@@ -243,6 +243,9 @@ pre code {
     --bs-tooltip-color: var(--bs-emphasis-color);
 }
 
+.page-title {
+    margin-bottom: 1.5rem;
+}
 .card-heading {
     font-size: 1.1rem;
     margin-bottom: 1rem;

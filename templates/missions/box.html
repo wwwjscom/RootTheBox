@@ -17,9 +17,9 @@
 <style>
   #review-mode-border {
     position: fixed;
-    top: 60px;
+    top: 57px;
     left: 0; right: 0; bottom: 0;
-    border: 5px solid #f89406;
+    border: 4px solid var(--bs-warning);
     pointer-events: none;
     z-index: 9998;
   }
@@ -36,24 +36,20 @@
 {% from handlers.MaterialsHandler import has_materials,has_box_materials %}
 {% from tornado.options import options %}
     <!-- Submit text flag -->
-    <div id="capture-text-flag-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div id="capture-text-flag-modal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            <h3>{{ _("Submit Flag") }}</h3>
+            <h3 class="modal-title fs-5">{{ _("Submit Flag") }}</h3>
         </div>
         <div class="modal-body">
             <form id="capture-text-flag-form" class="form-horizontal" method="post" action="/user/missions/boxes?uuid={{ box.uuid }}">
                 {% raw xsrf_form_html() %}
                 <input id="capture-text-flag-uuid" name="uuid" value="" type="hidden" />
                 {% include "penalty_note.html" %}
-                <div class="row mb-3">
-                    <label class="col-sm-3 col-form-label" for="flag-token">{{ _("Flag") }}</label>
-                    <div class="col-sm-9">
-                        <input class="form-control" autofocus required id="flag-token" name="token" type="text" placeholder="{{ _('Flag') }}" autocomplete="off"{% if level_submission_timer_expired %} disabled{% end %} />
-                    </div>
-                </div>
+                <label class="form-label" for="flag-token">{{ _("Flag") }}</label>
+                <input class="form-control font-mono" autofocus required id="flag-token" name="token" type="text" autocomplete="off"{% if level_submission_timer_expired %} disabled{% end %} />
             </form>
         </div>
         <div class="modal-footer">
@@ -66,12 +62,12 @@
     </div>
     </div></div>
     <!-- Submit multiple choice flag -->
-    <div id="capture-choice-flag-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div id="capture-choice-flag-modal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
     <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                <h3>{{ _("Submit Flag") }}</h3>
+                <h3 class="modal-title fs-5">{{ _("Submit Flag") }}</h3>
             </div>
             <div class="modal-body">
                 <form id="capture-choice-flag-form" class="form-horizontal" method="post" action="/user/missions/boxes?uuid={{ box.uuid }}">
@@ -79,7 +75,7 @@
                     <input id="capture-choice-flag-uuid" name="uuid" value="" type="hidden" />
                     <input id="choice-flag-token" name="token" type="hidden" />
                     {% include "penalty_note.html" %}
-                    <div id="choiceinput" style="margin-left: 50px;"></div>
+                    <div id="choiceinput"></div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -92,25 +88,20 @@
     </div>
     </div></div>
     <!-- Submit file flag -->
-    <div id="capture-file-flag-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div id="capture-file-flag-modal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            <h3>{{ _("Submit Flag") }}</h3>
+            <h3 class="modal-title fs-5">{{ _("Submit Flag") }}</h3>
         </div>
         <div class="modal-body">
             <form id="capture-file-flag-form" class="form-horizontal" method="post" action="/user/missions/boxes?uuid={{ box.uuid }}" enctype="multipart/form-data" >
                 {% raw xsrf_form_html() %}
                 <input autofocus id="capture-file-flag-uuid" name="uuid" type="hidden" />
                 {% include "penalty_note.html" %}
-                <div class="row mb-3">
-                    <br />
-                    <label class="col-sm-3 col-form-label" for="flag-file">{{ _("Flag") }}</label>
-                    <div class="col-sm-9">
-                        <input class="form-control" id="flag-file" name="flag" type="file"{% if level_submission_timer_expired %} disabled{% end %} />
-                    </div>
-                </div>
+                <label class="form-label" for="flag-file">{{ _("Flag file") }}</label>
+                <input class="form-control" id="flag-file" name="flag" type="file"{% if level_submission_timer_expired %} disabled{% end %} />
             </form>
         </div>
         <div class="modal-footer">
@@ -123,16 +114,15 @@
     </div>
     </div></div>
 
-    <div id="show-flag-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div id="show-flag-modal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            <h3 id="showknownname">{{ _("Flag") }}</h3>
+            <h3 class="modal-title fs-5" id="showknownname">{{ _("Flag") }}</h3>
         </div>
         <div class="modal-body">
-            <br />
-            <h5 id="showknownflag" style="text-align: center;"></h5>
+            <code id="showknownflag" class="d-block p-3 fs-6"></code>
         </div>
         <div class="modal-footer">
             <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
@@ -141,15 +131,14 @@
     </div>
     </div></div>
     
-    <div id="purchase-hint-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div id="purchase-hint-modal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            <h3>{% if options.banking %}{{ _("Purchase") }}{% else %}{{ _("Take") }}{% end %} {{ _("Hint") }}</h3>
+            <h3 class="modal-title fs-5">{% if options.banking %}{{ _("Purchase") }}{% else %}{{ _("Take") }}{% end %} {{ _("Hint") }}</h3>
         </div>
         <div class="modal-body">
-            <br />
             <p id="purchase-hint-text"></p>
             <form id="purchase-hint-form" class="form-horizontal" method="post" action="/user/missions/hint">
                 {% raw xsrf_form_html() %}
@@ -166,75 +155,67 @@
     </div>
     </div></div>
 
-    <div id="flag-attempts-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div id="flag-attempts-modal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
     <div class="modal-content">
-        <div class="modal-header" style="background: #2a2a2a; border-radius: 6px 6px 0 0;">
-            <button type="button" style="color: #aaa; opacity: 0.8;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            <h3 style="color: #e0e0e0; margin: 0; font-size: 16px; letter-spacing: 0.5px;">
-                <i class="fa fa-history" style="margin-right: 8px; color: #888;"></i>{{ _("Prior Attempts") }}
-            </h3>
+        <div class="modal-header">
+            <h3 class="modal-title fs-5"><i class="fa fa-history"></i> {{ _("Prior Attempts") }}</h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" style="background: #1e1e1e; padding: 0;">
-            <table id="flag-attempts-table" class="table table-condensed" style="display: none; margin: 0; color: #ccc;">
+        <div class="modal-body p-0">
+            <table id="flag-attempts-table" class="table table-sm table-striped mb-0" style="display: none;">
                 <thead>
-                    <tr style="background: #2e2e2e; border-bottom: 1px solid #444;">
-                        <th style="width: 40px; color: #888; font-weight: normal; padding: 8px 12px;">#</th>
-                        <th style="color: #888; font-weight: normal; padding: 8px 12px;">{{ _("Submitted") }}</th>
-                        <th style="width: 130px; color: #888; font-weight: normal; padding: 8px 12px;">{{ _("When") }}</th>
+                    <tr>
+                        <th class="ps-3">#</th>
+                        <th>{{ _("Submitted") }}</th>
+                        <th class="pe-3">{{ _("When") }}</th>
                     </tr>
                 </thead>
                 <tbody id="flag-attempts-list"></tbody>
             </table>
-            <p id="flag-attempts-empty" style="display: none; color: #666; text-align: center; padding: 24px; margin: 0;">
-                <i class="fa fa-inbox" style="font-size: 20px; display: block; margin-bottom: 8px;"></i>
+            <p id="flag-attempts-empty" class="text-center text-body-secondary p-4 mb-0" style="display: none;">
+                <i class="fa fa-inbox fa-lg d-block mb-2"></i>
                 {{ _("No prior attempts recorded.") }}
             </p>
         </div>
-        <div class="modal-footer" style="background: #2a2a2a; border-top: 1px solid #444; border-radius: 0 0 6px 6px;">
-            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal" style="color: #aaa;">{{ _("Close") }}</a>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         </div>
-    
     </div>
-    </div></div>
+    </div>
+    </div>
 {% end %}
 
 {% block content %}
-    <!-- Visible -->
-    <div class="container missions-box">
+    <div class="missions-box">
         {% if level.review_mode %}
         <div class="alert alert-warning">
             <i class="fa fa-eye"></i>&nbsp;<strong>{{ _("Review Mode") }}</strong> &mdash; {{ _("Flag submissions are accepted but no points are awarded") }}
         </div>
         {% end %}
-        <h1>
-            {% if box.operating_system.lower() == 'windows' %}
-                <i class="fa fa-windows"></i>
-            {% elif box.operating_system.lower() == 'linux' %}
-                <i class="fa fa-linux"></i>
-            {% elif box.operating_system.lower() == 'apple' %}
-                <i class="fa fa-apple"></i>
-            {% elif box.operating_system.lower() == '?' %}
-                <i class="fa fa-desktop"></i>
-            {% else %}
-                <i class="fa fa-th"></i>
-            {% end %}
-            {% if box.corporation.name != "" %}{{ box.corporation.name }} - {% end %}{{ box.name }}
-            {% if options.story_mode and len(box.capture_message) > 0 and box.is_complete(user) %}
-                <a class="btn playstory btn-secondary" style="margin-left: 8px; float:right; margin-top: 10px;" href="captured?box={{ box.uuid }}">
-                    <i class="fa fa-play"></i>
-                    {{ _("Play Story") }}
-                </a>&nbsp;&nbsp;
-            {% end %}
-            {% if not user.is_admin() %}
-                <a style="float:right; margin-top: 10px;"  class="btn btn-secondary" href="/user/missions">{{ _("Return to Missions") }}</a>
-            {% else %}
-                <a style="float:right; margin-top: 10px;"  class="btn btn-secondary" href="/admin/view/game_objects#{{ box.uuid }}">{{ _("Return to Edit") }}</a>
-            {% end %}
-        </h1>
-        <div style="margin-top: -5px; margin-bottom: -5px;">
-            {% if box.category %}{{ box.category }}{% end %}
-        </div><br />
+        {% set os_name = box.operating_system.lower() %}
+        <header class="box-header">
+            <div class="box-title">
+                <h1>
+                    <i class="fa {% if os_name == 'windows' %}fa-windows{% elif os_name == 'linux' %}fa-linux{% elif os_name == 'apple' %}fa-apple{% elif os_name == '?' %}fa-desktop{% else %}fa-th{% end %}"></i>
+                    {{ box.name }}
+                </h1>
+                <p class="box-subtitle">
+                    {% if box.corporation.name %}{{ box.corporation.name }}{% end %}
+                    {% if box.category %}<span class="badge text-bg-secondary">{{ box.category }}</span>{% end %}
+                </p>
+            </div>
+            <div class="box-actions">
+                {% if options.story_mode and len(box.capture_message) > 0 and box.is_complete(user) %}
+                <a class="btn playstory btn-secondary" href="captured?box={{ box.uuid }}"><i class="fa fa-play"></i> {{ _("Play Story") }}</a>
+                {% end %}
+                {% if not user.is_admin() %}
+                <a class="btn btn-secondary" href="/user/missions"><i class="fa fa-th-large"></i> {{ _("All missions") }}</a>
+                {% else %}
+                <a class="btn btn-secondary" href="/admin/view/game_objects#{{ box.uuid }}"><i class="fa fa-pencil"></i> {{ _("Edit box") }}</a>
+                {% end %}
+            </div>
+        </header>
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
                 <div class="alert alert-danger alert-dismissible">
@@ -276,33 +257,32 @@
                 {% end %}
             </div>
         {% end %}
-        <div class="container">
-            <div class="card card-body">
-                <div>                   
+        <div class="card box-briefing mb-4">
+            <div class="card-body">
+                <div class="row g-4">
                     {% if box.avatar != "none" %}
-                    <div class="col-md-4" style="margin: 0 30px 5px 3px;">
-                        <img src="/avatars/{{ box.avatar }}" class="img-polaroid" />
+                    <div class="col-md-4">
+                        <img src="/avatars/{{ box.avatar }}" class="box-image" alt="" />
                         {% if has_materials() and not has_box_materials(box) %}
-                            <a style="margin-top: 10px;" class="btn btn-secondary" href="/materials"><i class="fa fa-fw fa-folder-open-o"></i>
-                            {{ _("Game Materials") }}</a>
+                        <a class="btn btn-secondary btn-sm mt-3" href="/materials"><i class="fa fa-fw fa-folder-open-o"></i> {{ _("Game Materials") }}</a>
                         {% end %}
                     </div>
                     {% end %}
-                    <div class="preformatted" style="overflow: hidden; white-space: nowrap; text-align: center; margin-top: 5px;">***** {% if options.story_mode %}{{ _("BEGIN SECURE COMMUNIQUE") }}{% else %}{{ _("DESCRIPTION") }}{% end %} *****************************************************************************************************************************************</div>
-                    <div class="preformatted markdown" style="text-align: justify; padding: 0 20px; margin-left: 10px;">{{ box.description }}</div>
-                    <div class="preformatted" style="overflow: hidden; white-space: nowrap; text-align: center; margin: 0;">*****{% if options.story_mode %} {{ _("END SECURE COMMUNIQUE") }} {% end %}**********************************************************************************************************************************************************************</div>
+                    <div class="{% if box.avatar != 'none' %}col-md-8{% else %}col-12{% end %}">
+                        <div class="briefing-label">{% if options.story_mode %}{{ _("Secure communique") }}{% else %}{{ _("Briefing") }}{% end %}</div>
+                        <div class="briefing-text markdown">{{ box.description }}</div>
+                    </div>
                 </div>
-                <br clear="all" />
             </div>
         </div>
         {% if has_box_materials(box) %}
-        <div id="box-materials" class="card card-body" data-subdir="{{ has_box_materials(box) }}">
-            <div id="box-materials-tree" class="container">
+        <div id="box-materials" class="card card-body mb-4" data-subdir="{{ has_box_materials(box) }}">
+            <h2 class="card-heading"><i class="fa fa-folder-open-o"></i> {{ _("Materials") }}</h2>
+            <div id="box-materials-tree">
                 <!-- Box materials go here -->
             </div>
         </div>
         {% end %}
-        <br />
         {% set boxhints = [] %}
         {% set flaghints = [] %}
 
@@ -322,46 +302,46 @@
                 {% end %}
             {% end %}
         {% end %}
-        {% if flagcount != 0 and len(box.flags) != 0 %}
-            <div class="progress" style="height: 8px;; background-color: #424242;">
-                <div class="progress-bar minibar" style="width: {{ ( flagcount /  float(len(box.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box.flags) }}">
-                </div>
-            </div>
-        {% end %}
 
         {% if box.flag_submission_type == FlagsSubmissionType.SINGLE_SUBMISSION_BOX %}
-        <div id="capture-text-flag-box" class="card card-body">
-            <form id="capture-text-flag-box-form" class="form-horizontal" method="post" action="/user/missions/boxes?uuid={{ box.uuid }}">
+        <div id="capture-text-flag-box" class="card card-body mb-4">
+            <form id="capture-text-flag-box-form" method="post" action="/user/missions/boxes?uuid={{ box.uuid }}">
                 {% raw xsrf_form_html() %}
                 <input id="capture-text-flag-box-box-id" name="box_id" value="{{ box.id }}" type="hidden" />
-                <h4>{{ _("Submit a Flag") }}</h4>
+                <h2 class="card-heading"><i class="fa fa-flag"></i> {{ _("Submit a Flag") }}</h2>
                 {% include "penalty_note.html" %}
-                <div class="row mb-3">
-                    <label class="col-sm-3 col-form-label" for="capture-text-flag-box-token">{{ _("Flag") }}</label>
-                    <div class="col-sm-9">
-                        <input class="form-control" autofocus required id="capture-text-flag-box-token" name="token" type="text" placeholder="{{ _('Flag') }}" autocomplete="off" size="70"{% if level_submission_timer_expired %} disabled{% end %} />
-                        <button id="capture-text-flag-box-submit" class="btn btn-primary" type="submit"{% if level_submission_timer_expired %} disabled{% end %}>
-                            {{ _("Submit") }}
-                        </button>
-                    </div>
+                <div class="input-group">
+                    <input class="form-control font-mono" autofocus required id="capture-text-flag-box-token" name="token" type="text" placeholder="{{ _('Flag') }}" autocomplete="off" aria-label="{{ _('Flag') }}"{% if level_submission_timer_expired %} disabled{% end %} />
+                    <button id="capture-text-flag-box-submit" class="btn btn-primary" type="submit"{% if level_submission_timer_expired %} disabled{% end %}>
+                        <i class="fa fa-flag"></i> {{ _("Submit") }}
+                    </button>
                 </div>
             </form>
         </div>
         {% end %}
-        <div class="card card-body">
-            <table class="table table-hover">
-                <caption><h4> - {{ _("Flags") }} - </h4></caption>
+        <div class="card card-body mb-4">
+            <div class="flags-header">
+                <h2 class="card-heading mb-0"><i class="fa fa-flag"></i> {{ _("Flags") }}</h2>
+                {% if team and len(box.flags) != 0 %}
+                <div class="flags-progress">
+                    <span>{{ flagcount }}/{{ len(box.flags) }} {{ _("captured") }}</span>
+                    <div class="progress"><div class="progress-bar" style="width: {{ 100.0 * flagcount / len(box.flags) }}%;"></div></div>
+                </div>
+                {% end %}
+            </div>
+            <div class="table-responsive">
+            <table class="table flags-table align-middle">
                 <thead>
                     <tr>
-                        <th style="width: 6px; padding: 0px; margin: 0px;"><!-- success bar --></th>
+                        <th class="flag-status"><!-- status --></th>
                         <th>#</th>
                         <th><!-- Name --></th>
                         <th><!-- Description --></th>
-                        <th style="text-align: center;">{% if options.scoreboard_visibility != 'admins' %}{{ _("Captures") }}{% end %}</th>
+                        <th class="text-center">{% if options.scoreboard_visibility != 'admins' %}{{ _("Captures") }}{% end %}</th>
                         {% if team and options.penalize_flag_value and not user.is_admin() %}
-                                <th style="text-align: center;">{{ _("Attempts") }}</th>
+                                <th class="text-center">{{ _("Attempts") }}</th>
                         {% end %}
-                        <th style="text-align: center;">{% if options.banking %}{{ _("Reward") }}{% else %}{{ _("Points") }}{% end %}</th>
+                        <th class="text-center">{% if options.banking %}{{ _("Reward") }}{% else %}{{ _("Points") }}{% end %}</th>
                         {% if team or not user.is_admin() %}
                             <th><!-- Hints --></th>
                             <th><!-- Submit --></th>
@@ -373,14 +353,14 @@
                     <tbody class="flagbody">
                         <tr {% if team and flag in team.flags %}class="flag-expand" style="cursor: pointer;"{% end %}>
                         {% if team and flag in team.flags %}
-                            <td class="hidehovercolor" style="background: green; margin: 0px; padding: 0px; min-width: 6px;"></td>
+                            <td class="flag-status is-captured"></td>
                         {% elif box.flag_submission_type != FlagsSubmissionType.SINGLE_SUBMISSION_BOX and penalty >= options.max_flag_attempts %}
-                            <td class="hidehovercolor" style="background: gray; margin: 0px; padding: 0px; min-width: 6px;"></td>
+                            <td class="flag-status is-maxed"></td>
                         {% else %}
-                            <td style="margin: 0px; padding: 0px;"></td>
+                            <td class="flag-status"></td>
                         {% end %}
-                            <td class="shortcolumn" style="vertical-align: middle;">{{ box.flags.index(flag) +1 }}</td>
-                            <td class="shortcolumn" style="vertical-align: middle; padding-right: 20px; font-weight: bold;">{{ flag.name }}</td>
+                            <td class="shortcolumn text-body-secondary">{{ box.flags.index(flag) +1 }}</td>
+                            <td class="shortcolumn flag-name">{{ flag.name }}</td>
                             {% if team and flag.lock_id and Flag.by_id(flag.lock_id) and not Flag.by_id(flag.lock_id) in team.flags %}
                                 <td class="descriptioncol"><i class="fa fa-lock"></i> {{ _("Locked by") }} {{ Flag.by_id(flag.lock_id).name }}</td>
                                 <td class="shortcolumn centercolumn">{% if options.scoreboard_visibility != 'admins' %}{{ len(Flag.team_captures(flag.id)) }}{% end %}</td>
@@ -398,7 +378,7 @@
                                 {% end %}
                                 <td class="shortcolumn centercolumn">{% if options.banking %}${% end %}{{ flag.dynamic_value(team) }}</td>
                                 {% if team and not user.is_admin() %}
-                                    <td class="shortcolumn"{% if not flag in team.flags %} style="padding-right: 10px;"{% end %}>
+                                    <td class="shortcolumn">
                                         {% if not flag in team.flags %}
                                             {% set i = 1 %}
                                             {% for hint in flaghints %}
@@ -425,9 +405,9 @@
                                     </td>
                                 
                                     {% if flag in team.flags %}
-                                        <td class="shortcolumn successtext" style="text-align: right; padding: 5px 10px; vertical-align: middle;">
+                                        <td class="shortcolumn text-end flag-captured">
                                             {% if penalty > 0 %}
-                                            <a class="btn btn-sm prior-attempts-btn btn-secondary" data-uuid="{{ flag.uuid }}" href="#" title="{{ _('Prior Attempts') }}" style="color: #333;">
+                                            <a class="btn btn-sm prior-attempts-btn btn-secondary" data-uuid="{{ flag.uuid }}" href="#" title="{{ _('Prior Attempts') }}">
                                                 <i class="fa fa-history"></i> {{ _("History") }}
                                             </a>
                                             {% end %}
@@ -435,19 +415,19 @@
                                         </td>
                                     {% elif level_submission_timer_expired %}
                                         {# Keep flag details visible but block submissions after timer expiry. #}
-                                        <td class="shortcolumn disabledtext" style="text-align: right;">
+                                        <td class="shortcolumn text-end flag-blocked">
                                             <i class="fa fa-clock-o" title="Submission Window Expired"></i>
                                             {% if penalty > 0 %}
-                                            <a class="btn btn-sm prior-attempts-btn btn-secondary" data-uuid="{{ flag.uuid }}" href="#" title="{{ _('Prior Attempts') }}" style="color: #333;">
+                                            <a class="btn btn-sm prior-attempts-btn btn-secondary" data-uuid="{{ flag.uuid }}" href="#" title="{{ _('Prior Attempts') }}">
                                                 <i class="fa fa-history"></i> {{ _("History") }}
                                             </a>
                                             {% end %}
                                         </td>
                                     {% elif box.flag_submission_type != FlagsSubmissionType.SINGLE_SUBMISSION_BOX and penalty >= options.max_flag_attempts %}
-                                        <td class="shortcolumn disabledtext" style="text-align: right;">
+                                        <td class="shortcolumn text-end flag-blocked">
                                             <i class="fa fa-ban" title="Max Attempts Reached"></i>
                                             {% if penalty > 0 %}
-                                            <a class="btn btn-sm prior-attempts-btn btn-secondary" data-uuid="{{ flag.uuid }}" href="#" title="{{ _('Prior Attempts') }}" style="color: #333;">
+                                            <a class="btn btn-sm prior-attempts-btn btn-secondary" data-uuid="{{ flag.uuid }}" href="#" title="{{ _('Prior Attempts') }}">
                                                 <i class="fa fa-history"></i> {{ _("History") }}
                                             </a>
                                             {% end %}
@@ -477,10 +457,10 @@
                         {% else %}
                         <tr {% if team and flag in team.flags %}class="flag-collapse" style="display: none;"{% end %}>
                             {% if team and flag in team.flags %}
-                            <td class="hidehovercolor" style="background: green; margin: 0px; padding: 0px; border-top: 1px solid green;"></td>
+                            <td class="flag-status is-captured"></td>
                             <td style="border-top: 0px;"></td>
                             {% elif box.flag_submission_type != FlagsSubmissionType.SINGLE_SUBMISSION_BOX and penalty >= options.max_flag_attempts %}
-                            <td class="hidehovercolor" style="background: gray; margin: 0px; padding: 0px; border-top: 1px solid gray;"></td>
+                            <td class="flag-status is-maxed"></td>
                             <td style="border-top: 0px;"></td>
                             {% else %}
                             <td colspan="2" style="border-top: 0px;"></td>
@@ -492,7 +472,7 @@
                                     <td style="border-top: 0px;"></td>
                                     <td style="border-top: 0px;">
                                         {% if options.show_captured_flag and team and flag in team.flags %}
-                                        <a style="float: right;" class="btn btn-sm showflag btn-secondary" data-bs-toggle="modal" href="#show-flag-modal" 
+                                        <a class="btn btn-sm showflag btn-secondary float-end" data-bs-toggle="modal" href="#show-flag-modal" 
                                         data-flag="{{ flag.token }}" data-name="{{ flag.name }}">
                                             <i class="fa fa-flag"></i>
                                             {{ _("Flag") }}
@@ -508,18 +488,18 @@
                                     {% if user.is_admin() or flag in team.flags or hint in team.hints %}
                                         <tr {% if team and flag in team.flags %}class="flag-collapse" style="display: none;"{% end %}>
                                             {% if team and flag in team.flags %}
-                                            <td class="hidehovercolor" style="background: green; margin: 0px; padding: 0px; border-top: 1px solid green;"></td>
+                                            <td class="flag-status is-captured"></td>
                                             <td style="border-top: 0px;"></td>
                                             {% elif box.flag_submission_type != FlagsSubmissionType.SINGLE_SUBMISSION_BOX and penalty >= options.max_flag_attempts %}
-                                            <td class="hidehovercolor" style="background: gray; margin: 0px; padding: 0px; border-top: 1px solid gray;"></td>
+                                            <td class="flag-status is-maxed"></td>
                                             <td style="border-top: 0px;"></td>
                                             {% else %}
                                             <td colspan="2" style="border-top: 0px;"></td>
                                             {% end %}
-                                            <td style="text-align: right;"><i class="fa fa-arrow-circle-up"></i><h5 style="display:inline;"> Hint #{{i}}:</h5></td>
+                                            <td class="text-end text-nowrap hint-label"><i class="fa fa-lightbulb-o"></i> {{ _("Hint") }} #{{i}}</td>
                                             <td colspan="{% if team and options.penalize_flag_value %}2{% else %}1{% end %}" class="descriptioncol markdown">{{ hint.description }}</td>
-                                            <td class="shortcolumn" style="text-align: center;"><i>{% if user.is_admin() %}{% elif hint in team.hints %}{% if options.banking %}{{ _("Purchased") }}{% else %}{{ _("Taken") }}{% end %}{% end %}</i></td>
-                                            <td class="shortcolumn" style="text-align: center;">{% if team and hint in team.hints %}-{{ hint.price }}{% end %}</td>
+                                            <td class="shortcolumn text-center"><i>{% if user.is_admin() %}{% elif hint in team.hints %}{% if options.banking %}{{ _("Purchased") }}{% else %}{{ _("Taken") }}{% end %}{% end %}</i></td>
+                                            <td class="shortcolumn text-center">{% if team and hint in team.hints %}-{{ hint.price }}{% end %}</td>
                                             <td colspan="2" style="border-top: 0px;"></td>
                                         </tr>
                                     {% end %}
@@ -527,14 +507,16 @@
                                 {% end %}
                             {% end %}
                         {% end %}
-                    </tbody> 
+                    </tbody>
                 {% end %}
             </table>
+            </div>
         </div>
         {% if len(box.visible_ips) != 0 %}
-            <div class="card card-body">
-                <table class="table table-hover">
-                    <caption><h4> - {{ _("Known IP Addresses") }} - </h4></caption>
+            <div class="card card-body mb-4">
+                <h2 class="card-heading"><i class="fa fa-sitemap"></i> {{ _("Known IP Addresses") }}</h2>
+                <div class="table-responsive">
+                <table class="table table-hover mb-0">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -547,25 +529,27 @@
                         {% for index, ip in enumerate(box.visible_ips) %}
                             <tr>
                                 <td>{{ index + 1 }}</td>
-                                <td>{{ str(ip) }}</td>
+                                <td class="font-mono">{{ str(ip) }}</td>
                                 <td>{{ ip.version }}</td>
                                 <td>{{ str(ip.is_private) }}</td>
                             </tr>
                         {% end %}
                     </tbody>
                 </table>
+                </div>
             </div>
         {% end %}
         {% if len(box.hints) != 0 %}
             <input id="hintbanking" value="{{ str(options.banking).lower() }}" type="hidden" />
             {% if len(boxhints) > 0 %}
-                <div class="card card-body">
-                    <table class="table table-hover">
-                        <caption><h4> - {{ box.name }} {{ _("Hints") }} - </h4></caption>
+                <div class="card card-body mb-4">
+                    <h2 class="card-heading"><i class="fa fa-lightbulb-o"></i> {{ _("Hints") }}</h2>
+                    <div class="table-responsive">
+                    <table class="table table-hover mb-0">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th style="text-align: center; padding-right: 20px;">{% if options.banking %}{{ _("Price") }}{% else %}{{ _("Cost") }}{%end%}</th>
+                                <th class="text-center">{% if options.banking %}{{ _("Price") }}{% else %}{{ _("Cost") }}{%end%}</th>
                                 <th>{{ _("Description") }}</th>
                                 <th><!-- Purchse/View Button --></th>
                             </tr>
@@ -579,7 +563,7 @@
                                         <td class="shortcolumn"><i>{% if user.is_admin() %}{% elif hint in team.hints %}{% if options.banking %}{{ _("Purchased") }}{% else %}{{ _("Taken") }}{% end %}{% else %}{{ _("Completed") }} {{box.name}}{% end %}</i></td>
                                         <td class="descriptioncol markdown">{{ hint.description }}</td>
                                     {% else %}
-                                        <td class="shortcolumn" style="text-align: center; padding-right: 20px;">{% if options.banking %}${% end %}{% if hint in team.hints or flagcount != len(box.flags) %}{{ hint.price }}{% else %}0{% end %}</td>
+                                        <td class="shortcolumn text-center">{% if options.banking %}${% end %}{% if hint in team.hints or flagcount != len(box.flags) %}{{ hint.price }}{% else %}0{% end %}</td>
                                         <td>{{ _("Hint not yet taken") }}</td>
                                         <td class="shortcolumn">
                                             <a id="purchase-hint-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#purchase-hint-modal" data-price="{{ hint.price }}" data-uuid="{{ hint.uuid }}">
@@ -591,6 +575,7 @@
                             {% end %}
                         </tbody>
                     </table>
+                    </div>
                 </div>
             {% end %}
         {% end %}
@@ -607,11 +592,10 @@ $(document).on("click", ".prior-attempts-btn", function(e) {
             $("#flag-attempts-empty").show();
         } else {
             $.each(data, function(i, attempt) {
-                var bg = i % 2 === 0 ? "#1e1e1e" : "#252525";
-                var row = $("<tr>").css("background", bg);
-                row.append($("<td>").css({padding: "7px 12px", color: "#555", fontSize: "12px"}).text(i + 1));
-                row.append($("<td>").css({padding: "7px 12px"}).append($("<code>").css({background: "transparent", color: "#a8d8a8", padding: 0, fontSize: "13px"}).text(attempt.token)));
-                row.append($("<td>").css({padding: "7px 12px", color: "#666", fontSize: "12px", whiteSpace: "nowrap"}).text(attempt.created));
+                var row = $("<tr>");
+                row.append($("<td class=\"ps-3 text-body-secondary\">").text(i + 1));
+                row.append($("<td>").append($("<code>").text(attempt.token)));
+                row.append($("<td class=\"pe-3 text-body-secondary text-nowrap\">").text(attempt.created));
                 tbody.append(row);
             });
             $("#flag-attempts-table").show();

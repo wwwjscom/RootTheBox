@@ -4,7 +4,6 @@
 <script src="/static/js/libs/animator.min.js"></script>
 <script src="/static/js/pages/scoreboard/rankingTableUpdate.js"></script>
 <script src="/static/js/pages/scoreboard/summary.js"></script>
-<script src="/static/js/pages/missions/view.js"></script>
 <link href="/static/css/pages/public/summary.css" rel="stylesheet" />
 <link href="/static/css/pages/scoreboard/summary.css" rel="stylesheet" />
 {% end %}
@@ -16,11 +15,11 @@
     {% from math import ceil %}
     {% if not hide_scoreboard %}
     <div class="scoreboard-summary">
-    <div class="d-flex flex-wrap align-items-center gap-3">
-        <div class="order-last ms-auto">
+    <div class="scoreboard-header">
+        <div class="scoreboard-paging">
             {% set pcount = ceil(teamcount / display) %}
             <div id="parameters" data-count="{{display}}" data-page="{{page}}" style="visibility: hidden;"></div>
-            <ul class="pagination mb-0">
+            <ul class="pagination pagination-sm mb-0">
                     {% if pcount > 1 %}
                     <li class="page-item{%if page==1 %} disabled{%end%}"><a class="page-link" {%if page !=1 %}href="?count={{display}}&page={{page-1}}"
                             {%end%}>Prev</a></li>
@@ -35,7 +34,7 @@
                         <a class="page-link">&nbsp;{% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %} {{ _("per page") }}</a>
                     </li>
                     <li class="page-item">
-                        <select class="form-select" id="page_count" style="width: auto;">
+                        <select class="form-select form-select-sm" id="page_count" style="width: auto;">
                             {% if display!= 10 and display!=25 and display!=50 and display!=100 and display!=250 %}
                                 <option value={{display}} selected>{{display}}</option>
                             {%end%}
@@ -49,28 +48,24 @@
                 </ul>
         </div>
         {% if timer %}
-        <h3 id="timercount" class="order-last text-danger mb-0" title="Scoreboard Countdown"></h3>
+        <h3 id="timercount" class="font-mono text-danger mb-0" title="Scoreboard Countdown"></h3>
         {% end %}
-        <h1>
-            <i class="fa fa-bar-chart-o"></i>
+        <h1 class="mb-0">
+            <i class="fa fa-trophy"></i>
             {% if scoreboard_top > 0 %}{{ _("Top") }} {{ scoreboard_top }} {% end %}{{ _("Scoreboard") }}
         </h1>
     </div>
-    <br />
-    <div class="row">
-        {% if len(options.scoreboard_right_image) > 0 %}
-            {% set wellspan="col-md-7" %}
-        {% elif options.teams and options.show_mvp %}
-            {% set wellspan="col-md-7" %}
-        {% else %}
-            {% set wellspan="col-md-10" %}
-        {% end %}
-        <div class="card card-body {{wellspan}} offset-md-1" style="padding-left: 30px; padding-right: 30px;">
-            <div id="summary_loading"><h3>Loading...</h3></div>
-            <table id="summary_table" class="table table-striped" data-since-score="{{ _('Since Score') }}">
+    <div class="row g-4">
+        {% set showimage = len(options.scoreboard_right_image) > 0 %}
+        {% set showmvp = options.teams and options.show_mvp %}
+        <div class="{% if showimage or showmvp %}col-lg-9{% else %}col-12{% end %}">
+        <div class="card"><div class="card-body">
+            <div id="summary_loading" class="text-body-secondary py-3"><i class="fa fa-spinner fa-spin"></i> {{ _("Loading...") }}</div>
+            <div class="table-responsive">
+            <table id="summary_table" class="table align-middle mb-0" data-since-score="{{ _('Since Score') }}">
                 <thead>
-                    <tr style="font-size: 120%;">
-                        <th class="anim:position anim:update" style="text-align: center;"><i class="fa fa-trophy" style="font-size: 120%; margin-left: -10px; margin-top: -10px;"></i></th>
+                    <tr>
+                        <th class="anim:position anim:update text-center">#</th>
                         <th class="anim:id" style="display:none;"><!-- UUID --></th>
                         <th class="anim:constant">
                             {% if options.teams %}
@@ -79,9 +74,9 @@
                                 {{ _("Player") }}
                             {% end %}
                         </th>
-                        <th class="anim:constant" style="text-align: center;{% if not options.use_bots %} display: none;{% end %}">{{ _("Bots") }}</th>
-                        <th class="anim:constant" style="text-align: center;">{{ _("Flags") }}</th>
-                        <th class="anim:constant" style="text-align: center;">
+                        <th class="anim:constant text-center{% if not options.use_bots %} d-none{% end %}">{{ _("Bots") }}</th>
+                        <th class="anim:constant text-center">{{ _("Flags") }}</th>
+                        <th class="anim:constant text-center">
                             {% if options.banking %}
                                 {{ _("Bank Account") }}
                             {% else %}
@@ -91,17 +86,18 @@
                         <th class="anim:update"><!-- Details --></th>
                     </tr>
                 </thead>
-                <tbody id="summary_tbody" >
+                <tbody id="summary_tbody">
                     <!-- AJAX -->
                 </tbody>
             </table>
+            </div>
+        </div></div>
         </div>
-        {% set showimage = len(options.scoreboard_right_image) > 0 %}
-        {% set showmvp = options.teams and options.show_mvp %}
         {% if showimage or showmvp %}
-        <div class="card card-body col-md-3">
+        <div class="col-lg-3">
+        <div class="card card-body">
             {% if showimage %}
-                <img id="scoreboard_right_image" src="{{options.scoreboard_right_image}}">
+                <img id="scoreboard_right_image" class="img-fluid rounded" src="{{options.scoreboard_right_image}}" alt="">
             {% end %}
             {% if showmvp %}
                 <table id="scoreboard_mvp" class="table table-striped"{% if showimage %} style="display: none;"{% end %}>
@@ -110,7 +106,7 @@
                             <th>
                                 {{ _("MVP") }}
                             </th>
-                            <th style="text-align: center;">
+                            <th class="text-center">
                                 {% if options.banking %}
                                     {{ _("Money") }}
                                 {% else %}
@@ -124,6 +120,7 @@
                     </tbody>
                 </table>
             {% end %}
+        </div>
         </div>
         {% end %}
     </div>
