@@ -216,6 +216,9 @@ def tests():
     from tests import setup_database, teardown_database
 
     print(INFO + "%s : Running unit tests ..." % current_time())
+    # Route tables are built from options.auth at import; tests expect the
+    # default (db) mode and switch to other modes themselves.
+    options.auth = "db"
     db_name = "test-%04d" % randint(0, 9999)
     setup_database(db_name)
     try:
@@ -478,7 +481,7 @@ define(
     "auth",
     default="db",
     group="application",
-    help="The authentication mechanism, db (default) or Azure AD",
+    help="The authentication mechanism: db (default), azuread, or oidc (e.g. Keycloak)",
 )
 
 define(
@@ -577,6 +580,48 @@ define("client_id", default="", group="azuread")
 define("tenant_id", default="common", group="azuread")
 define("client_secret", default="", group="azuread")
 define("redirect_url", default="http://localhost:8888/oidc", group="azuread")
+
+# Generic OpenID Connect (e.g. Keycloak) - used when auth = "oidc"
+define(
+    "oidc_issuer",
+    default="http://localhost:8080/realms/rootthebox",
+    group="oidc",
+    help="OIDC issuer URL as seen by browsers (must match the ID token 'iss' claim)",
+)
+define(
+    "oidc_backchannel_url",
+    default="",
+    group="oidc",
+    help="Optional issuer URL the server uses to reach the IdP (e.g. from inside Docker)",
+)
+define("oidc_client_id", default="", group="oidc", help="OIDC client id")
+define("oidc_client_secret", default="", group="oidc", help="OIDC client secret")
+define(
+    "oidc_redirect_url",
+    default="http://localhost:8888/oidc/callback",
+    group="oidc",
+    help="OIDC redirect URI registered with the IdP",
+)
+define("oidc_scopes", default="openid profile email", group="oidc")
+define(
+    "oidc_roles_claim",
+    default="roles",
+    group="oidc",
+    help="ID token claim holding roles; dotted paths like realm_access.roles work",
+)
+define(
+    "oidc_admin_role",
+    default="rtb-admin",
+    group="oidc",
+    help="Role that grants RootTheBox admin rights",
+)
+define(
+    "oidc_logout",
+    default=True,
+    group="oidc",
+    help="Also end the IdP session when a user logs out",
+    type=bool,
+)
 
 # ReCAPTCHA
 define(
@@ -1260,6 +1305,10 @@ if __name__ == "__main__":
         options.auth = "azuread"  # in-case it wasn't lower-case.
         options.require_email = False
         options.public_teams = False
+    elif options.auth.lower() == "oidc":
+        # The identity provider owns the email address.
+        options.auth = "oidc"
+        options.validate_email = False
 
     if options.generate_teams:
         generate_teams(options.generate_teams)

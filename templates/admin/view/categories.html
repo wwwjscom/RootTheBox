@@ -9,9 +9,11 @@
 {% block modals %}
 {% from tornado.options import options %}
 <!-- Hidden Edit Form -->
-<div id="edit-category-item-modal" class="modal hide fade" style="display: none; ">
+<div id="edit-category-item-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>
             <i class="fa fa-pencil"></i>
             {{ _ ("Edit Category") }}
@@ -22,32 +24,36 @@
         <form id="edit-category-item-form" class="form-horizontal" action="/admin/edit/category" method="post">
             {% raw xsrf_form_html() %}
             <input type="hidden" id="edit-category-item-uuid" name="uuid" value="" />
-            <div class="control-group">
-                <label class="control-label" for="category">{{ _("Category Name") }}</label>
-                <div class="controls">
-                    <input autofocus id="edit-category-item-name" name="category" maxlength="24" minlength="3" type="text" placeholder="Category" />
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="category">{{ _("Category Name") }}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" autofocus id="edit-category-item-name" name="category" maxlength="24" minlength="3" type="text" placeholder="Category" />
                 </div>
             </div>
-            <div class="control-group">
-                <div class="controls">
-                    <textarea autofocus id="edit-category-description" name="category_description" maxlength="4096" type="text" placeholder="{{_('Optional')}} {{_('Description')}}"
-                           data-original-title="{{_('Description')}}">
+            <div class="row mb-3">
+                <div class="col-sm-9">
+                    <textarea class="form-control" autofocus id="edit-category-description" name="category_description" maxlength="4096" type="text" placeholder="{{_('Optional')}} {{_('Description')}}"
+                           data-bs-title="{{_('Description')}}">
                     </textarea>
                 </div>
             </div>
         </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="edit-category-item-submit" type="button" class="btn btn-primary">
             <i class="fa fa-save"></i>
             {{ _("Save") }}
         </button>
     </div>
-</div>
-<div id="delete-category-modal" class="modal hide fade" style="display: none; ">
+
+    </div>
+    </div></div>
+<div id="delete-category-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3><i class="fa fa-fw fa-times-circle-o"></i> {{ _("Delete Category") }}</h3>
     </div>
     <div class="modal-body">
@@ -60,13 +66,15 @@
     </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="delete-category-submit" type="button" class="btn btn-danger">
             <i class="fa fa-fw fa-times-circle-o"></i>
             {{ _("Delete") }}
         </button>
     </div>
-</div>
+
+    </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -79,14 +87,14 @@
     <br />
     {% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
-              <div class="alert alert-error">
-                <a class="close" data-dismiss="alert" href="#">&times;</a>
+              <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <h4 class="alert-heading">{{_("ERROR")}}</h4>
                 {{ error }}
               </div>
         {% end %}
       {% end %}
-      <div class="well">
+      <div class="card card-body">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -103,13 +111,13 @@
                         <td class="shortcolumn"> {{ item.category }} </td>
                         <td> {{ item.description }}</td>
                         <td class="shortcolumn">
-                            <a id="edit-category-item-button{{ index }}" class="btn btn-mini" data-toggle="modal" href="#edit-category-item-modal" data-uuid="{{ item.uuid }}" data-name="{{ item.category }}" data-description="{{ item.description }}">
+                            <a id="edit-category-item-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-category-item-modal" data-uuid="{{ item.uuid }}" data-name="{{ item.category }}" data-description="{{ item.description }}">
                                 &nbsp;&nbsp;<i class="fa fa-pencil"></i>&nbsp;
                                 {{ _("Edit") }}&nbsp;&nbsp;&nbsp;
                             </a>
                         </td>
                         <td class="shortcolumn">
-                            <a id="delete-category-button-{{ item.uuid }}" class="btn btn-danger btn-mini" data-toggle="modal" href="#delete-category-modal" data-uuid="{{ item.uuid }}">
+                            <a id="delete-category-button-{{ item.uuid }}" class="btn btn-danger btn-sm" data-bs-toggle="modal" href="#delete-category-modal" data-uuid="{{ item.uuid }}">
                                 <i class="fa fa-fw fa-times-circle-o"></i>
                                 {{ _("Delete") }}&nbsp;
                             </a>

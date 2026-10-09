@@ -20,14 +20,15 @@
 {% from models.Hint import Hint %}
 {% from tornado.options import options %}
 {% set team = user.team %}
-<div class="row-fluid">
-    <div class="span6">
+<div class="row user-home">
+    <div class="col-md-6">
         <div class="row">
-            <div class="span11 offset1 well">
+            <div class="col-md-11 offset-md-1 card card-body">
+                <div class="d-flex justify-content-between align-items-start">
                 <h2 style="padding-bottom: 8px;">
-                    <i class="fa fa-user"></i> {{ user.handle }} 
+                    <i class="fa fa-user"></i> {{ user.handle }}
                 </h2>
-                <span style="float: right; margin-top: -63px; text-align: center;">
+                <span style="text-align: center;">
                     <table>
                         <tr>
                             {% if options.teams %}<td>{{ _("Player Score") }}</td>{% end %}{% if scoreboard_visible %}<td style="padding-left: 20px;">Rank</td>{% end %}
@@ -37,6 +38,7 @@
                         </tr>
                     </table>
                 </span>
+                </div>
                 <center>
                     {% if options.teams or not team %}
                         <img src="/avatars/{{ user.avatar }}" class="img-polaroid" />
@@ -90,7 +92,7 @@
         {% if len(Category.all()) > 2 %}
             <div class="row">
                 <!-- Only looks good if there are at least 3 categories -->
-                <div class="span11 offset1 well">
+                <div class="col-md-11 offset-md-1 card card-body">
                     <h2><i class="fa fa-star"></i> {% if options.teams %}{{ _("Team") }} {% end %}{{ _("Skill Progress") }}</h2>
                     <hr style="margin-bottom: 8px;">
                     <center>
@@ -100,10 +102,10 @@
                         </div>
                     {% else %}
                         <div class="row" style="padding-top: 15px;">
-                            <div class="span1" style="text-align: right;">
+                            <div class="col-md-1" style="text-align: right;">
                                 <i class="fa fa-pause" style="font-size: 120%;"></i>
                             </div>
-                            <div class="span7 msgdescription">
+                            <div class="col-md-7 msgdescription">
                                     {{ _("Waiting for the game to start...") }}
                             </div>
                         </div>
@@ -116,17 +118,17 @@
         {% if not visitor %}
 		{% from models.MarketItem import MarketItem %}
         <div class="row">
-            <div class="span11 offset1 well">
+            <div class="col-md-11 offset-md-1 card card-body">
                 <h2>
                     <i class="fa fa-trophy"></i>
                     {{ _("Game Information") }}
                 </h2>
                 <hr>
                 <div class="row">
-                    <div class="span1 offset1" style="text-align: center; padding-top: 5px;">
+                    <div class="col-md-1 offset-md-1" style="text-align: center; padding-top: 5px;">
                         <i class="fa fa-sitemap" style="font-size: 180%;"></i>
                     </div>
-                    <div class="span7 msgdescription">
+                    <div class="col-md-7 msgdescription">
                             {{ _("Welcome to the computer war game where security professionals can practice and learn.") }}  
                             {{ _("Each player will target challenges of varying difficulty and sophistication, attempting to collect flags and win glory.  Good luck!") }}
                     </div>
@@ -134,20 +136,20 @@
                 <br/>
 				{% if options.show_organizor_help %}
 				<div class="row">
-                    <div class="span1 offset1" style="text-align: center; padding-top: 5px;">
+                    <div class="col-md-1 offset-md-1" style="text-align: center; padding-top: 5px;">
                         <i class="fa fa-question-circle" style="font-size: 180%;"></i>
                     </div>
-                    <div class="span7 msgdescription">
+                    <div class="col-md-7 msgdescription">
 							{{ _("If you have any questions or need help do not hestitate to ask one of the organizers.") }}
                     </div>
                 </div>
 				<br/>
 				{% end %}
                 <div class="row">
-                    <div class="span1 offset1" style="text-align: center; padding-top: 5px;">
+                    <div class="col-md-1 offset-md-1" style="text-align: center; padding-top: 5px;">
                         <i class="fa fa-crosshairs" style="font-size: 180%;"></i>
                     </div>
-                    <div class="span7 msgdescription">
+                    <div class="col-md-7 msgdescription">
                             {{ _("Rules of Engagement: Do not attack the game scoreboard platform.  Do not change the passwords of existing accounts in the network unless specified by a game objective.") }}
                             {{ _("Do not delete or modify community flags unless instructed. Do not attack other players unless outlined in the game goals.") }}
                     </div>
@@ -155,10 +157,10 @@
                 <br/>
                 {% if options.dynamic_flag_value %}
                 <div class="row">
-                    <div class="span1 offset1" style="text-align: center; padding-top: 5px;">
+                    <div class="col-md-1 offset-md-1" style="text-align: center; padding-top: 5px;">
                         <i class="fa fa-bar-chart-o" style="font-size: 180%"></i>
                     </div>
-                    <div class="span7 msgdescription">
+                    <div class="col-md-7 msgdescription">
                         {% if options.dynamic_flag_type == "decay_future" %}
                             {{ _("This game is set up to use dynamic scoring based on speed, meaning as other players capture the flags, the future value of those flags will decrease.  So grab them fast or lose out!") }}
                         {% else %}
@@ -170,10 +172,10 @@
                 {% end %}
                 {% if options.penalize_flag_value %}
                 <div class="row">
-                    <div class="span1 offset1" style="text-align: center; padding-top: 5px;">
+                    <div class="col-md-1 offset-md-1" style="text-align: center; padding-top: 5px;">
                         <i class="fa fa-minus-circle" style="font-size: 180%;"></i>
                     </div>
-                    <div class="span7 msgdescription">
+                    <div class="col-md-7 msgdescription">
                         {{ _("Failure has a cost. Be careful as penalties are applied when incorrect answers are submitted.") }}  
                         {{ _("The deduction is") }} {{ options.flag_penalty_cost }}% {{ _("of the flag's value. It will start on the") }} {% set n = options.flag_start_penalty %}{{str(n)+("th" if 4<=n%100<=20 else {1:"st",2:"nd",3:"rd"}.get(n%10, "th"))}} 
                         {{ _("attempt and continue until the") }} {% set n = options.flag_stop_penalty - 1 %}{{str(n)+("th" if 4<=n%100<=20 else {1:"st",2:"nd",3:"rd"}.get(n%10, "th"))}}. {{ _("No further penalty thereafter.") }}
@@ -184,10 +186,10 @@
                 {% end %}
                 {% if options.banking %}
                 <div class="row">
-                    <div class="span1 offset1" style="text-align: center; padding-top: 5px;">
+                    <div class="col-md-1 offset-md-1" style="text-align: center; padding-top: 5px;">
                         <i class="fa fa-dollar" style="font-size: 180%;"></i>
                     </div>
-                    <div class="span7 msgdescription">
+                    <div class="col-md-7 msgdescription">
                         {{ _("It's about the money and it's time to cash in on those skills!  This game is set up to use a banking system, so waste no time to build your fortune and buy what you need to win.") }}
                     </div>
                 </div>
@@ -195,10 +197,10 @@
                 {% end %}
                 {% if options.use_black_market %}
                 <div class="row">
-                    <div class="span1 offset1" style="text-align: center; padding-top: 5px;">
+                    <div class="col-md-1 offset-md-1" style="text-align: center; padding-top: 5px;">
                         <i class="fa fa-shopping-cart" style="font-size: 180%;"></i>
                     </div>
-                    <div class="span7 msgdescription">
+                    <div class="col-md-7 msgdescription">
 						{% if options.use_black_market %}
 							{{ _("The black market is open and you know a guy. The following items are available:") }}
 							{% set market_items = MarketItem.all() %}
@@ -220,10 +222,10 @@
                 {% end %}
                 {% if options.use_bots %}
                 <div class="row">
-                    <div class="span1 offset1" style="text-align: center; padding-top: 5px;">
+                    <div class="col-md-1 offset-md-1" style="text-align: center; padding-top: 5px;">
                         <i class="fa fa-android" style="font-size: 180%;"></i>
                     </div>
-                    <div class="span7 msgdescription">
+                    <div class="col-md-7 msgdescription">
                         {{ _("Time to create a botnet. By uploading a small bot program to target machines, you can be periodically rewarded for each bot in your botnet; the larger the botnet the larger the reward.") }}
                     </div>
                 </div>
@@ -235,24 +237,24 @@
     </div>
 
     {% if options.teams and team and not visitor %}
-    <div class="span5 well" style="width: 46%;">
+    <div class="col-md-5 card card-body" style="width: 46%;">
         <h2>
             <i class="fa fa-group"></i>
             {{ _("Team Information") }}
         </h2>
         <hr>      
         <div class="row">
-            <div class="span1 offset1" style="text-align: center; padding-top: 5px;">
+            <div class="col-md-1 offset-md-1" style="text-align: center; padding-top: 5px;">
                 <i class="fa fa-key" style="font-size: 180%;"></i>
             </div>
-            <div class="span7 msgdescription">
+            <div class="col-md-7 msgdescription">
                     {{ team.code }}<br>{{ _("Share your team code to allow other players to join") }} {{ team.name }}.
             </div>
         </div>
     </div>
     {% end %}
 
-    <div class="span5 well" style="width: 46%;">
+    <div class="col-md-5 card card-body" style="width: 46%;">
         <h2>
             <i class="fa fa-flag"></i> 
             {% if options.teams %}{{ _("Team") }} {% end %}{{ _("Mission Progress") }}
@@ -274,7 +276,7 @@
                     {% if level.description %}<h4 class="levelheader">({{ level.description }})<h4>{% end %}
                     {% if len(team.level_flags(level.number)) != 0 %}
                         <div class="progress" style="height: 8px; margin-bottom: 15px; background-color: #424242;">
-                            <div class="bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}">
+                            <div class="progress-bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}">
                             </div>
                         </div>
                     {% end %}
@@ -283,7 +285,7 @@
                         {% for box in sorted(level.unlocked_boxes()) %}
                             {% if not box.locked and len(box.flags) > 0 %}
                             <div class="row" style="margin-left: 16px;">
-                                <div class="span4">
+                                <div class="col-md-4">
                                     <a href="/user/missions/boxes?uuid={{ box.uuid }}">
                                         <h5 style="display: inline;">
                                             {% if box.operating_system.lower() == "windows" %}
@@ -300,18 +302,18 @@
                                         </h5>
                                     </a>
                                 </div>
-                                {% set flagcount=0 %} 
-                                {% for index, flag in enumerate(sorted(box.flags)) %} 
-                                    {% if flag in team.flags %} 
+                                {% set flagcount=0 %}
+                                {% for index, flag in enumerate(sorted(box.flags)) %}
+                                    {% if flag in team.flags %}
                                         {% set flagcount += 1 %}
-                                    {% end %} 
+                                    {% end %}
                                 {% end %}
-                                <div class="span8" style="padding-top: 6px;">
+                                <div class="col-md-8" style="padding-top: 6px;">
                                     <table style="width: 100%; margin: 0 3px;"><tr>
-                                    {% for index, flag in enumerate(sorted(box.flags)) %} 
+                                    {% for index, flag in enumerate(sorted(box.flags)) %}
                                         <td style="padding: 0 3px;">
                                             <div class="progress" style="height: 8px; background-color: #424242;" title="{{ flag.name }}">
-                                                <div class="bar minibar" style="width: {% if flag in team.flags %}100{% else %}0{% end %}%;"></div>
+                                                <div class="progress-bar minibar" style="width: {% if flag in team.flags %}100{% else %}0{% end %}%;"></div>
                                             </div>
                                         </td>
                                     {% end %}
@@ -328,10 +330,10 @@
             {% end %}
         {% else %}
             <div class="row" style="padding-top: 15px;">
-                <div class="span1" style="text-align: right;">
+                <div class="col-md-1" style="text-align: right;">
                     <i class="fa fa-pause" style="font-size: 120%;"></i>
                 </div>
-                <div class="span7 msgdescription">
+                <div class="col-md-7 msgdescription">
                         {{ _("Waiting for the game to start...") }}
                 </div>
             </div>
@@ -339,7 +341,7 @@
     </div>
         {% if options.teams %}
         
-        <div class="span5 well" style="width: 46%;">
+        <div class="col-md-5 card card-body" style="width: 46%;">
             <h2>
                 <i class="fa fa-flag"></i> 
                 {{ _("Player") }} {{ _("Mission Progress") }}
@@ -361,7 +363,7 @@
                         {% if level.description %}<h4 class="levelheader">({{ level.description }})<h4>{% end %}
                         {% if len(team.level_flags(level.number)) != 0 %}
                             <div class="progress" style="height: 8px; margin-bottom: 15px; background-color: #424242;">
-                                <div class="bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}">
+                                <div class="progress-bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}">
                                 </div>
                             </div>
                         {% end %}
@@ -370,7 +372,7 @@
                             {% for box in sorted(level.unlocked_boxes()) %}
                                 {% if not box.locked and len(box.flags) > 0 %}
                                 <div class="row" style="margin-left: 16px;">
-                                    <div class="span4">
+                                    <div class="col-md-4">
                                         <a href="/user/missions/boxes?uuid={{ box.uuid }}">
                                             <h5 style="display: inline;">
                                                 {% if box.operating_system.lower() == "windows" %}
@@ -393,12 +395,12 @@
                                             {% set flagcount += 1 %}
                                         {% end %} 
                                     {% end %}
-                                    <div class="span8" style="padding-top: 6px;">
+                                    <div class="col-md-8" style="padding-top: 6px;">
                                         <table style="width: 100%; margin: 0 3px;"><tr>
                                         {% for index, flag in enumerate(sorted(box.flags)) %} 
                                             <td style="padding: 0 3px;">
                                                 <div class="progress" style="height: 8px; background-color: #424242;" title="{{ flag.name }}">
-                                                    <div class="bar minibar" style="width: {% if flag in user.flags %}100{% else %}0{% end %}%;"></div>
+                                                    <div class="progress-bar minibar" style="width: {% if flag in user.flags %}100{% else %}0{% end %}%;"></div>
                                                 </div>
                                             </td>
                                         {% end %}
@@ -415,10 +417,10 @@
                 {% end %}
             {% else %}
                 <div class="row" style="padding-top: 15px;">
-                    <div class="span1" style="text-align: right;">
+                    <div class="col-md-1" style="text-align: right;">
                         <i class="fa fa-pause" style="font-size: 120%;"></i>
                     </div>
-                    <div class="span7 msgdescription">
+                    <div class="col-md-7 msgdescription">
                             {{ _("Waiting for the game to start...") }}
                     </div>
                 </div>

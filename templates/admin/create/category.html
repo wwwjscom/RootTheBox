@@ -14,34 +14,34 @@
     </h1>
     <br />{% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
-        <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <h4 class="alert-heading">{{_("ERROR")}}</h4>
             {{ error }}
         </div>
         {% end %}
     {% end %}
-    <div class="well">
+    <div class="card card-body">
         <form class="form-horizontal" action="/admin/create/category" method="post">
             {% raw xsrf_form_html() %}
-            <div class="control-group">
-                <label class="control-label" for="category">{{_("Category Name")}}</label>
-                <div class="controls">
-                    <input autofocus id="category" name="category" maxlength='24' minlength="3" type="text" placeholder="{{_('Category')}}"
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="category">{{_("Category Name")}}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" autofocus id="category" name="category" maxlength='24' minlength="3" type="text" placeholder="{{_('Category')}}"
                            rel="popover"
-                           data-original-title="{{_('Category')}}"
-                           data-content="{{_('Add a Category for Boxes.')}} [3-24 {{_('Characters')}}]">
+                           data-bs-title="{{_('Category')}}"
+                           data-bs-content="{{_('Add a Category for Boxes.')}} [3-24 {{_('Characters')}}]">
                 </div>
             </div>
-            <div class="control-group">
-                <div class="controls">
-                    <textarea autofocus id="category-description" name="category_description" maxlength="4096" type="text" placeholder="{{_('Optional')}} {{_('Description')}}"
-                           data-original-title="{{_('Description')}}">
+            <div class="row mb-3">
+                <div class="col-sm-9">
+                    <textarea class="form-control" autofocus id="category-description" name="category_description" maxlength="4096" type="text" placeholder="{{_('Optional')}} {{_('Description')}}"
+                           data-bs-title="{{_('Description')}}">
                     </textarea>
                 </div>
             </div>
-            <div class="control-group">
-                <div class="controls">
+            <div class="row mb-3">
+                <div class="col-sm-9">
                     <button class="btn btn-primary" type="submit">{{_("Create Category")}}</button>
                 </div>
             </div>

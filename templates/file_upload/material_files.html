@@ -18,14 +18,14 @@
         <br />
         {% if errors != None and len(errors) != 0 %}
           {% for error in errors %}
-              <div class="alert alert-error">
-                <a class="close" data-dismiss="alert" href="#">&times;</a>
+              <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 <h4 class="alert-heading">{{ _("ERROR") }}</h4>
                 {{ error }}
               </div>
           {% end %}
         {% end %}
-        <div class="well">
+        <div class="card card-body">
             <div id="container" data-subdir="{{ subdir }}">
             </div>
         </div>

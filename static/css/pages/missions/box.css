@@ -1,0 +1,95 @@
+/* Missions box page (/user/missions/boxes, templates/missions/box.html).
+   Scoped under `.missions-box` (added to the template's outer content
+   `.container`) so these rules never leak onto the Missions list page
+   (view.css) or any other page using `.card`/`.form-horizontal`. */
+
+/* Same "Technique B" fixed-width container as Registration (see
+   static/css/pages/public/registration.css for the full cascade-quirk
+   writeup: cyborg.min.css's own unconditional `.container{width:940px}`
+   always beats bootstrap's responsive `@media(min-width:1200px)` override,
+   so the original app's box page never actually grows past 940px at any
+   desktop width -- confirmed live at 1280px: BS2's outer `.container` is
+   exactly 940px, centered, with 0 side padding). This page nests a SECOND
+   `.container` directly inside the first (wrapping the description card)
+   plus a couple of others (#box-materials-tree, hint tree) -- BS2 measured
+   all of them at the same 940px width, 0 padding, sitting flush with the
+   outer one (not shrunk further for nesting), so the fix targets every
+   `.container` under this wrapper, not just the outermost. */
+.missions-box.container,
+.missions-box .container {
+  max-width: 940px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* The description card's avatar column: BS2's markup is a bare
+   `<div class="span4">` (no `.row`/`.row-fluid` ancestor at all) sitting
+   beside two `<div class="preformatted">` siblings, followed by
+   `<br clear="all">` -- BS2's `[class*="span"]` selector floats left
+   unconditionally, even outside a row, so the description text
+   genuinely wraps beside the 300px-wide image (measured live: avatar
+   span4 = 300px fixed, for this page's 940px container; the header/desc
+   text starts at the float's right edge and only drops below once the
+   image's height is cleared). BS5's `.col-md-4` has no such default float
+   -- outside a `.row` it just becomes a plain block, so the description
+   text was dropping to a new line below the image instead of beside it
+   (measured live: avatar column stretched to 350.7px, description block
+   sat below at full card width instead of wrapping). Restore both the
+   float and the exact fixed BS2 width; `.img-polaroid`'s existing sitewide
+   `max-width:100%` (main.css) then naturally shrinks the 500px image down
+   to fill this 300px column, matching BS2 pixel-for-pixel. */
+.missions-box .col-md-4 {
+  float: left;
+  width: 300px;
+}
+
+/* Same "form-horizontal col-form-label fights col-sm-3" bug as Registration
+   (see registration.css for the full mechanism) -- occurs 3 times on this
+   page: the text-flag and file-flag submission modals (`#capture-text-flag-
+   modal`, `#capture-file-flag-modal`, both rendered in `{% block modals %}`
+   which is a direct child of `<body>`, OUTSIDE `.missions-box` -- scoped by
+   their own IDs below instead) and the single-submission-box inline form
+   (`#capture-text-flag-box-form`, which IS inside `.missions-box`). Measured
+   live on the original app's modal (same gap as Registration): label floats
+   at a fixed 160px, `.controls` sibling starts at margin-left:180px -- the
+   same real 20px gutter between them. */
+#capture-text-flag-modal .row.mb-3,
+#capture-file-flag-modal .row.mb-3,
+.missions-box .row.mb-3 {
+  --bs-gutter-x: 0;
+}
+#capture-text-flag-modal .col-form-label,
+#capture-file-flag-modal .col-form-label,
+.missions-box .col-form-label {
+  width: 25%;
+  float: none;
+  padding-right: 20px;
+}
+
+/* BS2's plain, unclassed `<input type="text">` (flag token fields, both
+   modal and inline single-submission-box form) had no width set at all --
+   just the browser's natural ~220px default (measured live: 206px content
+   + 2x6px padding + 2x1px border = 220px), same fix as Registration's
+   Handle/Player Name fields and the admin dashboard's "Threshold" input.
+   Bootstrap 5's `.form-control` is `display:block; width:100%` by design,
+   which stretched this to the full modal-body width. Restore narrowly. */
+#capture-text-flag-modal input.form-control[type="text"],
+.missions-box #capture-text-flag-box-token {
+  width: 220px;
+}
+
+/* Flags table's floated "Flag" (show captured flag) button: this table has
+   no fixed column widths, so the browser's automatic table-layout sizes the
+   last column from the narrowest content seen across all rows in that
+   column (mostly a bare checkmark icon or "Hint #N"/"Submit" buttons).
+   Measured live: this button's own single-line content needs 58.4px and the
+   column itself renders at 59.4px -- comfortably enough room on paper, but
+   the browser's CSS2.1 shrink-to-fit width algorithm for a `float:right`
+   block box inside a table cell rounds/estimates rather than measuring
+   exactly, and at that 1px margin it was tipping into a 2-line wrap (icon
+   above, "Flag" text below) instead of the single-line pill BS2 rendered.
+   Force the intended single-line box explicitly rather than relying on the
+   browser to find the same razor-thin fit BS2 happened to get right. */
+.missions-box .showflag {
+  white-space: nowrap;
+}

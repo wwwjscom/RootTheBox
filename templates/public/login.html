@@ -16,8 +16,8 @@
         </h3>
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
-                <div class="alert alert-error" >
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-danger alert-dismissible" >
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("Authentication Failure") }}</h4>
                     {{ error }}
                 </div>
@@ -25,16 +25,22 @@
         {% end %}
         {% if info is not None and len(info) != 0 %}
             {% for item in info %}
-                <div class="alert alert-info" >
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-info alert-dismissible" >
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("Information") }}</h4>
                     {{ item }}
                 </div>
             {% end %}
         {% end %}
+        {% if options.auth == "oidc" %}
+        <a class="btn btn-primary" href="/login">
+            <i class="fa fa-sign-in"></i>
+            {{ _("Sign in with SSO") }}
+        </a>
+        {% else %}
         {% raw xsrf_form_html() %}
-        <input name="account" type="text" class="input-block-level" placeholder="{{ _('Handle') }}" autofocus>
-        <input name="password" type="password" class="input-block-level" placeholder="{{ _('Password') }}" autocomplete="off">
+        <input name="account" type="text" class="w-100 form-control" placeholder="{{ _('Handle') }}" autofocus>
+        <input name="password" type="password" class="w-100 form-control" placeholder="{{ _('Password') }}" autocomplete="off">
         {% if options.use_recaptcha %}
         {% module Recaptcha() %}
         <br />
@@ -45,6 +51,7 @@
         </button>
         {% if len(options.mail_host) > 0 %}
         <a href="/reset" style="float: right;">{{ _('Forgot Password') }}</a>
+        {% end %}
         {% end %}
     </form>
 </div> <!-- /container -->

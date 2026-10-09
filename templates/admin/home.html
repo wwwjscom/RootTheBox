@@ -9,9 +9,11 @@
 
 {% block modals %}
  <!-- Set Countdown Timer -->
- <div id="timer-modal" class="modal hide fade">
+ <div id="timer-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>
             <i class="fa fa-fw fa-clock-o"></i>
             {{ _("Set Countdown Timer") }}
@@ -25,20 +27,20 @@
             {{ _("Set the game countdown timer") }}:
         </p>
         <p>
-            <label><input name="timer_mode" type="radio" value="duration" checked> {{ _("Duration") }}</label>
-            <input id="timer-hours" name="timer_hours" style="width: 50px;" type="number" min="0" value="0" /> {{ _("Hours") }}
-            <input id="timer-minutes" name="timer_minutes" style="width: 50px;" type="number" min="0" value="30" /> {{ _("Minutes") }}
+            <label><input class="form-check-input" name="timer_mode" type="radio" value="duration" checked> {{ _("Duration") }}</label>
+            <input class="form-control" id="timer-hours" name="timer_hours" style="width: 50px;" type="number" min="0" value="0" /> {{ _("Hours") }}
+            <input class="form-control" id="timer-minutes" name="timer_minutes" style="width: 50px;" type="number" min="0" value="30" /> {{ _("Minutes") }}
         </p>
         <p>
-            <label><input name="timer_mode" type="radio" value="absolute"> {{ _("Absolute time") }}</label>
-            <input id="timer-absolute" type="datetime-local" disabled />
+            <label><input class="form-check-input" name="timer_mode" type="radio" value="absolute"> {{ _("Absolute time") }}</label>
+            <input class="form-control" id="timer-absolute" type="datetime-local" disabled />
             <input id="timer-absolute-epoch" name="timer_absolute_epoch" type="hidden" />
         </p>
         <p>
-            <input name="hide_scoreboard" type="checkbox" style="margin-top: -5px; margin-right: 5px;"> {{ _("Hide scoreboard during countdown") }}.
+            <input class="form-check-input" name="hide_scoreboard" type="checkbox" style="margin-top: -5px; margin-right: 5px;"> {{ _("Hide scoreboard during countdown") }}.
         </p>
         <p>
-            <input name="stop_timer" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> {{ _("Stop the game after timer ends") }}.
+            <input class="form-check-input" name="stop_timer" type="checkbox" style="margin-top: -5px; margin-right: 5px;" checked> {{ _("Stop the game after timer ends") }}.
         </p>
     </div>
 
@@ -46,17 +48,21 @@
     </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
         <button id="timer-submit" class="btn btn-primary" type="button">
             <i class="fa fa-fw fa-save"></i>
             {{ _("Save") }}
         </button>
     </div>
-</div>
+
+    </div>
+    </div></div>
  <!-- Send Global Message -->
-<div id="message-modal" class="modal hide fade">
+<div id="message-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-envelope"></i>
                 {{ _("Create Message") }}
@@ -68,28 +74,30 @@
         <div style="margin-left: 50px; vertical-align: middle;">
             <p>
                 {{ _("Send a global notification to all players") }}:
-            </p><textarea name="message" rows="10" cols="30" style="width: 425px;"></textarea>
+            </p><textarea class="form-control" name="message" rows="10" cols="30" style="width: 425px;"></textarea>
         </div>
             
         </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="message-submit" class="btn btn-primary" type="button">
                 <i class="fa fa-fw fa-save"></i>
                 {{ _("Send") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
 {% from models.Notification import Notification %}
 {% from tornado.options import options %}
 {% from libs.GameState import registration_seconds_remaining %}
-<div class="row-fluid">
+<div class="row admin-dashboard">
     <div class="row">
-        <div class="offset1">
+        <div class="col-md-11 offset-md-1">
             <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-right: 150px;"></h3>
             <h1>
                 <i class="fa fa-home"></i>
@@ -98,9 +106,9 @@
             <br />
         </div>
     </div>
-    <div class="span3">
+    <div class="col-md-3">
         <div class="row">
-            <div class="span11 offset1 well">
+            <div class="col-md-11 offset-md-1 card card-body">
                 <h3>{{ _("Game Control") }}</h3>
                 <form id="start-game-form" action="/admin/game" method="post">
                     {% raw xsrf_form_html() %}
@@ -151,7 +159,7 @@
                 </div>
                 <div class="game_button_area">
                     {% if not handler.application.settings['countdown_timer'] %}
-                        <button id="countdown-timer-button" class="btn btn-success game_button" data-toggle="modal" href="#timer-modal" type="button">
+                        <button id="countdown-timer-button" class="btn btn-success game_button" data-bs-toggle="modal" href="#timer-modal" type="button">
                             <i class="fa fa-fw fa-clock-o"></i>
                         </button>
                         <h4 class="game_button_text">{{ _("Set Countdown") }}</h4>
@@ -166,7 +174,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="span11 offset1 well">
+            <div class="col-md-11 offset-md-1 card card-body">
                 <h3>{{ _("Game Metrics") }}</h3>
                 <hr />
                 <ul>
@@ -178,7 +186,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="span11 offset1 well">
+            <div class="col-md-11 offset-md-1 card card-body">
                 <h3>{{ _("App Updates") }}</h3>
                 <hr />
                 <ul>
@@ -187,7 +195,7 @@
                     <i class="fa fa-fw fa-clock-o"></i> {{ _("Last Checked") }}: {{ last_checked if last_checked else _("never") }}
                     <form action="/admin/updatecheck" method="post" style="display: inline;">
                         {% raw xsrf_form_html() %}
-                        <button type="submit" class="btn btn-mini" title="{{ _('Check for updates now') }}">
+                        <button type="submit" class="btn btn-sm btn-secondary" title="{{ _('Check for updates now') }}">
                             <i class="fa fa-refresh"></i> {{ _("Check Now") }}
                         </button>
                     </form>
@@ -196,15 +204,15 @@
             </div>
         </div>
         <div class="row">
-            <div class="span11 offset1 well">
+            <div class="col-md-11 offset-md-1 card card-body">
                 <h3>{{_("Automatic Ban")}}</h3>
                 <hr />
                 <form action="/admin/ban/config" method="post">
                     {% raw xsrf_form_html() %}
-                    <div class="control-group">
-                        <div class="controls">
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
                             <input id="automatic-ban" name="automatic_ban" type="hidden" value="{{ str(handler.application.settings['automatic_ban']).lower() }}" />
-                            <div id="automatic-ban-button" class="btn-group" data-toggle="buttons-radio">
+                            <div id="automatic-ban-button" class="btn-group" data-bs-toggle="buttons-radio">
                                 <button id="automatic-ban-enable" type="button" class="btn btn-success">
                                     <i id="automatic-ban-enable-icon" class="fa fa-fw fa-square-o"></i>
                                     {{ _("Enable") }}
@@ -216,14 +224,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="threshold-size">{{ _("Threshold") }}</label>
-                        <div class="controls">
-                            <input id="threshold-size" type="text" name="threshold_size" value="{{ handler.application.settings['blacklist_threshold'] }}" />
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="threshold-size">{{ _("Threshold") }}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" id="threshold-size" type="text" name="threshold_size" value="{{ handler.application.settings['blacklist_threshold'] }}" />
                         </div>
                     </div>
-                    <div class="control-group">
-                        <div class="controls">
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
                             <button class="btn btn-primary" type="submit">
                                 <i class="fa fa-save"></i>
                                 {{ _("Save") }}
@@ -235,54 +243,53 @@
             
         </div>
     </div>
+    <div class="col-md-8">
     {% if user.validate_password("rootthebox") %}
-    <div class="span8 alert alert-warning">
-        <a class="close" data-dismiss="alert" href="#">&times;</a>
+    <div class="alert alert-warning alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <h4 class="alert-heading">{{ _("WARNING") }}</h4>
         Default password - please update in <a href="/user/settings" style="color: #000">User Settings</a>
     </div>
     {% end %}
     {% if "localhost" in options.origin.lower() or "127.0.0.1" in options.origin %}
-    <div class="span8 alert alert-warning">
-        <a class="close" data-dismiss="alert" href="#">&times;</a>
+    <div class="alert alert-warning alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <h4 class="alert-heading">{{ _("WARNING") }}</h4>
         Default WebSocket Origin - please update in <a href="/admin/configuration" style="color: #000">Configuration</a>
     </div>
     {% end %}
     {% if not options.suspend_registration %}
-    <div class="span8 alert alert-warning">
-        <a class="close" data-dismiss="alert" href="#">&times;</a>
+    <div class="alert alert-warning alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <h4 class="alert-heading">{{ _("WARNING") }}</h4>
         Registration defaults to open when the server starts.  This is a security risk - please update in <a href="/admin/configuration" style="color: #000">Configuration</a>
     </div>
     {% end %}
     {% if options.registration_open_minutes == 0 or options.registration_open_minutes > 120 %}
-    <div class="span8 alert alert-warning">
-        <a class="close" data-dismiss="alert" href="#">&times;</a>
+    <div class="alert alert-warning alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <h4 class="alert-heading">{{ _("WARNING") }}</h4>
         Registration Auto-Close is disabled or set above the recommended 120 minutes - please review in <a href="/admin/configuration" style="color: #000">Configuration</a>
     </div>
     {% end %}
     {% if update_available %}
-    <div class="span8 alert alert-info">
-        <a class="close" data-dismiss="alert" href="#">&times;</a>
+    <div class="alert alert-info alert-dismissible">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <h4 class="alert-heading">{{ _("Update Available") }}</h4>
         {{ _("A newer version of Root the Box is available") }}: <strong>{{ latest_version }}</strong>
         (<a href="https://github.com/wwwjscom/RootTheBox/releases" target="_blank">{{ _("view releases") }}</a>)
     </div>
     {% end %}
-    <div class="span8 well">
-        <div class="control-group" style="float: right; padding-top: 20px;">
-                <div class="controls">
-                    <button class="btn btn-primary" data-toggle="modal" href="#message-modal" type="button">
-                        {{ _("Create Notification") }}
-                    </button>
-                </div>
+    <div class="card card-body">
+        <div class="d-flex justify-content-between align-items-center mb-0">
+            <h3 id="notifications-title" class="mb-0">
+                <i class="fa fa-envelope"></i>
+                {{ _("Notifications") }}
+            </h3>
+            <button class="btn btn-primary" data-bs-toggle="modal" href="#message-modal" type="button">
+                {{ _("Create Notification") }}
+            </button>
         </div>
-        <h3 id="notifications-title">
-            <i class="fa fa-envelope"></i>
-            {{ _("Notifications") }}
-        </h3>
         <h4 id="notifications">
             <a href="/admin/view/notifications">
                 {{ _("See All") }} &raquo;
@@ -291,12 +298,12 @@
         <hr style="margin-bottom: 16px; margin-top: 16px;">
         {% for index, notify in enumerate(reversed(list(Notification.admin()[-6:]))) %}
             <div class="row">
-                <div class="span1">
+                <div class="col-md-1">
                     {% if notify.icon_url is not None %}
                         <img src="{{ notify.icon_url }}" style="width: 30px; float: right; padding-bottom: 10px" />
                     {% end %}
                 </div>
-                <div class="span11 msgdescription"  style="margin-left: 5px; padding-top: 5px;">
+                <div class="col-md-11 msgdescription"  style="margin-left: 5px; padding-top: 5px;">
                     <p>
                         <strong>{{ _(notify.title) }}</strong>
                         {{ notify.created.strftime("%I:%M%p %x") }}:&nbsp;&nbsp;{{ notify.message }}
@@ -308,11 +315,11 @@
             {% end %}
         {% end %}
     </div>
-    <div class="well span8">
+    <div class="card card-body">
     
         <h3>
         <span style="float: right;">
-            <a class="clear-ip-button btn btn-warning btn-small" data-ip="all" type="button">
+            <a class="clear-ip-button btn btn-warning btn-sm" data-ip="all" type="button">
                 <i class="fa fa-fw fa-eraser"></i> {{ _("Clear") }} All</a></span>
             <i class="fa fa-warning"></i>
             {{ _("Failed Logins") }}
@@ -337,13 +344,13 @@
                         <td>{{ ip }}</td>
                         <td>{{ failed_logins[ip] }}</td>
                         <td>
-                            <a class="ban-ip-button btn btn-danger btn-small" data-ip="{{ ip }}" type="button">
+                            <a class="ban-ip-button btn btn-danger btn-sm" data-ip="{{ ip }}" type="button">
                                 <i class="fa fa-fw fa-ban"></i>
                                 {{ _("Ban IP Address") }}
                             </a>
                         </td>
                         <td>
-                            <a class="clear-ip-button btn btn-warning btn-small" data-ip="{{ ip }}" type="button">
+                            <a class="clear-ip-button btn btn-warning btn-sm" data-ip="{{ ip }}" type="button">
                                 <i class="fa fa-fw fa-eraser"></i>
                                 {{ _("Clear") }}
                             </a>
@@ -374,6 +381,7 @@
                 {% end %}
             </tbody>
         </table>
+    </div>
     </div>
 </div>
 {% end %}

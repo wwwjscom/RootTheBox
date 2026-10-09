@@ -72,6 +72,19 @@ Applied to handler methods:
 - `@authorized(permission)` — requires a specific admin permission
 - `@dangerous` — marks model query methods that do unscoped lookups (by id/uuid without team scoping); these should only be called from admin handlers
 
+### Authentication Modes (`options.auth`)
+
+- `db` (default): password login and registration (`LoginHandler`, `RegistrationHandler`).
+- `azuread`: legacy Azure AD flow via MSAL (`CodeFlowHandler`, `JoinTeamHandler`).
+- `oidc`: generic OpenID Connect SSO, e.g. Keycloak (`handlers/OIDCHandlers.py`, `libs/OIDCClient.py`).
+  - `/login` redirects to the IdP. `/oidc/callback` validates the ID token.
+  - Users are linked by `User.oidc_subject` (the `sub` claim), never by email.
+  - First-time users, and players without a team, finish at `/onboarding` before any session exists.
+  - Name, email and the admin role (`oidc_admin_role`) are re-synced from the IdP on every login.
+  - Dev realm and setup: `setup/keycloak/README.md`. Tests: `tests/testOIDC.py`.
+- Routes for each mode are added conditionally at the bottom of the URL table in `handlers/__init__.py`. `oidc_urls` shadows `/login`.
+- `BaseHandler.start_user_session(user)` is the shared "user is now logged in" helper.
+
 ### Real-time Events
 
 `libs/EventManager.py` is a singleton that pushes score updates, flag captures, and notifications to connected clients over WebSockets. Call `self.event_manager.flag_capture(user, flag, reward)` (and similar methods) from handlers after DB writes, not before.

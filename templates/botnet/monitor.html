@@ -20,13 +20,13 @@
             {{ _("Botnet Command & Control") }}
         </h1>
         <br />
-        <div class="alert alert-info">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <div class="alert alert-info alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <h4 class="alert-heading">{{ _("Are You Elite") }}?</h4>
             <a href="/user/bots/download/monitor" target="_blank">
             {{ _("Download the command line botnet monitor") }}</a> (Linux / BSD)
         </div>
-        <div class="well">
+        <div class="card card-body">
             <table id="monitor-table" class="table table-bordered">
                 <thead>
                     <tr>

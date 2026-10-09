@@ -7,12 +7,12 @@
 <script src="/static/js/pages/missions/view.js"></script>
 <link href="/static/css/pages/public/summary.css" rel="stylesheet" />
 <style>
-  .navbar-fixed-top, footer { display: none !important; }
+  .fixed-top, footer { display: none !important; }
   body { padding-top: 20px !important; background: #111 !important; color: #eee !important; }
   .container-fluid { background: #111 !important; }
-  .well { background: #1a1a1a !important; border-color: #333 !important; }
-  .well .table-striped tbody tr:nth-child(odd) td { background-color: #222; }
-  .well .table-striped tbody tr:nth-child(even) td { background-color: #1a1a1a; }
+  .card-body { background: #1a1a1a !important; border-color: #333 !important; }
+  .card-body .table-striped tbody tr:nth-child(odd) td { background-color: #222; }
+  .card-body .table-striped tbody tr:nth-child(even) td { background-color: #1a1a1a; }
   #summary_table th, #summary_table td { color: #eee !important; border-color: #333 !important; }
   #summary_table thead th { border-bottom-color: #555 !important; }
   #summary_loading { color: #eee; }
@@ -28,26 +28,26 @@
 {% block content %}
     {% from tornado.options import options %}
     {% if not hide_scoreboard %}
-    <div class="row-fluid">
+    <div class="row">
         <div id="parameters" data-count="{{ top }}" data-page="1" style="visibility: hidden;"></div>
         {% if timer %}
         <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-right: 100px;"></h3>
         {% end %}
-        <h1 class="offset1">
+        <h1 class="offset-md-1">
             <i class="fa fa-bar-chart-o"></i>
             {{ _("Top") }} {{ top }} {{ _("Scoreboard") }}
         </h1>
     </div>
     <br />
-    <div class="row-fluid">
+    <div class="row">
         {% if len(options.scoreboard_right_image) > 0 %}
-            {% set wellspan="span7" %}
+            {% set wellspan="col-md-7" %}
         {% elif options.teams and options.show_mvp %}
-            {% set wellspan="span7" %}
+            {% set wellspan="col-md-7" %}
         {% else %}
-            {% set wellspan="span10" %}
+            {% set wellspan="col-md-10" %}
         {% end %}
-        <div class="well {{wellspan}} offset1" style="padding-left: 30px; padding-right: 30px;">
+        <div class="card card-body {{wellspan}} offset-md-1" style="padding-left: 30px; padding-right: 30px;">
             <div id="summary_loading"><h3>Loading...</h3></div>
             <table id="summary_table" class="table table-striped" data-since-score="{{ _('Since Score') }}">
                 <thead>
@@ -81,7 +81,7 @@
         {% set showimage = len(options.scoreboard_right_image) > 0 %}
         {% set showmvp = options.teams and options.show_mvp %}
         {% if showimage or showmvp %}
-        <div class="well span3">
+        <div class="card card-body col-md-3">
             {% if showimage %}
                 <img id="scoreboard_right_image" src="{{options.scoreboard_right_image}}">
             {% end %}

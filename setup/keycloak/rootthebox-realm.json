@@ -1,0 +1,88 @@
+{
+  "realm": "rootthebox",
+  "displayName": "Root the Box (dev)",
+  "enabled": true,
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "attributes": {
+    "frontendUrl": "http://localhost:8080"
+  },
+  "roles": {
+    "realm": [
+      {
+        "name": "rtb-admin",
+        "description": "Root the Box game administrator"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "rootthebox",
+      "name": "Root the Box",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "rtb-dev-secret-DO-NOT-USE-IN-PRODUCTION",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "rootUrl": "http://localhost:8888",
+      "baseUrl": "/",
+      "redirectUris": ["http://localhost:8888/oidc/callback"],
+      "webOrigins": ["http://localhost:8888"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:8888/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "player1",
+      "enabled": true,
+      "email": "player1@example.com",
+      "emailVerified": true,
+      "firstName": "Player",
+      "lastName": "One",
+      "credentials": [{ "type": "password", "value": "player1", "temporary": false }]
+    },
+    {
+      "username": "player2",
+      "enabled": true,
+      "email": "player2@example.com",
+      "emailVerified": true,
+      "firstName": "Player",
+      "lastName": "Two",
+      "credentials": [{ "type": "password", "value": "player2", "temporary": false }]
+    },
+    {
+      "username": "rtbadmin",
+      "enabled": true,
+      "email": "rtbadmin@example.com",
+      "emailVerified": true,
+      "firstName": "Game",
+      "lastName": "Admin",
+      "realmRoles": ["rtb-admin"],
+      "credentials": [{ "type": "password", "value": "rtbadmin", "temporary": false }]
+    }
+  ]
+}

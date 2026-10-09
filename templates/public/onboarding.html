@@ -1,0 +1,141 @@
+{% extends "../main.html" %}
+
+{% block title %}{{ _("Welcome") }}{% end %}
+
+{% block header %}
+    {% from tornado.options import options %}
+    <link rel="stylesheet" href="/static/css/pages/public/registration.css" type="text/css" />
+    <script src="/static/js/pages/public/registration.js"></script>
+{% end %}
+
+{% block content %}
+    <div class="container registration-page">
+        <h1>
+            <i class="fa fa-user-plus"></i>
+            {% if new_user %}{{ _("Set Up Your Profile") }}{% else %}{{ _("Choose Your Team") }}{% end %}
+        </h1>
+        <br />
+        {% if errors is not None and len(errors) != 0 %}
+            {% for error in errors %}
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <h4 class="alert-heading">{{ _("ERROR") }}</h4>
+                    {{ error }}
+                </div>
+            {% end %}
+        {% end %}
+        <div class="registration-card col-md-8 offset-md-1 card card-body">
+        {% if not suspend %}
+            <legend>
+                {% if new_user %}{{ _("Welcome to the Scene") }}{% else %}{{ _("Welcome Back") }}{% end %}
+            </legend>
+            <form class="form-horizontal" action="/onboarding" method="post">
+                {% raw xsrf_form_html() %}
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label">{{ _("Signed in as") }}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control-plaintext" readonly type="text" value="{{ identity['name'] }}{% if identity['email'] %} &lt;{{ identity['email'] }}&gt;{% end %}" />
+                    </div>
+                </div>
+                {% if new_user %}
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="handle">
+                        <i class="fa fa-user"></i>
+                        {{ _("Handle") }}
+                    </label>
+                    <div class="col-sm-9">
+                        <input class="form-control" required id="handle" name="handle" maxlength="16" minlength="3" placeholder="{{ _('Player Alias') }}" type="text"
+                            value="{{ handle }}" autofocus
+                            rel="popover" pattern="^[a-zA-Z0-9_\-\.]{3,16}$"
+                            data-bs-title="{{ _('Player Alias') }}"
+                            data-bs-content="{{_('Your handle is shown to other players.  It must be 3-16 alphanumeric characters.  Underscore, dash, and dots allowed.')}}" />
+                    </div>
+                </div>
+                {% end %}
+                {% if not identity["admin"] %}
+                <hr>
+                {% if options.teams %}
+                    {% if options.public_teams %}
+                        <input type="radio" class="teammode form-check-input" name="teammode" value="join" checked><h5 style="display: inline;">{{ _("Join Existing Team") }}</h5>
+                        <input type="radio" class="teammode form-check-input" name="teammode" value="create"><h5 style="display: inline;">{{ _("Start a New Team") }}</h5>
+                        <br/><br/>
+                        <div id="teammode-create" style="display: none;">
+                            <div class="row mb-3">
+                                <label class="col-sm-3 col-form-label" for="team-name">{{ _("Team Name") }}</label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" id="team-name" name="team_name" maxlength="24" minlength="3" type="text" placeholder="{{ _('Team Name') }}"
+                                        rel="popover" pattern="^[a-zA-Z0-9 _\-\.]{3,24}$"
+                                        data-bs-title="{{_('New Team Name')}}"
+                                        data-bs-content="{{_('Choose a name for your new team!')}} [3-24 {{_('Characters')}}]" >
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <label class="col-sm-3 col-form-label" for="motto">{{ _("Motto") }}</label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" id="motto" name="motto" maxlength="32" type="text" placeholder="{{ _('Team Motto') }}"
+                                        rel="popover"
+                                        data-bs-title="{{_('Team Motto')}}"
+                                        data-bs-content="{{_('Optional')}}: {{_('What is your teams motto?')}} [{{ _('Max') }}: 32 {{_('Characters')}}]">
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <h5 style="margin-bottom: 15px;">{{ _("Join Existing Team") }}</h5>
+                    {% end %}
+                    <div id="teammode-join" class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="team-code">{{ _("Team Code") }}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" id="team-code" name="team-code" type="text" placeholder="{{ _('Team Code') }}"
+                                rel="popover"
+                                data-bs-title="{{_('Team Code')}}"
+                                data-bs-content="{{_('Provide the code used to join an existing team.  Visible to other team members on their home page.')}}" >
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="motto">{{ _("Motto") }}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" id="motto" name="motto" maxlength="32" type="text" placeholder="{{ _('Motto') }}"
+                                rel="popover"
+                                data-bs-title="{{_('Motto')}}"
+                                data-bs-content="{{_('Optional')}}: {{_('What is your motto?')}} [{{ _('Max') }}: 32 {{_('Characters')}}]">
+                        </div>
+                    </div>
+                {% end %}
+                {% end %}
+                {% if new_user and options.banking and not set(["Password Security", "Federal Reserve"]).isdisjoint(options.allowed_market_items) %}
+                <hr>
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="bpass">{{ _("Bank Account Password") }}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" required id="bpass" name="bpass" maxlength="{{ options.max_password_length }}" placeholder="{{ _('Bank Account Password') }}" type="password"
+                            autocomplete="off"
+                            rel="popover"
+                            data-bs-title="{{_('Password')}}"
+                            data-bs-content="{{_('Used to secure your (in-game) bank account.')}} [{{ _('Max') }}: {{ options.max_password_length }} {{_('Characters')}}].  {{_('Please do NOT enter your real bank account password.')}}" />
+                    </div>
+                </div>
+                {% end %}
+                {% if new_user and options.privacy_policy_link %}
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="privacy_policy_accept">{{ _("I accept the") }} <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a></label>
+                        <div class="col-sm-9">
+                            <input class="form-check-input" required id="privacy_policy_accept" name="privacy_policy_accept" type="checkbox" />
+                        </div>
+                    </div>
+                {% end %}
+                <br />
+                <div class="row mb-3">
+                    <div class="col-sm-9 offset-sm-3">
+                        <button class="btn btn-primary" type="submit">
+                            {% if new_user %}{{ _("Create Profile") }}{% else %}{{ _("Join") }}{% end %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        {% else %}
+            <h4 style="text-align: center;"><i class="fa fa-group"></i>&nbsp;&nbsp;{{ _("The game is not accepting new players at this time.") }}</h4>
+        {% end %}
+        </div>
+    </div>
+{% end %}

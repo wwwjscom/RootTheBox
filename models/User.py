@@ -62,6 +62,22 @@ DEFAULT_HASH_ALGORITHM = "md5"
 ITERATE = 0x2BAD  # 11181
 
 
+def _default_theme_id():
+    """
+    Resolve the id of the configured default theme (options.default_theme,
+    e.g. "Cyborg") at row-insert time, rather than hardcoding a numeric id.
+    The seeded Theme rows' insertion order (and thus their ids) depends on
+    setup/bootstrap.py's css_files list, which has changed over time (e.g.
+    themes dropped during the Bootstrap 5 migration) -- a hardcoded id would
+    silently point at the wrong theme after such a reorder. Falls back to
+    id 3 (the historical Cyborg position) if the theme table isn't seeded
+    yet, which should not happen in practice since bootstrap.py seeds Theme
+    rows before creating any User row.
+    """
+    theme = Theme.by_name(options.default_theme)
+    return theme.id if theme else 3
+
+
 class User(DatabaseObject):
     """User definition"""
 
@@ -80,8 +96,10 @@ class User(DatabaseObject):
     _notes = Column(Unicode(512))
     _expire = Column(DateTime, default=None, nullable=True)
     money = Column(Integer, default=0, nullable=False)
+    # Stable OIDC 'sub' claim linking this account to the identity provider.
+    oidc_subject = Column(String(255), unique=True, index=True, nullable=True)
 
-    theme_id = Column(Integer, ForeignKey("theme.id"), default=3, nullable=False)
+    theme_id = Column(Integer, ForeignKey("theme.id"), default=_default_theme_id, nullable=False)
 
     algorithm = Column(String(8), default=DEFAULT_HASH_ALGORITHM, nullable=False)
 
@@ -132,6 +150,13 @@ class User(DatabaseObject):
     def by_uuid(cls, _uuid):
         """Return and object based on a uuid"""
         return dbsession.query(cls).filter_by(uuid=str(_uuid)).first()
+
+    @classmethod
+    def by_oidc_subject(cls, subject):
+        """Return the user linked to an OIDC subject ('sub' claim)"""
+        if not subject:
+            return None
+        return dbsession.query(cls).filter_by(oidc_subject=str(subject)).first()
 
     @classmethod
     def by_email(cls, email):

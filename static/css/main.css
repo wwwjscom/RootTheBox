@@ -2,6 +2,37 @@ body {
     padding-top: 60px;
     padding-bottom: 40px;
 }
+/* Bootstrap 5 grid rows are flexbox (BS2 used floats), so a column that is also
+   an .alert would stretch to the row's full height. An alert should size to its
+   content; align-self is a no-op when the alert isn't a flex/grid child. */
+.alert {
+    align-self: flex-start;
+}
+/* BS2 modal headers place the close button before the title; BS5 modal-header is
+   flex, so order the close to the right and keep the (bare <h3>) titles tidy. */
+.modal-header .btn-close {
+    order: 1;
+    margin: -0.5rem -0.5rem -0.5rem auto;
+}
+.modal-header > h1,
+.modal-header > h2,
+.modal-header > h3,
+.modal-header > h4,
+.modal-header > h5 {
+    margin: 0;
+}
+/* Form-horizontal labels: BS2's .control-label floated right-aligned in a
+   fixed 160px gutter beside its input column; BS5's .col-form-label defaults
+   to left-aligned with small padding, so every settings/create/config form
+   lost its label alignment in the migration. This is layout, not color/theme,
+   so it lives here (main.css) rather than the Cyborg-only theme file. */
+.form-horizontal .col-form-label {
+    float: left;
+    width: 160px;
+    padding-top: 5px;
+    text-align: right;
+    line-height: 20px;
+}
 footer {
     font-size: 75%;
     position: fixed;
@@ -9,10 +40,28 @@ footer {
     width: 100%;
 }
 .footernav {
+    /* BS2's ".navbar-inner" gave the footer bar its own dark surface, border,
+       and min-height; that class isn't used in the BS5 markup, so the bar
+       collapsed to a single text line. Restore the original bar geometry
+       (min-height 50px, content-box, 1px border) so the pinned footer's
+       visible height (~52px) matches the original. */
     padding: 5px 20px;
+    min-height: 50px;
+    box-sizing: content-box;
+    border: 1px solid #000;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+    background-color: #020202;
 }
+/* BS2's own reset CSS made every <img> responsive by default
+   (`img{max-width:100%}`); BS5 dropped that global default (you opt in per
+   image with `.img-fluid` instead). This 500px value was always meant as a
+   cap, not a forced width -- restore max-width/height:auto so it shrinks
+   inside a narrower container instead of overflowing it. */
 .img-polaroid {
     width: 500px;
+    max-width: 100%;
+    height: auto;
 }
 .shortcolumn {
     width: 1px;

@@ -16,84 +16,78 @@
             setGraphScale("{% if options.banking %}{{ _('Money') }}{% else %}{{ _('Points') }}{% end %}");
             setGraphSymbol("{% if options.banking %}{{ _('$') }}{% end %}");
         </script>
-        <div class="row-fluid">
+        <div class="row">
             {% if timer %}
             <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-top: 3px; margin-bottom: 0px; margin-right: 150px;"></h3>
             {% end %}
-            <h1 class="offset1" style="margin-bottom: 0px;">
+            <h1 class="offset-md-1" style="margin-bottom: 0px;">
                 <i class="fa fa-bar-chart-o"></i>
                 {{ _("Charts") }}
             </h1>
             <br />
-            <div class="row-fluid">
-            <div class="well span10 offset1">
-                <div class="navbar navbar-inverse">
-                    <div class="navbar-inner">
-                        <div class="container ">
-                            <a class="brand" href="#">
-                                <i id="history-icon" class="fa fa-fw fa-calendar"></i>
-                                {{ _("History") }}
-                            </a>
-                            <div class="nav-collapse collapse">
-                                <ul class="nav">
-                                    <li>
-                                        <a id="flags-history-button" href="#">
-                                            <i class="fa fa-flag"></i>
-                                            {{ _("Flags") }}
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a id="money-history-button" href="#">
-                                            {% if options.banking %}
-                                                <i class="fa fa-dollar"></i>
-                                                {{ _("Money") }}
-                                            {% else %}
-                                                <i class="fa fa-fw fa-bar-chart-o"></i>
-                                                {{ _("Score") }}
-                                            {% end %}
-                                        </a>
-                                    </li>
-                                    {% if options.use_bots %}
-                                        <li>
-                                            <a id="bots-history-button" href="#">
-                                                <i class="fa fa-android"></i>
-                                                {{ _("Bots") }}
-                                            </a>
-                                        </li>
-                                    {% end %}
-                                    <li style="padding: 15px; padding-right: 0;">{{ _("Top") }}</li>
-                                    <li style="padding: 10px; padding-bottom: 0px;">
-                                        <select id="datapoints" style="width: 100px;">
-                                            <option value="5">5</option>
-                                            <option value="10" selected>10</option>
-                                            <option value="15">15</option>
-                                            <option value="25">20</option>
-                                            <option value="30">30</option>
-                                        </select>  
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="nav pull-right">
-                                <a class="brand">
-                                    <i id="activity-monitor" class="fa fa-fw fa-eye-slash"></i>
+            <div class="row">
+            <div class="card card-body col-md-10 offset-md-1">
+                <nav class="navbar navbar-expand bg-dark rounded" data-bs-theme="dark">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">
+                            <i id="history-icon" class="fa fa-fw fa-calendar"></i>
+                            {{ _("History") }}
+                        </a>
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" id="flags-history-button" href="#">
+                                    <i class="fa fa-flag"></i>
+                                    {{ _("Flags") }}
                                 </a>
-                            </div>
-                        </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="money-history-button" href="#">
+                                    {% if options.banking %}
+                                        <i class="fa fa-dollar"></i>
+                                        {{ _("Money") }}
+                                    {% else %}
+                                        <i class="fa fa-fw fa-bar-chart-o"></i>
+                                        {{ _("Score") }}
+                                    {% end %}
+                                </a>
+                            </li>
+                            {% if options.use_bots %}
+                                <li class="nav-item">
+                                    <a class="nav-link" id="bots-history-button" href="#">
+                                        <i class="fa fa-android"></i>
+                                        {{ _("Bots") }}
+                                    </a>
+                                </li>
+                            {% end %}
+                            <li class="nav-item" style="padding: 15px; padding-right: 0;">{{ _("Top") }}</li>
+                            <li class="nav-item" style="padding: 10px; padding-bottom: 0px;">
+                                <select class="form-select" id="datapoints" style="width: 100px;">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="25">20</option>
+                                    <option value="30">30</option>
+                                </select>
+                            </li>
+                        </ul>
+                        <a class="navbar-brand">
+                            <i id="activity-monitor" class="fa fa-fw fa-eye-slash"></i>
+                        </a>
                     </div>
-                </div>
+                </nav>
                 <div id="history-graph" style="height:400px;" data-name="{{ _('Botnets') }}"
                     data-xaxis="{{ _('Time') }}" data-yaxis="{{ _('Number of Bots') }}">
                     <!-- Graph goes here - used for several graphs, not just bots -->
                 </div>
             </div>
         </div>
-            <div id="pie_graphs" class="row-fluid">
-                <div class="well span5 offset1">
+            <div id="pie_graphs" class="row">
+                <div class="card card-body col-md-5 offset-md-1">
                     <div id="pie_flags" style="height:300px;" data-name="{{ _('Flags Captured') }} ({{ _('Top 10') }})">
                         <!-- Pie Chart Here -->
                     </div>
                 </div>
-                <div class="well span5">
+                <div class="card card-body col-md-5">
                     <div id="pie_money" style="height:300px;" 
                         data-name="{% if options.banking %}{{ _('Bank Account') }}{% else %}{{ _('Score') }}{% end %}  ({{ _('Top 10') }})" 
                         data-symbol="{% if options.banking %}{{ _('$') }}{% end %}">

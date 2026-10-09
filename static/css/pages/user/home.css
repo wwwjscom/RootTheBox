@@ -10,3 +10,44 @@
 .msgdescription {
     width: 82% !important;
 }
+
+/* Top-level two-column split (player card | team/market card): BS2's real
+   `.row-fluid` measured live gives the left column 48.9359% (matches the
+   standard BS2 span6 fluid-grid percentage exactly) and the right column
+   already has the correct value hardcoded inline in the template
+   (`style="width: 46%"`, itself measured from BS2 at 46.0% -- that part was
+   already right). The bug: BS5's `.card` defaults to `flex: 1 1 auto`, so
+   as a flex item it grows to fill 100% of whatever space is left over
+   instead of respecting its own inline width -- with the left column fixed
+   at BS5's default 50% (`flex:0 0 auto`), the right card's flex-grow simply
+   ate the other 50%, landing at 632px instead of the intended 570px (46%
+   of a 1240px row). Stop the card from growing/shrinking as a grid column
+   here so its own width wins, and correct the left column to the real
+   48.9359% instead of BS5's default 50%. */
+/* BS2's `.row-fluid` columns were floated, so each sized to its own
+   content height independently -- the shorter right column (Mission
+   Progress) just ended where its own content ended. BS5's `.row` is
+   `display:flex` with the default `align-items:stretch`, which forces
+   every flex item to the height of the tallest one, so the right column's
+   card was stretching to match the left column's (taller) height and
+   filling the extra space with empty dark background. Opt back out of
+   stretching so each column keeps its own natural height, like BS2. */
+.user-home {
+    align-items: flex-start;
+}
+.user-home > .col-md-6 {
+    flex: 0 0 48.9359%;
+    max-width: 48.9359%;
+}
+.user-home > .card {
+    flex-grow: 0;
+    flex-shrink: 0;
+    /* BS2's `.row-fluid` puts a 2.127659574468085% gutter (margin-left) on
+       every non-first-child column -- measured live as a real ~26px gap
+       between the two top-level panels at 1240px. BS5's flex `.row` has no
+       equivalent gap here since --bs-gutter-x only pads columns that still
+       use the default width math, which this card's fixed 46% width and
+       zeroed flex-grow/shrink above bypass entirely -- restore the gap
+       explicitly. */
+    margin-left: 2.127659574468085%;
+}

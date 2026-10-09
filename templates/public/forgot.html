@@ -15,8 +15,8 @@
         </h3>
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
-                <div class="alert alert-error" >
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-danger alert-dismissible" >
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("Error") }}</h4>
                     {{ error }}
                 </div>
@@ -24,15 +24,15 @@
         {% end %}
         {% if info is not None and len(info) != 0 %}
             {% for item in info %}
-                <div class="alert alert-info" >
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-info alert-dismissible" >
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("Information") }}</h4>
                     {{ item }}
                 </div>
             {% end %}
         {% end %}
         {% raw xsrf_form_html() %}
-        <input name="email" type="text" class="input-block-level" placeholder="{{ _('email') }}" autofocus>
+        <input name="email" type="text" class="w-100 form-control" placeholder="{{ _('email') }}" autofocus>
         <button class="btn btn-primary" type="submit">
             <i class="fa fa-key"></i>
             {{ _("Request Password Reset") }}

@@ -50,6 +50,11 @@ from handlers.MarketHandlers import *
 from handlers.MaterialsHandler import *
 from handlers.MissionsHandler import *
 from handlers.NotificationHandlers import *
+from handlers.OIDCHandlers import (
+    OIDCCallbackHandler,
+    OIDCLoginHandler,
+    OnboardingHandler,
+)
 from handlers.PastebinHandlers import *
 from handlers.PublicHandlers import *
 from handlers.ScoreboardHandlers import *
@@ -221,6 +226,14 @@ urls = [
     (r"/administrator(.*)", NoobHandler),
 ]
 
+# Single sign-on via a generic OIDC provider (e.g. Keycloak).  The /login entry
+# shadows the password LoginHandler because Tornado matches the first rule.
+oidc_urls = [
+    (r"/login", OIDCLoginHandler),
+    (r"/oidc/callback", OIDCCallbackHandler),
+    (r"/onboarding", OnboardingHandler),
+]
+
 # These routes should be disabled if we're not using the database for authentication.
 # If database auth is used add them in.
 if options.auth == "db":
@@ -231,6 +244,8 @@ if options.auth == "db":
 # For Azure AD authentication we have a simplified Join Team instead of registration.
 elif options.auth == "azuread":
     urls.insert(2, (r"/jointeam", JoinTeamHandler))
+elif options.auth == "oidc":
+    urls[0:0] = oidc_urls
 
 # This one has to be last
 urls.append((r"/(.*)", NotFoundHandler))

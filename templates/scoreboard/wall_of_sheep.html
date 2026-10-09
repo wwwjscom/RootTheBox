@@ -7,7 +7,7 @@
 <div class="container">
     <h1>{{ _("Wall of Sheep") }}</h1>
     <br />
-    <div class="well">
+    <div class="card card-body">
         {% if len(flock) != 0 %}
             <h3>{{ _("Sheep") }}</h3>
             <table class="table table-striped">
@@ -41,7 +41,7 @@
     </div>
     {% if len(leaderboard) != 0 %}
         <br />
-        <div class="well">
+        <div class="card card-body">
             <h3>{{ _("Password Cracking Leaderboard") }}</h3>
             <table class="table table-striped">
                 <thead>

@@ -8,45 +8,51 @@
 {% end %}
 
 {% block modals %}
-<div id="add-source-code-modal" class="modal hide fade" style="display: none; ">
+<div id="add-source-code-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>{{_("Add Source Code to Market")}}</h3>
     </div>
     <div class="modal-body">
         <form id="add-source-code-form" class="form-horizontal" action="/admin/upgrades/source_code_market/add" method="post" enctype="multipart/form-data">
             {% raw xsrf_form_html() %}
             <input id="add-source-code-uuid" type="hidden" name="box_uuid" value="" />
-            <div class="control-group">
-                <label class="control-label" for="price">{% if options.banking %}{{ _("Price") }}{% else %}{{ _("Cost") }}{% end %}</label>
-                <div class="controls">
-                    <input autofocus required id="price" name="price" type="text" pattern="[0-9]+" placeholder="{% if options.banking %}{{ _('Price') }} ({{_('$')}}){% else %}{{ _('Cost') }}{% end %}">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="price">{% if options.banking %}{{ _("Price") }}{% else %}{{ _("Cost") }}{% end %}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" autofocus required id="price" name="price" type="text" pattern="[0-9]+" placeholder="{% if options.banking %}{{ _('Price') }} ({{_('$')}}){% else %}{{ _('Cost') }}{% end %}">
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="description">{{_("Description")}}</label>
-                <div class="controls">
-                    <input required id="description" name="description" type="text" placeholder="{{_('Description')}}">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="description">{{_("Description")}}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" required id="description" name="description" type="text" placeholder="{{_('Description')}}">
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="source_archive">{{_("Source Code Archive")}}</label>
-                <div class="controls">
-                    <input id="source_archive" name="source_archive" type="file">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="source_archive">{{_("Source Code Archive")}}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" id="source_archive" name="source_archive" type="file">
                 </div>
             </div>
         </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
         <button id="add-source-code-submit" class="btn btn-primary" type="button">
             {{_("Add to Market")}}
         </button>
     </div>
-</div>
-<div id="delete-source-code-modal" class="modal hide fade" style="display: none; ">
+
+    </div>
+    </div></div>
+<div id="delete-source-code-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>
             <i class="fa fa-times-circle-o"></i>
             {{_("Delete Source Code")}}
@@ -63,13 +69,15 @@
         </form>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
         <button id="delete-source-code-submit" type="button" class="btn btn-danger">
             <i class="fa fa-times-circle-o"></i>
             {{_("Delete")}}
         </button>
     </div>
-</div>
+
+    </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -82,14 +90,14 @@
     <br />
     {% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
-        <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <h4 class="alert-heading">{{_("ERROR")}}</h4>
             {{ error }}
         </div>
         {% end %}
     {% end %}
-    <div class="well">
+    <div class="card card-body">
         {% if len(Box.unlocked()) == 0 %}
             <p><strong>{{_("No Boxes")}}</strong></p>
         {% else %}
@@ -116,7 +124,7 @@
                         <td>N / A</td>
                         <td>N / A</td>
                         <td>
-                            <a id="add-source-code-button{{ index }}" class="btn btn-mini" data-toggle="modal" href="#add-source-code-modal" data-uuid="{{ box.uuid }}">
+                            <a id="add-source-code-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#add-source-code-modal" data-uuid="{{ box.uuid }}">
                                 {{_("Add Source Code")}}
                             </a>
                         </td>
@@ -125,7 +133,7 @@
                         <td>{{ box.source_code.description }}</td>
                         <td>{% if options.banking %}{{ _("$") }}{% end %}{{ box.source_code.price }}</td>
                         <td>
-                            <a id="delete-source-code-button{{ index }}" class="btn btn-mini btn-danger" data-toggle="modal" href="#delete-source-code-modal" data-uuid="{{ box.uuid }}">
+                            <a id="delete-source-code-button{{ index }}" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#delete-source-code-modal" data-uuid="{{ box.uuid }}">
                                 <i class="fa fa-times-circle-o"></i>
                                 {{_("Delete Source Code")}}
                             </a>

@@ -7,7 +7,6 @@
         <meta name="description" content="Hacker War Game">
         <meta name="author" content="moloch, eljeffe">
         <link href="/static/images/favicon.ico" rel="shortcut icon" />
-        <link href="/static/css/bootstrap-responsive.css" rel="stylesheet" />
         <link href="/static/css/font-awesome.min.css" rel="stylesheet" />
         <link href="/static/css/animate.css" rel="stylesheet" />
         <link href="/static/css/notifier.css" rel="stylesheet" />
@@ -17,8 +16,9 @@
         <![endif]-->
         <script src="/static/js/jquery.min.js" type="text/javascript"></script>
         <script src="/static/js/jquery-migrate.min.js" type="text/javascript"></script>
-        <script src="/static/js/jquery-ui.min.js"></script> <!-- load before bootstrap -->
-        <script src="/static/js/bootstrap.min.js" type="text/javascript"></script>
+        <script src="/static/js/jquery-ui.min.js"></script>
+        <script src="/static/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+        <script src="/static/js/libs/bs5-jquery-bridge.js" type="text/javascript"></script>
         <script src="/static/js/pages/main.js" type="text/javascript"></script>
         <script src="/static/js/libs/countdown.js" type="text/javascript"></script>
         <script src="/static/js/libs/notifier.js" type="text/javascript"></script>
@@ -42,7 +42,7 @@
         <footer>
             {% from tornado.options import options %}
             <hr style="margin-bottom: -1px;">
-            <div class="navbar-inner footernav">
+            <div class="footernav">
                 Powered by <a href="https://github.com/wwwjscom/RootTheBox" target="_blank">Root the Box</a> &copy; {{ datetime.date.today().year }}{% if options.privacy_policy_link %} • <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a>{% end %} • <a href="https://github.com/moloch--/RootTheBox" target="_blank">{{ _("Original Repo") }}</a>
                 <span style="float:right; padding-right: 5px;">{% raw options.org_footer %}</span>
             </div>

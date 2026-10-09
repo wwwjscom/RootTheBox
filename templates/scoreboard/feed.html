@@ -15,7 +15,7 @@
     {% if options.scoreboard_visibility != "public" %}
         <h4 style="color: red;">NOTE: The scoreboard must be set to "public" visibility in the configuration to use the Feed URL with CTFtime.</h4>
     {% end %}
-    <div class="well">
+    <div class="card card-body">
         <div>
             This Scoreboard feed can be used to update <a href="https://ctftime.org/" target="_blank">CTFtime</a> for real-time (feed url) or archive (copy json) purposes.  
             <div style="margin-left: 30px; margin-top: 8px;">
@@ -29,15 +29,15 @@
         </div>
         <div id="ctftime-target" class="ctftime">
             <div class="input-group" style="text-align: center">
-                <input id="ctftime_feed_link" type="text" value="{{hostname}}/scoreboard/ajax/feed">
+                <input class="form-control" id="ctftime_feed_link" type="text" value="{{hostname}}/scoreboard/ajax/feed">
                 <span class="input-group-button">
-                    <button class="btn" type="button" data-clipboard-btn="" data-clipboard-target="#ctftime_feed_link">
+                    <button class="btn btn-secondary" type="button" data-clipboard-btn="" data-clipboard-target="#ctftime_feed_link">
                     <img class="clippy" src="/static/images/clippy.svg" alt="Copy to clipboard" width="14">
                     </button>
                 </span>
             </div>
         </div>
-        <div id="snippet" class="snippet"><button class="btn" data-clipboard-snippet=""><img class="clippy" src="/static/images/clippy.svg" alt="Copy to clipboard" width="14"></button>
+        <div id="snippet" class="snippet"><button class="btn btn-secondary" data-clipboard-snippet=""><img class="clippy" src="/static/images/clippy.svg" alt="Copy to clipboard" width="14"></button>
            <pre></pre>
         </div>   
     </div>

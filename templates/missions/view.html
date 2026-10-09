@@ -3,14 +3,17 @@
 {% block title %}{{ _("Missions") }}{% end %}
 
 {% block header %}
+<link rel="stylesheet" href="/static/css/pages/missions/view.css" />
 <script src="/static/js/pages/missions/view.js"></script>
 {% end %}
 
 {% block modals %}
 {% from tornado.options import options %}
-    <div id="unlock-game-level-modal" class="modal hide fade" style="display: none;">
+    <div id="unlock-game-level-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 <i class="fa fa-unlock"></i>
                 {{ _("Unlock Level") }}
@@ -25,12 +28,14 @@
             </p>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{_("Close")}}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{_("Close")}}</a>
             <button id="unlock-game-level-submit" class="btn btn-primary" type="button">
                 {{ _("Unlock") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -42,13 +47,13 @@
     {% set corps = [""] %}
 {% end %}
     <!-- Visible -->
-    <div class="container">
+    <div class="container missions-view">
         <h1>{{ _("Missions") }}</h1>
         <br />
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
-            <div class="alert alert-error">
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+            <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("ERROR") }}</h4>
                     {{ error }}
             </div>
@@ -69,7 +74,7 @@
             {# Server-provided timer state for this level on the missions overview page. #}
             {% set level_timer = level_submission_timers.get(level.uuid, {}) %}
             {% if not (level.type == 'hidden' and not has_level) %}
-            <div class="well">
+            <div class="card card-body">
                 {% if len(GameLevel.all()) > 1 %}
                     <h3 class="levelheader">
                         {% if has_level %}
@@ -78,12 +83,12 @@
                             <i class="fa fa-lock"></i>
                         {% end %}
                         {{ level.name }}&nbsp;
-                        {% if level.review_mode %}<span class="label label-warning">{{_("Review Mode — No Points")}}</span>{% end %}
+                        {% if level.review_mode %}<span class="badge text-bg-warning">{{_("Review Mode — No Points")}}</span>{% end %}
                     </h3>
                     {% if level.description %}<h4 class="levelheader">({{ level.description }})</h4>{% end %}
                     {% if team and has_level and level_timer.get("enabled") %}
                         {# Visible countdown per level; actual enforcement remains server-side. #}
-                        <div class="alert {% if level_timer.get('expired') %}alert-error{% else %}alert-info{% end %}"
+                        <div class="alert {% if level_timer.get('expired') %}alert-danger{% else %}alert-info{% end %}"
                              style="margin: 10px 0;"
                              data-level-submission-timer="1"
                              data-level-submission-timer-started="{{ str(level_timer.get('started')).lower() }}"
@@ -106,10 +111,10 @@
                     {% if team and has_level %}
                         <div class="progress" style="height: 10px; background-color: #424242;">
                         {% if len(level.flags) == 0 %}
-                            <div class="bar minibar" style="width: {{0}}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}"></div>
+                            <div class="progress-bar minibar" style="width: {{0}}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}"></div>
                         {% end %}
                         {% if len(level.flags) != 0 %}
-                            <div class="bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}"></div>
+                            <div class="progress-bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;" title="{{ len(team.level_flags(level.number)) }} / {{ len(level.flags) }}"></div>
                         {% end %}
                         </div>
                     {% end %}
@@ -133,7 +138,7 @@
                         {% end %}
                         {% for box in boxes[::3] %}
                             <div class="row">
-                                <div class="span3">
+                                <div class="col-md-3">
                                     <center>
                                         <a href="/user/missions/boxes?uuid={{ box.uuid }}">
                                             <h5 style="margin-bottom: 6px;">
@@ -159,9 +164,9 @@
                                                 {% end %}
                                                 <div class="progress" style="height: 8px; margin-bottom: 8px; margin-right: -10px; background-color: #424242;">
                                                     {% if flagcount != 0 and len(box.flags) != 0 %}
-                                                            <div class="bar minibar" style="width: {{ ( flagcount /  float(len(box.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box.flags) }}"></div>
+                                                            <div class="progress-bar minibar" style="width: {{ ( flagcount /  float(len(box.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box.flags) }}"></div>
                                                     {% else %}
-                                                            <div class="bar minibar" style="width: 0%;"></div>
+                                                            <div class="progress-bar minibar" style="width: 0%;"></div>
                                                     {% end %}
                                                 </div>
                                             {% end %}
@@ -173,7 +178,7 @@
                                 </div>
                                 {% if boxes.index(box) + 1 < len(boxes) %}
                                     {% set box1 = boxes[boxes.index(box) + 1] %}
-                                    <div class="span3 offset1">
+                                    <div class="col-md-3 offset-md-1">
                                         <center>
                                             <a href="/user/missions/boxes?uuid={{ box1.uuid }}">
                                                 <h5 style="margin-bottom: 6px;">
@@ -199,9 +204,9 @@
                                                     {% end %}
                                                     <div class="progress" style="height: 8px; margin-bottom: 8px; margin-right: -10px; background-color: #424242;" title="{% if len(box1.flags) != 0 %}{{ flagcount }} / {{ len(box1.flags) }}{% else %}0 / 0{% end %}">
                                                         {% if flagcount != 0 and len(box1.flags) != 0 %}
-                                                                <div class="bar minibar" style="width: {{ ( flagcount /  float(len(box1.flags)) ) * 100.0 }}%;"></div>
+                                                                <div class="progress-bar minibar" style="width: {{ ( flagcount /  float(len(box1.flags)) ) * 100.0 }}%;"></div>
                                                         {% else %}
-                                                                <div class="bar minibar" style="width: 0%;"></div>
+                                                                <div class="progress-bar minibar" style="width: 0%;"></div>
                                                         {% end %}
                                                     </div>
                                                 {% end %}
@@ -214,7 +219,7 @@
                                 {% end %}
                                 {% if boxes.index(box) + 2 < len(boxes) %}
                                     {% set box2 = boxes[boxes.index(box) + 2] %}
-                                    <div class="span3 offset1">
+                                    <div class="col-md-3 offset-md-1">
                                         <center>
                                             <a href="/user/missions/boxes?uuid={{ box2.uuid }}">
                                                 <h5 style="margin-bottom: 6px;">
@@ -240,9 +245,9 @@
                                                     {% end %}
                                                     <div class="progress" style="height: 8px; margin-bottom: 8px; margin-right: -10px; background-color: #424242;">
                                                         {% if flagcount != 0 and len(box2.flags) != 0 %}
-                                                                <div class="bar minibar" style="width: {{ ( flagcount /  float(len(box2.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box2.flags) }}"></div>
+                                                                <div class="progress-bar minibar" style="width: {{ ( flagcount /  float(len(box2.flags)) ) * 100.0 }}%;" title="{{ flagcount }} / {{ len(box2.flags) }}"></div>
                                                         {% else %}
-                                                                <div class="bar minibar" style="width: 0%;"></div>
+                                                                <div class="progress-bar minibar" style="width: 0%;"></div>
                                                         {% end %}
                                                     </div>
                                                 {% end %}
@@ -259,7 +264,7 @@
                     </div>
                 {% else %}
                     {% if level._type == "buyout" %}
-                    <a id="unlock-game-level-button{{ index }}" class="btn" data-toggle="modal" href="#unlock-game-level-modal" data-uuid="{{ level.uuid }}" data-banking="{{ str(options.banking).lower() }}" data-buyout="{{ level.buyout }}">
+                    <a id="unlock-game-level-button{{ index }}" class="btn btn-secondary" data-bs-toggle="modal" href="#unlock-game-level-modal" data-uuid="{{ level.uuid }}" data-banking="{{ str(options.banking).lower() }}" data-buyout="{{ level.buyout }}">
                         <i class="fa fa-unlock"></i>
                         {{ _("Unlock") }}
                     </a>

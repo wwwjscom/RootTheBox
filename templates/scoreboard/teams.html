@@ -5,6 +5,7 @@
 <script src="/static/js/pages/scoreboard/teams.js"></script>
 <script src="/static/js/pages/anchor.js"></script>
 <link href="/static/css/pages/public/summary.css" rel="stylesheet" />
+<link href="/static/css/pages/scoreboard/teams.css" rel="stylesheet" />
 {% end %}
 {% block title %}
 {% from tornado.options import options %}
@@ -16,10 +17,11 @@
 {% from models.Team import Team %}
 {% from models.GameLevel import GameLevel %}
 
-<div class="row-fluid">
+<div class="scoreboard-teams">
+<div class="row">
     {% if not hide_scoreboard %}
-    <div class="span2" />
-        <ul id="navWrapper" class="nav nav-tabs nav-stacked affix well">
+    <div class="col-md-2" />
+        <ul id="navWrapper" class="nav nav-tabs nav-stacked affix card card-body">
             <center>
                 <strong>
                     <i class="fa fa-group"></i>
@@ -31,7 +33,7 @@
                 {% set rank = page * display - display + t_index + 1 %}
                 <li>
                     <a href="#{{ team.uuid }}">
-                        <i class="icon-chevron-right"></i>
+                        <i class="fa fa-chevron-right"></i>
                         &nbsp;&nbsp;#{{ rank }} - {{ team.name }}
                     </a>
                 </li>
@@ -39,28 +41,27 @@
         </ul>
     </div>
 
-    <div class="span10">
+    <div class="col-md-10">
         <div style="float:right; margin-top: -15px;">
             {% if teamcount > 0 %}
                 {% set pcount = int(ceil(teamcount / float(display))) %}
                 
-                <div class="pagination" style="padding: 5px; margin-right: 75px">
-                    <ul>
+                <ul class="pagination" style="padding: 5px; margin-right: 75px">
                         {% if pcount > 1 %}
-                        <li {%if page==1 %}class="disabled" {%end%}><a {%if page !=1 %}href="?count={{display}}&page={{page-1}}"
+                        <li class="page-item{%if page==1 %} disabled{%end%}"><a class="page-link" {%if page !=1 %}href="?count={{display}}&page={{page-1}}"
                                 {%end%}>Prev</a></li>
                             {% for x in range(max(1,page-4), min(pcount+1, max(page+5, 10))) %}
-                            <li {%if page==x %}class="active" {%end%}><a {%if page !=x %}href="?count={{display}}&page={{x}}"
+                            <li class="page-item{%if page==x %} active{%end%}"><a class="page-link" {%if page !=x %}href="?count={{display}}&page={{x}}"
                                     {%end%}>{{x}}</a></li>
                             {% end %}
-                        <li {%if page==pcount %}class="disabled" {%end%}><a {%if page !=pcount
+                        <li class="page-item{%if page==pcount %} disabled{%end%}"><a class="page-link" {%if page !=pcount
                                 %}href="?count={{display}}&page={{page+1}}" {%end%}>Next</a></li>
                         {% end %}
-                        <li class="disabled">
-                            <a>&nbsp;{% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %} {{ _("per page") }}</a>
+                        <li class="page-item disabled">
+                            <a class="page-link">&nbsp;{% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %} {{ _("per page") }}</a>
                         </li>
-                        <li>
-                            <select id="page_count" style="width: 80px;">
+                        <li class="page-item">
+                            <select class="form-select" id="page_count" style="width: 80px;">
                                 {% if display!= 10 and display!=25 and display!=50 and display!=100 and display!=250 %}
                                     <option value={{display}} selected>{{display}}</option>
                                 {%end%}
@@ -72,13 +73,12 @@
                             </select>
                         </li>
                     </ul>
-                </div>
             {% end %}
         </div>
         {% if timer %}
         <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-right: 100px;"></h3>
         {% end %}
-        <h1 class="offset1">
+        <h1 class="offset-md-1">
             <i class="fa fa-group"></i>
             {% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %}
         </h1>
@@ -102,7 +102,7 @@
                         <div class="container">
                             {% for user in team.members %}
                                 {% if not user.locked %}
-                                    <div class="span2" align="middle">
+                                    <div class="col-md-2" align="middle">
                                         <a href="/user?id={{user.uuid}}">
                                             <h5>{{ user.handle }}</h5>
                                             <img src="/avatars/{{ user.avatar }}" class="img-polaroid" align="middle" />
@@ -135,9 +135,9 @@
                                                     {% end %}
                                                     <div class="progress" style="height: 8px; margin-bottom: 8px; background-color: #424242;" title="{% if len(GameLevel.all()) > 1 %}{{ level.name }} &ndash; {% end %}{% if len(team.level_flags(level.number)) != 0 %}{{ int(( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100) }}%{% else %}0%{% end %}">
                                                         {% if len(team.level_flags(level.number)) != 0 %}
-                                                            <div class="bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;"></div>
+                                                            <div class="progress-bar minibar" style="width: {{ ( len(team.level_flags(level.number)) /  float(len(level.flags)) ) * 100.0 }}%;"></div>
                                                         {% else %}
-                                                            <div class="bar minibar" style="width: 0%;"></div>
+                                                            <div class="progress-bar minibar" style="width: 0%;"></div>
                                                         {% end %}
                                                     </div>
                                                 </div>
@@ -182,5 +182,6 @@
     {% else %}
         <h1 id="timercount_hidescoreboard" class="timercount"></h1>
     {% end %}
+</div>
 </div>
 {% end %}

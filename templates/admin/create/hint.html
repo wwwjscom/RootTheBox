@@ -20,43 +20,43 @@
     <br />
     {% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
-        <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <h4 class="alert-heading">{{_("ERROR")}}</h4>
             {{ error }}
         </div>
         {% end %}
     {% end %}
-    <div class="well">
+    <div class="card card-body">
             <div class="row">
-                <div class="span4">
+                <div class="col-md-4">
                 <form class="form-horizontal" action="/admin/create/hint" method="post">
                     {% raw xsrf_form_html() %}
-                    <div class="control-group">
-                        <label class="control-label" for="price">{{_("Cost")}}</label>
-                        <div class="controls">
-                            <input autofocus required id="price" name="price" min="0" type="number" placeholder="{% if options.banking %}{{_('$')}} {{_('Price')}}{% else %}{{_('Points')}}{% end %}"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="price">{{_("Cost")}}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" autofocus required id="price" name="price" min="0" type="number" placeholder="{% if options.banking %}{{_('$')}} {{_('Price')}}{% else %}{{_('Points')}}{% end %}"
                                     rel="popover"
-                                    data-original-title="{{_('Cost')}}"
-                                    data-content="{{_('The cost to take the hint.  Can be >= 0.')}}">
+                                    data-bs-title="{{_('Cost')}}"
+                                    data-bs-content="{{_('The cost to take the hint.  Can be >= 0.')}}">
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="description">{{_("Description")}}</label>
-                        <div class="controls">
-                            <textarea required class="toolbar" id="description" maxlength="4096" rows="5" name="description" type="text" placeholder="{{_('Hint')}}"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="description">{{_("Description")}}</label>
+                        <div class="col-sm-9">
+                            <textarea required class="toolbar form-control" id="description" maxlength="4096" rows="5" name="description" type="text" placeholder="{{_('Hint')}}"
                                     rel="popover"
-                                    data-original-title="{{_('Description')}}"
-                                    data-html="true"
-                                    data-content="{{_('This is the description')}} [Max: 4096 {{_('Characters')}}].<br/><br/>{{_('Supports')}} Markdown (GitHub Style)">
+                                    data-bs-title="{{_('Description')}}"
+                                    data-bs-html="true"
+                                    data-bs-content="{{_('This is the description')}} [Max: 4096 {{_('Characters')}}].<br/><br/>{{_('Supports')}} Markdown (GitHub Style)">
                             </textarea>
                         </div>
                     </div>
                     {% if not box %}
-                        <div class="control-group">
-                            <label class="control-label" for="box_uuid">{{_("Box")}}</label>
-                            <div class="controls">
-                                <select name="box_uuid">
+                        <div class="row mb-3">
+                            <label class="col-sm-3 col-form-label" for="box_uuid">{{_("Box")}}</label>
+                            <div class="col-sm-9">
+                                <select class="form-select" name="box_uuid">
                                     <option value=""></option>
                                     {% for thebox in sorted(Box.all()) %}
                                         <option value="{{ thebox.uuid }}">{{ thebox.name }}</option>
@@ -68,10 +68,10 @@
                         <input id="box_uuid" name="box_uuid" value="{{ box.uuid }}" type="hidden" />
                     {% end %}
                     {% if box %}
-                        <div class="control-group">
-                            <label class="control-label" for="flag_uuid">{{_("Flag")}}</label>
-                            <div class="controls">
-                                <select name="flag_uuid">
+                        <div class="row mb-3">
+                            <label class="col-sm-3 col-form-label" for="flag_uuid">{{_("Flag")}}</label>
+                            <div class="col-sm-9">
+                                <select class="form-select" name="flag_uuid">
                                     <option value=""></option>
                                     {% for flag in sorted(box.flags) %}
                                         <option value="{{ flag.uuid }}">{{ flag.name }}</option>
@@ -80,14 +80,14 @@
                             </div>
                         </div>
                     {% end %}
-                    <div class="control-group">
-                        <div class="controls">
+                    <div class="row mb-3">
+                        <div class="col-sm-9">
                             <button class="btn btn-primary" type="submit">{{_("Create Hint")}}</button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="offset3 span4">
+            <div class="offset-md-3 col-md-4">
                 {% if box %}
                 <p>
                     <blockquote>

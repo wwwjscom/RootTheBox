@@ -1,0 +1,254 @@
+@charset "UTF-8";
+/*!
+ * "386" theme for Root the Box -- ported from the original Bootstrap 2.3.1
+ * theme (386.css/386.responsive.css) to Bootstrap 5.3.3.
+ *
+ * This is a retro DOS "blue screen" text-mode look: navy background,
+ * light-grey monospace text, yellow links, cyan page headers, magenta
+ * h4s, and green success accents -- the classic Fixedsys/EGA palette.
+ * (Note: despite sometimes being described as a "green terminal" theme,
+ * the original stylesheet's actual palette is DOS blue-screen, not
+ * green-on-black; this port preserves the original's real colors.)
+ *
+ * Ported as a thin skin layered on the vendored Bootstrap 5 base
+ * (bootstrap.min.css) rather than re-implementing Bootstrap 2's grid/
+ * component CSS -- only the distinctive color/font/shape rules are
+ * carried over, re-targeted at Bootstrap 5's selectors. Structural-only
+ * BS2 rules (grid math, clearfixes, vendor-prefixed gradients, IE hacks)
+ * were not ported; Bootstrap 5's own base supplies the modern equivalent.
+ * static/js/themes/386.js (the CRT boot-scan animation) is unchanged --
+ * it is plain DOM/CSS and has no Bootstrap-version dependency.
+ */
+@import url("/static/css/themes/bootstrap.min.css");
+
+@font-face {
+  font-family: "DOS";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/static/font/Fixedsys500c.eot");
+  src: local("☺"), url("/static/font/Fixedsys500c.woff") format("woff"), url("/static/font/Fixedsys500c.ttf") format("truetype"), url("/static/font/Fixedsys500c.svg") format("svg");
+}
+
+:root, [data-bs-theme] {
+  --bs-body-font-family: DOS, Monaco, Menlo, Consolas, "Courier New", monospace;
+  --bs-body-bg: #000084;
+  --bs-body-color: #bbbbbb;
+  --bs-border-radius: 0;
+  --bs-border-radius-sm: 0;
+  --bs-border-radius-lg: 0;
+}
+
+body {
+  font-family: DOS, Monaco, Menlo, Consolas, "Courier New", monospace;
+  background-color: #000084;
+  color: #bbbbbb;
+}
+
+a {
+  color: #fefe54;
+  text-decoration: none;
+}
+a:hover,
+a:focus {
+  color: #fefe54;
+  background: #aa5500;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff;
+  font-weight: normal;
+  text-transform: none;
+}
+h1 { text-transform: uppercase; }
+h3::before { content: ">>> "; }
+h3::after { content: " <<<"; }
+h4 { color: #fe54fe; }
+small, .text-body-secondary { color: #bbbbbb; }
+
+.lead {
+  padding: 9px 14px;
+  color: #ffffff;
+  border: 2px solid #bbbbbb;
+}
+
+hr { border-top: 0; border-bottom: 2px solid #ffffff; }
+
+blockquote {
+  border-left: 5px solid #bbbbbb;
+}
+blockquote small { color: #bbbbbb; }
+
+code, pre {
+  font-family: DOS, Monaco, Menlo, Consolas, "Courier New", monospace;
+}
+code {
+  color: #ffffff;
+  background-color: #000000;
+}
+pre {
+  color: #555555;
+  background-color: #000000;
+  border: 0;
+  border-radius: 0;
+}
+
+.page-header {
+  background: #00aaaa;
+  padding: 20px;
+}
+.page-header h1 { color: #000000; }
+
+/* Buttons: the original theme renders every semantic variant as the
+   same flat grey/black "system button" with a hard drop shadow. */
+.btn {
+  color: #000000;
+  background-color: #bbbbbb;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 6px 6px 0 #000000;
+}
+.btn:hover, .btn:focus, .btn:active {
+  color: #000000;
+  background-color: #ffffff;
+}
+.btn-primary, .btn-secondary, .btn-success, .btn-danger,
+.btn-warning, .btn-info, .btn-light, .btn-dark {
+  color: #000000;
+  background-color: #bbbbbb;
+  border-color: #000000;
+}
+.btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn-danger:hover,
+.btn-warning:hover, .btn-info:hover, .btn-light:hover, .btn-dark:hover {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+/* Forms: bracket-style light-grey fields on the navy background. */
+.form-control, .form-select {
+  color: #000000;
+  background-color: #bbbbbb;
+  border: 0;
+  border-bottom: 2px solid #000000;
+  border-radius: 0;
+  font-family: DOS, Monaco, Menlo, Consolas, "Courier New", monospace;
+}
+.form-control:focus, .form-select:focus {
+  color: #000000;
+  background-color: #ffffff;
+  border-color: #000000;
+  box-shadow: none;
+}
+.form-check-input {
+  border-radius: 0;
+}
+label, .form-label { color: #ffffff; }
+
+/* Tables */
+.table {
+  color: #bbbbbb;
+  --bs-table-color: #bbbbbb;
+  --bs-table-bg: transparent;
+  --bs-table-border-color: #bbbbbb;
+}
+.table > :not(caption) > * > * { background-color: transparent; }
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  --bs-table-accent-bg: rgba(187, 187, 187, 0.08);
+  color: #bbbbbb;
+}
+
+/* Alerts (preserving the original's colors, including its own
+   black-on-black .alert-info -- a quirk inherited from the source
+   theme, not introduced by this port). */
+.alert {
+  color: #ffffff;
+  background-color: #00aaaa;
+  border: 1px solid #00aa8e;
+  border-radius: 0;
+}
+.alert-success { color: #55ff55; background-color: #000000; border-color: #000000; }
+.alert-danger  { color: #ffffff; background-color: #aa0000; border-color: #aa001c; }
+.alert-warning { color: #000000; background-color: #fefe54; border-color: #aa5500; }
+.alert-info    { color: #000000; background-color: #000000; border-color: #000000; }
+
+/* Cards (BS5 replacement for the BS2 "well") */
+.card {
+  background-color: #000000;
+  border: 1px solid #000000;
+  border-radius: 0;
+  color: #bbbbbb;
+}
+.card-body { border-radius: 0; }
+
+/* Badges (BS2 .label/.badge) */
+.badge, .text-bg-primary, .text-bg-secondary {
+  color: #ffffff;
+  background-color: #bbbbbb !important;
+}
+.text-bg-warning { color: #ffffff; background-color: #a85400 !important; }
+.text-bg-success { color: #000000; background-color: #55ff55 !important; }
+.text-bg-info    { color: #ffffff; background-color: #000000 !important; }
+.text-bg-danger  { color: #ffffff; background-color: #aa0000 !important; }
+.text-bg-dark    { color: #ffffff; background-color: #555555 !important; }
+
+/* Navbar */
+.navbar {
+  background-color: #bbbbbb !important;
+}
+.navbar .navbar-brand {
+  color: #000084 !important;
+}
+.navbar .nav-link {
+  color: #000000 !important;
+}
+.navbar .nav-link:hover,
+.navbar .nav-link:focus,
+.navbar .nav-item.active .nav-link {
+  color: #bbbbbb !important;
+  background-color: #000000;
+}
+.navbar-toggler {
+  border-color: #000000;
+}
+
+.dropdown-menu {
+  background-color: #bbbbbb;
+  border: 1px solid #000000;
+  border-radius: 0;
+}
+.dropdown-item {
+  color: #000000;
+}
+.dropdown-item:hover, .dropdown-item:focus {
+  color: #bbbbbb;
+  background-color: #000000;
+}
+.dropdown-item.active, .dropdown-item:active {
+  color: #000000;
+  background-color: #fefe54;
+}
+
+/* Modals: the source theme left these at Bootstrap's stock look, so
+   only the border radius is squared off to match the rest of the UI. */
+.modal-content { border-radius: 0; }
+
+/* Pagination */
+.page-link {
+  color: #000000;
+  background-color: #bbbbbb;
+  border: 1px solid #000000;
+  border-radius: 0;
+}
+.page-link:hover { color: #bbbbbb; background-color: #000000; }
+.page-item.active .page-link {
+  color: #000000;
+  background-color: #fefe54;
+  border-color: #000000;
+}
+.page-item.disabled .page-link {
+  color: #777777;
+  background-color: #bbbbbb;
+}
+
+.close, .btn-close {
+  opacity: 0.6;
+}
