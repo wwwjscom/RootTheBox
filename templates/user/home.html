@@ -237,7 +237,7 @@
     </div>
 
     {% if options.teams and team and not visitor %}
-    <div class="col-md-5 card card-body" style="width: 46%;">
+    <div class="col-md-5 card card-body">
         <h2>
             <i class="fa fa-group"></i>
             {{ _("Team Information") }}
@@ -254,7 +254,7 @@
     </div>
     {% end %}
 
-    <div class="col-md-5 card card-body" style="width: 46%;">
+    <div class="col-md-5 card card-body">
         <h2>
             <i class="fa fa-flag"></i> 
             {% if options.teams %}{{ _("Team") }} {% end %}{{ _("Mission Progress") }}
@@ -341,7 +341,7 @@
     </div>
         {% if options.teams %}
         
-        <div class="col-md-5 card card-body" style="width: 46%;">
+        <div class="col-md-5 card card-body">
             <h2>
                 <i class="fa fa-flag"></i> 
                 {{ _("Player") }} {{ _("Mission Progress") }}

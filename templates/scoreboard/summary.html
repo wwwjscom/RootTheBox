@@ -16,11 +16,11 @@
     {% from math import ceil %}
     {% if not hide_scoreboard %}
     <div class="scoreboard-summary">
-    <div class="row">
-        <div style="float:right; margin-top: -15px; margin-right: 4.75%;">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+        <div class="order-last ms-auto">
             {% set pcount = ceil(teamcount / display) %}
             <div id="parameters" data-count="{{display}}" data-page="{{page}}" style="visibility: hidden;"></div>
-            <ul class="pagination" style="padding: 5px; margin-right: 110px">
+            <ul class="pagination mb-0">
                     {% if pcount > 1 %}
                     <li class="page-item{%if page==1 %} disabled{%end%}"><a class="page-link" {%if page !=1 %}href="?count={{display}}&page={{page-1}}"
                             {%end%}>Prev</a></li>
@@ -35,7 +35,7 @@
                         <a class="page-link">&nbsp;{% if options.teams %}{{ _("Teams") }}{% else %}{{ _("Players") }}{% end %} {{ _("per page") }}</a>
                     </li>
                     <li class="page-item">
-                        <select class="form-select" id="page_count" style="width: 80px;">
+                        <select class="form-select" id="page_count" style="width: auto;">
                             {% if display!= 10 and display!=25 and display!=50 and display!=100 and display!=250 %}
                                 <option value={{display}} selected>{{display}}</option>
                             {%end%}
@@ -49,9 +49,9 @@
                 </ul>
         </div>
         {% if timer %}
-        <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-right: 100px;"></h3>
+        <h3 id="timercount" class="order-last text-danger mb-0" title="Scoreboard Countdown"></h3>
         {% end %}
-        <h1 class="offset-md-1">
+        <h1>
             <i class="fa fa-bar-chart-o"></i>
             {% if scoreboard_top > 0 %}{{ _("Top") }} {{ scoreboard_top }} {% end %}{{ _("Scoreboard") }}
         </h1>

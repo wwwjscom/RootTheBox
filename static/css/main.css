@@ -1,15 +1,32 @@
+/* Site-wide layout and legacy helper classes. Colors, type and component
+   styling live in the theme (static/css/themes/rtb.css). */
+
+/* Room for the fixed-top navbar; the footer sits at the bottom of the page. */
 body {
-    padding-top: 60px;
-    padding-bottom: 40px;
+    padding-top: 4.5rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
-/* Bootstrap 5 grid rows are flexbox (BS2 used floats), so a column that is also
-   an .alert would stretch to the row's full height. An alert should size to its
-   content; align-self is a no-op when the alert isn't a flex/grid child. */
+body > .container-fluid {
+    flex: 1 0 auto;
+}
+footer {
+    font-size: 0.8125rem;
+    padding: 1rem 1.5rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--bs-border-color);
+    color: var(--bs-secondary-color);
+}
+footer .footer-extra {
+    float: right;
+}
+/* Grid rows are flex: an alert that is also a column should size to its
+   content rather than stretch to the row's height. */
 .alert {
     align-self: flex-start;
 }
-/* BS2 modal headers place the close button before the title; BS5 modal-header is
-   flex, so order the close to the right and keep the (bare <h3>) titles tidy. */
+/* Many modal headers put the close button before the title; keep it right. */
 .modal-header .btn-close {
     order: 1;
     margin: -0.5rem -0.5rem -0.5rem auto;
@@ -21,43 +38,6 @@ body {
 .modal-header > h5 {
     margin: 0;
 }
-/* Form-horizontal labels: BS2's .control-label floated right-aligned in a
-   fixed 160px gutter beside its input column; BS5's .col-form-label defaults
-   to left-aligned with small padding, so every settings/create/config form
-   lost its label alignment in the migration. This is layout, not color/theme,
-   so it lives here (main.css) rather than the Cyborg-only theme file. */
-.form-horizontal .col-form-label {
-    float: left;
-    width: 160px;
-    padding-top: 5px;
-    text-align: right;
-    line-height: 20px;
-}
-footer {
-    font-size: 75%;
-    position: fixed;
-    bottom: -30px;
-    width: 100%;
-}
-.footernav {
-    /* BS2's ".navbar-inner" gave the footer bar its own dark surface, border,
-       and min-height; that class isn't used in the BS5 markup, so the bar
-       collapsed to a single text line. Restore the original bar geometry
-       (min-height 50px, content-box, 1px border) so the pinned footer's
-       visible height (~52px) matches the original. */
-    padding: 5px 20px;
-    min-height: 50px;
-    box-sizing: content-box;
-    border: 1px solid #000;
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
-    background-color: #020202;
-}
-/* BS2's own reset CSS made every <img> responsive by default
-   (`img{max-width:100%}`); BS5 dropped that global default (you opt in per
-   image with `.img-fluid` instead). This 500px value was always meant as a
-   cap, not a forced width -- restore max-width/height:auto so it shrinks
-   inside a narrower container instead of overflowing it. */
 .img-polaroid {
     width: 500px;
     max-width: 100%;
@@ -69,7 +49,7 @@ footer {
 }
 .descriptioncol {
     white-space: pre-wrap;
-    word-wrap: break-word; 
+    word-wrap: break-word;
     max-width: 350px;
 }
 .levelheader {
@@ -77,65 +57,47 @@ footer {
     vertical-align: middle;
 }
 .statcolumn {
-    text-align: center !important;
-    vertical-align: middle  !important;
+    text-align: center;
+    vertical-align: middle;
     width: 100px;
 }
 .centercolumn {
-    text-align: center !important;
-    vertical-align: middle  !important;
+    text-align: center;
+    vertical-align: middle;
 }
 .wordbreak {
-    word-wrap: break-word; 
+    word-wrap: break-word;
 }
 .successtext {
     font-size: 225%;
-    color: green;
+    color: var(--bs-success);
 }
 .disabledtext {
     font-size: 275%;
 }
 .avatarused {
-    color: white; 
-    font-size: 23pt; 
-    position: absolute; 
-    top: -11px; 
+    color: #fff;
+    font-size: 1.75rem;
+    position: absolute;
+    top: -11px;
     right: -5px;
 }
 .avatarused-top {
-    font-size: 16pt; 
-    position: absolute; 
-    top: -6px; 
+    font-size: 1.25rem;
+    position: absolute;
+    top: -6px;
     right: -1px;
 }
-
 .preformatted {
-    font-family: monospace;
+    font-family: var(--bs-font-monospace);
     font-size: 95%;
     white-space: pre-wrap;
     display: block;
     margin: 1em 0;
 }
-
 .markdown p {
     display: inline;
 }
-
 .markdown ul {
-    margin-bottom: 0px;
-}
-
-code,
-pre {
-    background-color: #000 !important;
-    font-family: unset !important;
-    font-size: unset !important;
-    padding: 0px 6px 1px 5px !important;
-    white-space: pre-wrap !important;
-
-}
-
-code {
-    color: #f52323 !important;
-    border: 1px solid #979797 !important;
+    margin-bottom: 0;
 }

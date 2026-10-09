@@ -25,15 +25,6 @@
   }
 </style>
 <div id="review-mode-border"></div>
-<script>
-  $(function() {
-    var footernav = document.querySelector('.footernav');
-    if (footernav) {
-      var visible = window.innerHeight - footernav.getBoundingClientRect().top;
-      document.getElementById('review-mode-border').style.bottom = Math.max(0, visible) + 'px';
-    }
-  });
-</script>
 {% end %}
 {% import os %}
 {% from models.Penalty import Penalty %}

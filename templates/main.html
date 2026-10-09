@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
     <head>
         <meta charset="utf-8">
         <title>{% block title %} handler.application.settings['game_name'] {% end %}</title>
@@ -41,11 +41,8 @@
         </div><!--/.fluid-container-->
         <footer>
             {% from tornado.options import options %}
-            <hr style="margin-bottom: -1px;">
-            <div class="footernav">
-                Powered by <a href="https://github.com/wwwjscom/RootTheBox" target="_blank">Root the Box</a> &copy; {{ datetime.date.today().year }}{% if options.privacy_policy_link %} • <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a>{% end %} • <a href="https://github.com/moloch--/RootTheBox" target="_blank">{{ _("Original Repo") }}</a>
-                <span style="float:right; padding-right: 5px;">{% raw options.org_footer %}</span>
-            </div>
+            Powered by <a href="https://github.com/wwwjscom/RootTheBox" target="_blank">Root the Box</a> &copy; {{ datetime.date.today().year }}{% if options.privacy_policy_link %} • <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a>{% end %} • <a href="https://github.com/moloch--/RootTheBox" target="_blank">{{ _("Original Repo") }}</a>
+            <span class="footer-extra">{% raw options.org_footer %}</span>
          </footer>
    
     </body>

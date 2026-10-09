@@ -227,7 +227,7 @@
                     </form>
                 </div>
             {% end %}
-            {% if options.allow_user_to_change_theme %}
+            {% if options.allow_user_to_change_theme and len(Theme.all()) > 1 %}
             <div class="col-md-3 card card-body">
                 <form action="/user/settings/theme" method="post">
                     {% raw xsrf_form_html() %}

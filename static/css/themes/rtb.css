@@ -1,0 +1,18 @@
+/*
+ * Root the Box "Default" theme: design layer on top of vendor Bootstrap 5.3
+ * (themes/bootstrap.min.css). Dark mode is set on <html data-bs-theme="dark">
+ * in templates/main.html. Customize through Bootstrap's CSS variables; avoid
+ * !important and pixel-calibrated layout.
+ */
+
+[data-bs-theme="dark"] {
+    --rtb-accent: #22b5e8;
+    --rtb-accent-rgb: 34, 181, 232;
+
+    --bs-primary: var(--rtb-accent);
+    --bs-primary-rgb: var(--rtb-accent-rgb);
+    --bs-link-color: var(--rtb-accent);
+    --bs-link-color-rgb: var(--rtb-accent-rgb);
+    --bs-link-hover-color: #6fd0f2;
+    --bs-link-hover-color-rgb: 111, 208, 242;
+}

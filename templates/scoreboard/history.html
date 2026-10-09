@@ -16,17 +16,18 @@
             setGraphScale("{% if options.banking %}{{ _('Money') }}{% else %}{{ _('Points') }}{% end %}");
             setGraphSymbol("{% if options.banking %}{{ _('$') }}{% end %}");
         </script>
-        <div class="row">
+        <div class="history-page">
             {% if timer %}
-            <h3 id="timercount" title="Scoreboard Countdown" style="float: right; color: red; margin-top: 3px; margin-bottom: 0px; margin-right: 150px;"></h3>
+            <h3 id="timercount" class="float-end text-danger mb-0" title="Scoreboard Countdown"></h3>
             {% end %}
-            <h1 class="offset-md-1" style="margin-bottom: 0px;">
+            <h1>
                 <i class="fa fa-bar-chart-o"></i>
                 {{ _("Charts") }}
             </h1>
             <br />
             <div class="row">
-            <div class="card card-body col-md-10 offset-md-1">
+            <div class="col-12">
+            <div class="card card-body">
                 <nav class="navbar navbar-expand bg-dark rounded" data-bs-theme="dark">
                     <div class="container-fluid">
                         <a class="navbar-brand" href="#">
@@ -80,20 +81,21 @@
                     <!-- Graph goes here - used for several graphs, not just bots -->
                 </div>
             </div>
+            </div>
         </div>
-            <div id="pie_graphs" class="row">
-                <div class="card card-body col-md-5 offset-md-1">
+            <div id="pie_graphs" class="row mt-3">
+                <div class="col-md-6"><div class="card card-body">
                     <div id="pie_flags" style="height:300px;" data-name="{{ _('Flags Captured') }} ({{ _('Top 10') }})">
                         <!-- Pie Chart Here -->
                     </div>
-                </div>
-                <div class="card card-body col-md-5">
+                </div></div>
+                <div class="col-md-6"><div class="card card-body">
                     <div id="pie_money" style="height:300px;" 
                         data-name="{% if options.banking %}{{ _('Bank Account') }}{% else %}{{ _('Score') }}{% end %}  ({{ _('Top 10') }})" 
                         data-symbol="{% if options.banking %}{{ _('$') }}{% end %}">
                         <!-- Pie Chart Here -->
                     </div>
-                </div>
+                </div></div>
             </div>
         </div>
     {% else %}
