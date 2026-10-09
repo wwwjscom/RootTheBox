@@ -441,3 +441,48 @@ class TestGameStartedDecorator(unittest.TestCase):
 #    def setUp(self):
 #        self.username = 'foobar'
 #        self.password = 'testpassword123456'
+
+
+class TestPenaltyNote(unittest.TestCase):
+    """The wrong-answer penalty notice shown in flag submission forms"""
+
+    def setUp(self):
+        from tornado.template import Loader
+
+        self.template = Loader("templates").load("missions/penalty_note.html")
+        self._saved = {
+            name: getattr(options, name)
+            for name in (
+                "penalize_flag_value",
+                "flag_penalty_cost",
+                "flag_start_penalty",
+                "flag_stop_penalty",
+            )
+        }
+        options.flag_penalty_cost = 20
+        options.flag_start_penalty = 2
+        options.flag_stop_penalty = 5
+
+    def tearDown(self):
+        for name, value in self._saved.items():
+            setattr(options, name, value)
+
+    def _render(self, admin=False, team=True):
+        user = mock.Mock()
+        user.is_admin.return_value = admin
+        return self.template.generate(
+            user=user, team=team or None, _=lambda text: text
+        ).decode()
+
+    def test_shown_when_penalties_enabled(self):
+        options.penalize_flag_value = True
+        body = self._render()
+        self.assertIn("Wrong answers cost 20%", body)
+        self.assertIn("2nd attempt through your 4th", body)
+
+    def test_hidden_when_disabled_for_admins_or_without_team(self):
+        options.penalize_flag_value = False
+        self.assertNotIn("penalty-note", self._render())
+        options.penalize_flag_value = True
+        self.assertNotIn("penalty-note", self._render(admin=True))
+        self.assertNotIn("penalty-note", self._render(team=False))

@@ -3,7 +3,7 @@
 {% block title %}{{ _("Registration") }}{% end %}
 
 {% block header %}
-    <link rel="stylesheet" href="/static/css/pages/public/registration.css" type="text/css" />
+    <link rel="stylesheet" href="/static/css/pages/public/auth.css" type="text/css" />
     <script src="/static/js/pages/public/registration.js"></script>
 {% end %}
 
@@ -12,8 +12,6 @@
     {% from tornado.options import options %}
     {% from libs.XSSImageCheck import filter_avatars %}
     {% from libs.XSSImageCheck import existing_avatars %}
-    {% from models.Team import Team %}
-    <!-- Select Avatar -->
     {% if options.teams %}
         {% set dir = "user" %}
     {% else %}
@@ -21,244 +19,142 @@
     {% end %}
     {% set avatars = filter_avatars("user") %}
     {% set existing = existing_avatars(dir) %}
-    <div id="change-user-avatar-modal" class="modal fade" style="display: none; {% if len(avatars) > 0 %}width: 750px; margin-left: -375px;{% end %}" tabindex="-1">
-    <div class="modal-dialog">
+    {% if len(avatars) > 0 %}
+    <div id="change-user-avatar-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
         <div class="modal-header">
+            <h3 class="modal-title fs-5">{{ _("Select Avatar") }}</h3>
             <button type="button" id="avatarclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            <h3>{{ _("Select Avatar") }}</h3>
         </div>
         <div class="modal-body">
-            {% raw xsrf_form_html() %}
-            {% if len(avatars) > 0 %}
-                <div style="border-top: solid 1px rgb(92, 92, 92); margin-top: -5px; margin-bottom: 20px;"></div>
-                <span style="float: right; padding-right: 10px; margin-top: -15px; font-size: small;"><i class="fa fa-certificate"></i> {{ _("indicates use by another player") }}</span>
-                <br>
-                {% for avatar in avatars[::3] %}
-                    <div class="row">
-                        <div class="col-md-3" style="position: relative;">
-                            <center>
-                                {% if avatar in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
-                                <a href="#" class="useravatarimg" value="{{avatar}}"><img src="/avatars/{{avatar}}"  class="img-polaroid" style="width: 200px;"></a>
-                            </center>
-                        </div>
-                        {% if avatars.index(avatar) + 1 < len(avatars) %}
-                            {% set avatar1 = avatars[avatars.index(avatar) + 1] %}
-                            <div class="col-md-3" style="position: relative;">
-                                <center>
-                                    {% if avatar1 in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
-                                    <a href="#" class="useravatarimg" value="{{avatar1}}"><img src="/avatars/{{avatar1}}"  class="img-polaroid" style="width: 200px;"></a>
-                                </center>
-                            </div>
-                        {% end %}
-                        {% if avatars.index(avatar) + 2 < len(avatars) %}
-                            {% set avatar2 = avatars[avatars.index(avatar) + 2] %}
-                            <div class="col-md-3" style="position: relative;">
-                                <center>
-                                    {% if avatar2 in existing %}<i class="fa fa-certificate avatarused"></i><i class="fa fa-certificate avatarused-top"></i>{% end %}
-                                    <a href="#" class="useravatarimg" value="{{avatar2}}"><img src="/avatars/{{avatar2}}"  class="img-polaroid" style="width: 200px;"></a>
-                                </center>
-                            </div>
-                        {% end %}
-                    </div>
-                    <br/>
+            <p class="small text-body-secondary"><i class="fa fa-certificate text-warning"></i> {{ _("indicates use by another player") }}</p>
+            <div class="row row-cols-2 row-cols-md-3 g-3">
+                {% for avatar in avatars %}
+                <div class="col">
+                    <a href="#" class="useravatarimg avatar-choice" value="{{ avatar }}">
+                        {% if avatar in existing %}<i class="fa fa-certificate avatar-used"></i>{% end %}
+                        <img src="/avatars/{{ avatar }}" alt="">
+                    </a>
+                </div>
                 {% end %}
-            {% end %}
+            </div>
         </div>
-    
     </div>
-    </div></div>
+    </div>
+    </div>
+    {% end %}
 {% end %}
 
 {% block content %}
-    <div class="container registration-page">
-        <h1>
-            <i class="fa fa-pencil"></i>
-            {{ _("Registration") }}
-        </h1>
-        <br />
-        {% if errors is not None and len(errors) != 0 %}
-            {% for error in errors %}
-                <div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    <h4 class="alert-heading">{{ _("ERROR") }}</h4>
-                    {{ error }}
-                </div>
+<div class="auth-page">
+    <div class="card auth-card{% if not suspend %} auth-card-wide{% end %}">
+        <div class="card-body">
+            <div class="auth-icon"><i class="fa fa-user-plus"></i></div>
+            <h1 class="auth-title">{{ _("Create your account") }}</h1>
+            {% if errors is not None and len(errors) != 0 %}
+                {% for error in errors %}
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <h4 class="alert-heading">{{ _("ERROR") }}</h4>
+                        {{ error }}
+                    </div>
+                {% end %}
             {% end %}
-        {% end %}
-        <div class="registration-card {% if len(avatars) == 0 %}col-md-8 offset-md-1 {% end %}card card-body" style="position: relative;">
-        {% if not suspend %}
-            <legend>
-                {{ _("Welcome to the Scene") }}
-            </legend><!-- http://www.youtube.com/watch?v=xIs_5nfJKu4&list=PLC2FCB2871C396459 -->
+            {% if not suspend %}
             <form class="form-horizontal" action="/registration" method="post" enctype="multipart/form-data">
                 {% raw xsrf_form_html() %}
-                {% if len(avatars) > 0 %}
-                    {% set avatarimg = get_new_avatar("user", not options.teams) %}
-                    <div class="row mb-3" style="float: right; position: absolute; right: 30px; top: 40px;">
-                        <img id="avatarimage" src="/avatars/{{avatarimg}}" class="img-polaroid" style="width: 350px; height: 175px; object-fit: cover"/>
-                        <div class="col-sm-9" style="margin-top: 15px; margin-left: 0px;">
-                            <input id="user_avatar_select" name="user_avatar_select" type="hidden" value="{{avatarimg}}" />
-                            {% if len(avatars) > 0 %}<a data-bs-toggle="modal" class="btn btn-primary" href="#change-user-avatar-modal"> {{ _("Select New Avatar") }} </a>&nbsp;&nbsp;{% end %}
-                            <a id="uploadbutton" class="btn btn-primary" href="#">{{ _("Upload Avatar") }}</a>&nbsp;&nbsp;(w500 x h250)
-                            <input class="form-control" id="user-avatar" name="avatar" type="file" accept="image/bmp,image/jpeg,image/gif,image/png" style="display: none;"/>
+                <div class="auth-section-title">{{ _("Profile") }}</div>
+                <div class="row g-4">
+                    <div class="{% if len(avatars) > 0 %}col-md-7{% else %}col-12{% end %}">
+                        <div class="mb-3">
+                            <label class="form-label" for="handle"><i class="fa fa-user"></i> {{ _("Handle") }}</label>
+                            <input class="form-control" required id="handle" name="handle" maxlength="16" minlength="3" type="text"
+                                pattern="^[a-zA-Z0-9_\-\.]{3,16}$" autofocus>
+                            <div class="form-text">{{ _("Your public alias: 3-16 letters, numbers, _ - or .") }}</div>
                         </div>
-                        {% if options.use_recaptcha %}
-                        <br>
-                        {% module Recaptcha() %}
+                        <div class="mb-3">
+                            <label class="form-label" for="playername">{{ _("Player Name") }}</label>
+                            <input class="form-control" required id="playername" name="playername" maxlength="64" minlength="3" type="text">
+                            <div class="form-text">{{ _("Visible to game administrators") }}</div>
+                        </div>
+                        {% if options.require_email %}
+                        <div class="mb-3">
+                            <label class="form-label" for="email">{{ _("Email") }}</label>
+                            <input class="form-control" required id="email" name="email" maxlength="64" minlength="3" type="email"
+                                pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$">
+                        </div>
                         {% end %}
                     </div>
-                    
-                {% end %}
-                <div class="row mb-3">
-                    <label class="col-sm-3 col-form-label" for="handle">
-                        <i class="fa fa-user"></i>
-                        {{ _("Handle") }}
-                    </label>
-                    <div class="col-sm-9">
-                        <input class="form-control" required id="handle" name="handle" maxlength="16" minlength="3" placeholder="{{ _('Player Alias') }}" type="text"
-                            rel="popover" pattern="^[a-zA-Z0-9_\-\.]{3,16}$"
-                            data-bs-title="{{ _('Player Alias') }}"
-                            data-bs-content="{{_('Your handle must be 3-16 alphanumeric characters.  Underscore, dash, and dots allowed.')}}" />
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <label class="col-sm-3 col-form-label" for="playername">
-                        {{ _("Player Name") }}
-                    </label>
-                    <div class="col-sm-9">
-                        <input class="form-control" required id="playername" name="playername" maxlength="64" minlength="3" placeholder="{{_('Name')}}" type="text"
-                            rel="popover" pattern="^[a-zA-Z0-9 ]{3,64}$"
-                            data-bs-title="{{ _('Player Name') }}"
-                            data-bs-content="{{_('Your name, visible to game administrators.  Your name can be 3-64 alphanumeric characters')}}" />
-                    </div>
-                </div>
-                {% if options.require_email %}
-                <div class="row mb-3">
-                    <label class="col-sm-3 col-form-label" for="email">
-                        {{ _("Email") }}
-                    </label>
-                    <div class="col-sm-9">
-                        <input class="form-control" required id="email" name="email" maxlength="64" minlength="3" placeholder="{{ _('Email') }}" type="text"
-                            rel="popover" pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
-                            data-bs-title="{{_('Player Email')}}"
-                            data-bs-content="{{_('Your email, visible to game administrators.')}}" />
-                    </div>
-                </div>
-                {% end %}
-                <hr style="margin-right: 400px;">
-                {% if options.teams %}
-                    {% if options.public_teams %}
-                        <input type="radio" class="teammode form-check-input" name="teammode" value="join" checked><h5 style="display: inline;">{{ _("Join Existing Team") }}</h5>
-                        <input type="radio" class="teammode form-check-input" name="teammode" value="create"><h5 style="display: inline;">{{ _("Start a New Team") }}</h5>
-                        <br/><br/>
-                        <div id="teammode-create" style="display: none;">
-                            <div class="row mb-3">
-                                <label class="col-sm-3 col-form-label" for="team_name">{{ _("Team Name") }}</label>
-                                <div class="col-sm-9">
-                                    <input class="form-control" id="team-name" name="team_name" maxlength="24" minlength="3" type="text" placeholder="{{ _('Team Name') }}"
-                                        rel="popover" pattern="^[a-zA-Z0-9 _\-\.]{3,24}$"
-                                        data-bs-title="{{_('New Team Name')}}"
-                                        data-bs-content="{{_('Choose a name for your new team!')}} [3-24 {{_('Characters')}}]" >
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <label class="col-sm-3 col-form-label" for="motto">{{ _("Motto") }}</label>
-                                <div class="col-sm-9">
-                                    <input class="form-control" id="motto" name="motto" maxlength="32" type="text" placeholder="{{ _('Team Motto') }}"
-                                        rel="popover" pattern="^[a-zA-Z0-9 _\-\.]{,32}$"
-                                        data-bs-title="{{_('Team Motto')}}"
-                                        data-bs-content="{{_('Optional')}}: {{_('What is your teams motto?')}} [{{ _('Max') }}: 32 {{_('Characters')}}]">
-                                </div>
-                            </div>
+                    {% if len(avatars) > 0 %}
+                    {% set avatarimg = get_new_avatar("user", not options.teams) %}
+                    <div class="col-md-5">
+                        <label class="form-label">{{ _("Avatar") }}</label>
+                        <img id="avatarimage" src="/avatars/{{ avatarimg }}" class="avatar-preview mb-2" alt="">
+                        <input id="user_avatar_select" name="user_avatar_select" type="hidden" value="{{ avatarimg }}" />
+                        <input class="d-none" id="user-avatar" name="avatar" type="file" accept="image/bmp,image/jpeg,image/gif,image/png" />
+                        <div class="d-flex gap-2">
+                            <a data-bs-toggle="modal" class="btn btn-secondary btn-sm flex-fill" href="#change-user-avatar-modal">{{ _("Choose") }}</a>
+                            <a id="uploadbutton" class="btn btn-secondary btn-sm flex-fill" href="#">{{ _("Upload") }}</a>
                         </div>
-                    {% else %}
-                        <h5 style="margin-left: 20px; margin-bottom: 15px;">{{ _("Join Existing Team") }}</h5>
+                        <div class="form-text">{{ _("Uploads: 500 x 250 recommended") }}</div>
+                    </div>
                     {% end %}
-                    <div id="teammode-join" class="row mb-3">
-                        <label class="col-sm-3 col-form-label" for="team-code">{{ _("Team Code") }}</label>
-                        <div class="col-sm-9">
-                            <input class="form-control" id="team-code" name="team-code" type="text" placeholder="{{ _('Team Code') }}"
-                                rel="popover"
-                                data-bs-title="{{_('Team Code')}}"
-                                data-bs-content="{{_('Provide the code used to join an existing team.  Visible to other team members on their home page.')}}" >
+                </div>
+
+                <div class="auth-section">
+                    <div class="auth-section-title">{% if options.teams %}{{ _("Team") }}{% else %}{{ _("Player Profile") }}{% end %}</div>
+                    {% include "team_fields.html" %}
+                </div>
+
+                <div class="auth-section">
+                    <div class="auth-section-title">{{ _("Security") }}</div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="pass1">{{ _("Account Password") }}</label>
+                            <input class="form-control" required id="pass1" name="pass1" minlength="{{ options.min_user_password_length }}" type="password" autocomplete="new-password">
+                            <div class="form-text">{{ options.min_user_password_length }}+ {{ _("Characters") }}</div>
                         </div>
-                    </div>
-                {% else %}
-                    <div class="row mb-3">
-                        <label class="col-sm-3 col-form-label" for="motto">{{ _("Motto") }}</label>
-                        <div class="col-sm-9">
-                            <input class="form-control" id="motto" name="motto" maxlength="32" type="text" placeholder="{{ _('Motto') }}"
-                                rel="popover" pattern="^[a-zA-Z0-9_\-\.]{,32}$"
-                                data-bs-title="{{_('Motto')}}"
-                                data-bs-content="{{_('Optional')}}: {{_('What is your motto?')}} [{{ _('Max') }}: 32 {{_('Characters')}}]">
+                        <div class="col-md-6">
+                            <label class="form-label" for="pass2">{{ _("Confirm Account Password") }}</label>
+                            <input class="form-control" required id="pass2" name="pass2" minlength="{{ options.min_user_password_length }}" type="password" autocomplete="new-password">
                         </div>
-                    </div>
-                {% end %}
-                <hr style="margin-right: 400px;">
-                <div class="row mb-3">
-                    <label class="col-sm-3 col-form-label" for="pass1">{{ _("Account Password") }}</label>
-                    <div class="col-sm-9">
-                        <input class="form-control" required id="pass1" name="pass1" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Password') }}" type="password"
-                            autocomplete="off"
-                            rel="popover"
-                            data-bs-title="{{_('Password')}}"
-                            data-bs-content="{{_('Enter a complex password of')}} {{ options.min_user_password_length }}+ {{_('Characters')}}" />
+                        {% if options.banking and not set(["Password Security", "Federal Reserve"]).isdisjoint(options.allowed_market_items) %}
+                        <div class="col-md-6">
+                            <label class="form-label" for="bpass">{{ _("Bank Account Password") }}</label>
+                            <input class="form-control" required id="bpass" name="bpass" maxlength="{{ options.max_password_length }}" type="password" autocomplete="off">
+                            <div class="form-text">{{ _("Secures your in-game bank account. Do NOT use a real password.") }}</div>
+                        </div>
+                        {% end %}
+                        {% if options.restrict_registration %}
+                        <div class="col-md-6">
+                            <label class="form-label" for="regtoken">{{ _("Registration Token") }}</label>
+                            <input class="form-control font-mono" required id="regtoken" name="token" type="text" pattern="^[a-fA-F0-9]{1,6}$">
+                            <div class="form-text">{{ _("Get your registration token from reception") }}</div>
+                        </div>
+                        {% end %}
                     </div>
                 </div>
-                <div class="row mb-3">
-                    <label class="col-sm-3 col-form-label" for="pass2">{{ _("Confirm Account Password") }}</label>
-                    <div class="col-sm-9">
-                        <input class="form-control" required id="pass2" name="pass2" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Confirm Password') }}" type="password"
-                            autocomplete="off"
-                            rel="popover"
-                            data-bs-title="{{_('Confirm Password')}}"
-                            data-bs-content="{{_('Enter the same password as before')}}" />
-                    </div>
-                </div>
-                {% if options.banking and not set(["Password Security", "Federal Reserve"]).isdisjoint(options.allowed_market_items) %}
-					<div class="row mb-3">
-						<label class="col-sm-3 col-form-label" for="bpass1">{{ _("Bank Account Password") }}</label>
-						<div class="col-sm-9">
-							<input class="form-control" required id="bpass" name="bpass" maxlength="{{ options.max_password_length }}" placeholder="{{ _('Bank Account Password') }}" type="password"
-								autocomplete="off"
-								rel="popover"
-								data-bs-title="{{_('Password')}}"
-								data-bs-content="{{_('Used to secure your (in-game) bank account.')}} [{{ _('Max') }}: {{ options.max_password_length }} {{_('Characters')}}].  {{_('Please do NOT enter your real bank account password.')}}" />
-						</div>
-					</div>
-                {% end %}
-                {% if options.restrict_registration %}
-                    <div class="row mb-3">
-                        <label class="col-sm-3 col-form-label" for="token">{{ _("Registration Token") }}</label>
-                        <div class="col-sm-9">
-                            <input class="form-control" required id="regtoken" name="token" placeholder="{{ _('Token') }}" type="text"
-                                rel="popover" pattern="^[a-fA-F0-9]{1,6}$"
-                                data-bs-title="{{_('Registration Token')}}"
-                                data-bs-content="{{_('Get your registration token from reception')}}" />
-                        </div>
-                    </div>
+
+                {% if options.use_recaptcha %}
+                <div class="mt-4">{% module Recaptcha() %}</div>
                 {% end %}
                 {% if options.privacy_policy_link %}
-                    <div class="row mb-3">
-                        <label class="col-sm-3 col-form-label" for="privacy_policy_accept">{{ _("I accept the") }} <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a></label>
-                        <div class="col-sm-9">
-                            <input class="form-check-input" required id="privacy_policy_accept" name="privacy_policy_accept" type="checkbox" />
-                        </div>
-                    </div>
-                {% end %}
-                <br />
-                <div class="row mb-3">
-                    <div class="col-sm-9 offset-sm-3">
-                        <button class="btn btn-primary" type="submit">
-                            {{ _("Register Account") }}
-                        </button>
-                    </div>
+                <div class="form-check mt-4">
+                    <input class="form-check-input" required id="privacy_policy_accept" name="privacy_policy_accept" type="checkbox" />
+                    <label class="form-check-label" for="privacy_policy_accept">{{ _("I accept the") }} <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a></label>
                 </div>
+                {% end %}
+                <button class="btn btn-primary btn-lg w-100 mt-4" type="submit">{{ _("Register Account") }}</button>
+                <p class="text-center small text-body-secondary mt-3 mb-0">{{ _("Already registered?") }} <a href="/login">{{ _("Sign in") }}</a></p>
             </form>
-        {% else %}
-            <h4 style="text-align: center;"><i class="fa fa-group"></i>&nbsp;&nbsp;{{ _("The game is not accepting new players at this time.") }}</h4>
-        {% end %}
+            {% else %}
+            <div class="text-center text-body-secondary py-4">
+                <i class="fa fa-users fa-2x mb-3"></i>
+                <h2 class="h5">{{ _("The game is not accepting new players at this time.") }}</h2>
+            </div>
+            {% end %}
         </div>
     </div>
+</div>
 {% end %}

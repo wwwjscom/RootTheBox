@@ -243,6 +243,15 @@ pre code {
     --bs-tooltip-color: var(--bs-emphasis-color);
 }
 
+.card-heading {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+.card-heading > .fa {
+    color: var(--rtb-accent);
+    margin-right: 0.25rem;
+}
+
 /* ----------------------------------------------------------------- buttons */
 .btn {
     --bs-btn-font-weight: 500;
@@ -357,6 +366,16 @@ pre code {
     --bs-btn-disabled-color: #0e0a24;
     --bs-btn-disabled-bg: var(--bs-info);
     --bs-btn-disabled-border-color: var(--bs-info);
+}
+/* Enable/Disable toggle pairs: page scripts swap a checked/unchecked icon in
+   each button; mute the option that isn't currently selected. */
+.btn-group > .btn:has(> .fa-square-o) {
+    --bs-btn-color: var(--bs-secondary-color);
+    --bs-btn-bg: var(--rtb-surface-page);
+    --bs-btn-border-color: var(--rtb-border-strong);
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-hover-bg: var(--rtb-surface-hover);
+    --bs-btn-hover-border-color: var(--rtb-border-strong);
 }
 .btn-link {
     --bs-btn-color: var(--rtb-accent);

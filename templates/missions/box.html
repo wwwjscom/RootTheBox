@@ -47,7 +47,7 @@
             <form id="capture-text-flag-form" class="form-horizontal" method="post" action="/user/missions/boxes?uuid={{ box.uuid }}">
                 {% raw xsrf_form_html() %}
                 <input id="capture-text-flag-uuid" name="uuid" value="" type="hidden" />
-                <br />
+                {% include "penalty_note.html" %}
                 <div class="row mb-3">
                     <label class="col-sm-3 col-form-label" for="flag-token">{{ _("Flag") }}</label>
                     <div class="col-sm-9">
@@ -78,7 +78,7 @@
                     {% raw xsrf_form_html() %}
                     <input id="capture-choice-flag-uuid" name="uuid" value="" type="hidden" />
                     <input id="choice-flag-token" name="token" type="hidden" />
-                    <br/>
+                    {% include "penalty_note.html" %}
                     <div id="choiceinput" style="margin-left: 50px;"></div>
                 </form>
             </div>
@@ -103,6 +103,7 @@
             <form id="capture-file-flag-form" class="form-horizontal" method="post" action="/user/missions/boxes?uuid={{ box.uuid }}" enctype="multipart/form-data" >
                 {% raw xsrf_form_html() %}
                 <input autofocus id="capture-file-flag-uuid" name="uuid" type="hidden" />
+                {% include "penalty_note.html" %}
                 <div class="row mb-3">
                     <br />
                     <label class="col-sm-3 col-form-label" for="flag-file">{{ _("Flag") }}</label>
@@ -334,6 +335,7 @@
                 {% raw xsrf_form_html() %}
                 <input id="capture-text-flag-box-box-id" name="box_id" value="{{ box.id }}" type="hidden" />
                 <h4>{{ _("Submit a Flag") }}</h4>
+                {% include "penalty_note.html" %}
                 <div class="row mb-3">
                     <label class="col-sm-3 col-form-label" for="capture-text-flag-box-token">{{ _("Flag") }}</label>
                     <div class="col-sm-9">

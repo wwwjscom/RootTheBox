@@ -59,7 +59,7 @@ $(document).ready(function() {
 
     $("input[name=timer_mode]").change(updateTimerModeUI);
 
-    $("#timer-modal").on("show", function() {
+    $("#timer-modal").on("show.bs.modal", function() {
         $("#timer-form")[0].reset();
         updateTimerModeUI();
     });

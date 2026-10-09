@@ -3,13 +3,13 @@
 {% block title %}{{ _("Password Reset") }}{% end %}
 
 {% block header %}
-<link href="/static/css/pages/public/login.css" rel="stylesheet">
+<link href="/static/css/pages/public/auth.css" rel="stylesheet">
 {% end %}
 
 {% block content %}
-<div class="container">
+<div class="auth-page"><div class="card auth-card"><div class="card-body">
     <form class="form-signin" action="/reset" method="post">
-        <h3 class="form-signin-heading">
+        <h3 class="auth-title mb-4">
             <i class="fa fa-lock"></i>
             {{ _("Password Reset") }}
         </h3>
@@ -32,12 +32,12 @@
             {% end %}
         {% end %}
         {% raw xsrf_form_html() %}
-        <input name="email" type="text" class="w-100 form-control" placeholder="{{ _('email') }}" autofocus>
-        <button class="btn btn-primary" type="submit">
+        <input name="email" type="text" class="form-control mb-3" placeholder="{{ _('email') }}" autofocus>
+        <button class="btn btn-primary w-100" type="submit">
             <i class="fa fa-key"></i>
             {{ _("Request Password Reset") }}
         </button>
     </form>
-</div> <!-- /container -->
+</div></div></div>
 <br />
 {% end %}
