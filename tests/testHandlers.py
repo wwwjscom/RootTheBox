@@ -45,6 +45,16 @@ class TestPublicHandlers(ApplicationTest):
         rsp, body = self.get("/")
         self.assertIn(b"home_container", body)
 
+    def test_json_feed_logged_out_when_not_public(self):
+        saved = options.scoreboard_visibility
+        options.scoreboard_visibility = "players"
+        try:
+            rsp, body = self.get("/scoreboard/ajax/feed")
+            self.assertEqual(rsp.code, 200)
+            self.assertIn(b"scoreboard is not set to public", body)
+        finally:
+            options.scoreboard_visibility = saved
+
     def test_login_get(self):
         rsp, body = self.get("/login")
         self.assertIn(b'<form class="form-signin" action="/login"', body)

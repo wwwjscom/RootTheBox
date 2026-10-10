@@ -148,7 +148,7 @@ class ScoreboardAjaxHandler(BaseHandler):
         self.set_header("Content-Type", "application/json")
         feed = {}
         user = self.get_current_user()
-        if options.scoreboard_visibility == "public" or user.is_admin():
+        if options.scoreboard_visibility == "public" or (user and user.is_admin()):
             feed["standings"] = []
             teams = self.settings["scoreboard_state"]["teams"]
             for index, team in enumerate(teams):

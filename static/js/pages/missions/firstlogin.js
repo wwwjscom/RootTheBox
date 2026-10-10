@@ -3,15 +3,15 @@ function text_animation(term) {
     var index = 0;
     var intro_frames = $.parseJSON(dialog);
 
-    term.echo("[[b;;]**************** BEGIN SECURE COMMUNIQUE ****************]\n");
+    term.echo("[[b;;]*** BEGIN SECURE COMMUNIQUE ***]\n");
 
     function display(term, index) {
-        term.echo(intro_frames[index]);
+        term.echo(wrapForTerminal(intro_frames[index], term.cols()));
         index += 1;
         if (index < intro_frames.length) {
             setTimeout(display, 1500, term, index);
         } else {
-            term.echo("[[b;;]**************** END OF TRANSMISSION ****************]");
+            term.echo("[[b;;]*** END OF TRANSMISSION ***]");
         }
     }
     setTimeout(display, 2000, term, index);
