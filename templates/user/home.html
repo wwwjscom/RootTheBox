@@ -104,13 +104,17 @@
             {% if team is not None and game_started %}
             {% for (level, unlocked, boxes) in targets %}
             <section class="target-level{% if not unlocked %} is-locked{% end %}">
-                <header class="target-level-header">
+                <header class="target-level-header level-title">
                     <h2>{% if not unlocked %}<i class="fa fa-lock"></i> {% end %}{{ level.name }}</h2>
                     {% if unlocked %}
                     {% set level_flags = [f for b in boxes for f in b.flags] %}
-                    <span>{{ len([f for f in level_flags if f in team.flags]) }}/{{ len(level_flags) }} {{ _("flags") }}</span>
+                    {% set level_got = len([f for f in level_flags if f in team.flags]) %}
+                    <span class="level-pill{% if level_got == len(level_flags) %} is-complete{% end %}" title="{{ level_got }} {{ _('of') }} {{ len(level_flags) }} {{ _('flags captured') }}">
+                        <span class="level-pill-bar"><span style="width: {{ 100.0 * level_got / len(level_flags) }}%;"></span></span>
+                        {{ level_got }}/{{ len(level_flags) }} {{ _("flags") }}
+                    </span>
                     {% else %}
-                    <a href="/user/missions">{{ _("Unlock on the missions page") }}</a>
+                    <a class="small" href="/user/missions">{{ _("Unlock on the missions page") }}</a>
                     {% end %}
                 </header>
                 {% if level.description %}<p class="target-level-description">{{ level.description }}</p>{% end %}

@@ -320,13 +320,13 @@
         </div>
         {% end %}
         <div class="card card-body mb-4">
-            <div class="flags-header">
+            <div class="flags-header level-title">
                 <h2 class="card-heading mb-0"><i class="fa fa-flag"></i> {{ _("Flags") }}</h2>
                 {% if team and len(box.flags) != 0 %}
-                <div class="flags-progress">
-                    <span>{{ flagcount }}/{{ len(box.flags) }} {{ _("captured") }}</span>
-                    <div class="progress"><div class="progress-bar" style="width: {{ 100.0 * flagcount / len(box.flags) }}%;"></div></div>
-                </div>
+                <span class="level-pill{% if flagcount == len(box.flags) %} is-complete{% end %}">
+                    <span class="level-pill-bar"><span style="width: {{ 100.0 * flagcount / len(box.flags) }}%;"></span></span>
+                    {{ flagcount }}/{{ len(box.flags) }} {{ _("captured") }}
+                </span>
                 {% end %}
             </div>
             <div class="table-responsive">

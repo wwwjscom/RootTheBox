@@ -71,23 +71,21 @@
     <section class="mission-level{% if not has_level %} is-locked{% end %}">
         {% if len(levels) > 1 %}
         <header class="mission-level-header">
-            <div>
+            <div class="level-title">
                 <h2>
                     <i class="fa {% if has_level %}fa-unlock-alt{% else %}fa-lock{% end %}"></i>
                     {{ level.name }}
-                    {% if level.review_mode %}<span class="badge text-bg-warning align-middle">{{ _("Review Mode — No Points") }}</span>{% end %}
                 </h2>
-                {% if level.description %}<p class="mission-level-description">{{ level.description }}</p>{% end %}
+                {% if team and has_level and len(level.flags) > 0 %}
+                {% set level_captured = len(team.level_flags(level.number)) %}
+                <span class="level-pill{% if level_captured == len(level.flags) %} is-complete{% end %}" title="{{ level_captured }} {{ _('of') }} {{ len(level.flags) }} {{ _('flags captured') }}">
+                    <span class="level-pill-bar"><span style="width: {{ 100.0 * level_captured / len(level.flags) }}%;"></span></span>
+                    {{ level_captured }}/{{ len(level.flags) }} {{ _("flags") }}
+                </span>
+                {% end %}
+                {% if level.review_mode %}<span class="badge text-bg-warning">{{ _("Review Mode — No Points") }}</span>{% end %}
             </div>
-            {% if team and has_level and len(level.flags) > 0 %}
-            {% set level_captured = len(team.level_flags(level.number)) %}
-            <div class="mission-level-progress">
-                <span>{{ level_captured }}/{{ len(level.flags) }} {{ _("flags") }}</span>
-                <div class="progress" role="progressbar" aria-valuenow="{{ level_captured }}" aria-valuemin="0" aria-valuemax="{{ len(level.flags) }}">
-                    <div class="progress-bar" style="width: {{ 100.0 * level_captured / len(level.flags) }}%;"></div>
-                </div>
-            </div>
-            {% end %}
+            {% if level.description %}<p class="mission-level-description">{{ level.description }}</p>{% end %}
         </header>
         {% end %}
 

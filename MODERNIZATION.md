@@ -426,5 +426,11 @@ _(Update as branches land.)_
       game objects. Everything else only needs to look acceptable.
     - Done when pages work at any window width, look consistent, and nothing
       is broken. Matching old screenshots is not a goal.
+    - Steps: (1) single theme + strip parity CSS; (2) design layer
+      `rtb.css`; (3) pilot pages, reviewed; (4) rollout tier 1 (player
+      pages), tier 2 (admin pages), tier 3 (everything else, "acceptable");
+      (5) **polish pass**, which collects page-specific visual feedback
+      deferred during the rollout. Theme-level or broken items are fixed
+      straight away instead of waiting; (6) wrap-up (docs, memory, merge).
 - [ ] 2.2 Frontend build pipeline
 - [ ] 2.3 (Optional) framework modernization

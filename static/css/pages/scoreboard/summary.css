@@ -50,10 +50,15 @@
     font-weight: 400;
     color: var(--bs-secondary-color);
 }
+/* Spacing lives on the row content, not the cells: rankingTableUpdate.js
+   zeroes cell padding while animating. */
+#summary_table .team-line {
+    margin-top: 0.4rem;
+}
 #summary_table .team-progress {
     display: flex;
     gap: 6px;
-    margin-top: 0.5rem;
+    margin: 0.5rem 0 0.85rem;
     min-width: 160px;
 }
 #summary_table .progress-segment {

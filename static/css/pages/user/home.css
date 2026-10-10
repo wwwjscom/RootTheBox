@@ -170,20 +170,11 @@
     margin-top: 2rem;
 }
 .target-level-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
     margin-bottom: 0.75rem;
 }
 .target-level-header h2 {
     font-size: 1.05rem;
     margin: 0;
-}
-.target-level-header span {
-    font-size: 0.85rem;
-    color: var(--bs-secondary-color);
-    font-variant-numeric: tabular-nums;
 }
 .target-level-description {
     margin: -0.4rem 0 0.75rem;
