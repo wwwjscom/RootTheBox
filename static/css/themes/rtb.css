@@ -201,6 +201,13 @@ pre code {
     --bs-card-spacer-x: 1.25rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
+/* Legacy panels: the BS2->5 codemod turned every `.well` into `.card.card-body`.
+   A well was a plain block, but `.card` is a flex column, which stretches loose
+   buttons/inline content into full-width stacked rows. Restore normal flow for
+   that combined form; proper cards (.card > .card-body) are unaffected. */
+.card.card-body {
+    display: block;
+}
 .modal {
     --bs-modal-bg: var(--rtb-surface-raised);
     --bs-modal-border-color: var(--rtb-border-strong);
@@ -512,6 +519,102 @@ pre code {
 }
 .level-pill.is-complete .level-pill-bar > span {
     background: var(--bs-success);
+}
+
+/* Object toolbar: a title with its actions (admin pages) */
+.object-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    margin-bottom: 1rem;
+}
+.object-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 1.2rem;
+}
+.object-title > .fa {
+    color: var(--bs-secondary-color);
+}
+.object-title .badge {
+    font-size: 0.7rem;
+}
+.object-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+/* Locked rows (users, flags): a red tint instead of BS2's solid fill */
+.table > tbody > tr.locked > * {
+    --bs-table-bg: var(--bs-danger-bg-subtle);
+}
+
+/* Sticky in-page index (teams scoreboard, target management) */
+.page-index {
+    position: sticky;
+    top: 5.5rem;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    border-left: 1px solid var(--bs-border-color);
+}
+.page-index a {
+    padding: 0.35rem 0.85rem;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--bs-secondary-color);
+    text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.page-index a:hover {
+    color: var(--bs-emphasis-color);
+    border-left-color: var(--rtb-accent);
+}
+.page-index .rank {
+    display: inline-block;
+    min-width: 1.75rem;
+    color: var(--bs-tertiary-color);
+    font-variant-numeric: tabular-nums;
+}
+.page-index-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.85rem 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--bs-body-color);
+}
+.page-index-heading:first-child {
+    padding-top: 0;
+}
+
+/* Box briefing text (box page, target management) */
+.briefing-label {
+    font-family: var(--bs-font-monospace);
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+    margin-bottom: 0.6rem;
+}
+.briefing-label::before {
+    content: "> ";
+    color: var(--bs-tertiary-color);
+}
+.briefing-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.65;
+}
+.briefing-text.markdown p {
+    display: block;
 }
 
 /* -------------------------------------------------------------- navigation */

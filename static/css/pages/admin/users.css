@@ -1,0 +1,29 @@
+/* User management (templates/admin/view/users.html). */
+.user-management {
+    max-width: 1320px;
+    margin: 0 auto;
+}
+.score-pill {
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+    background: var(--rtb-surface-overlay);
+    border: 1px solid var(--bs-border-color);
+    font-variant-numeric: tabular-nums;
+}
+.team-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin: -0.25rem 0 1rem;
+    font-size: 0.875rem;
+}
+.team-facts dt {
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+.team-facts dd {
+    margin: 0;
+}

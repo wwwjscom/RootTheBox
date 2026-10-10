@@ -50,7 +50,7 @@
 
     <div class="row g-4">
         <nav class="col-lg-3 d-none d-lg-block">
-            <div class="teams-index">
+            <div class="page-index">
                 {% for t_index, team in enumerate(teams) %}
                 {% set rank = page * display - display + t_index + 1 %}
                 <a href="#{{ team.uuid }}"><span class="rank">{{ rank }}</span> {{ team.name }}</a>

@@ -17,37 +17,6 @@
     margin-left: auto;
 }
 
-/* Sticky index of teams on wide screens */
-.teams-index {
-    position: sticky;
-    top: 5.5rem;
-    display: flex;
-    flex-direction: column;
-    max-height: calc(100vh - 7rem);
-    overflow-y: auto;
-    border-left: 1px solid var(--bs-border-color);
-}
-.teams-index a {
-    padding: 0.35rem 0.85rem;
-    margin-left: -1px;
-    border-left: 2px solid transparent;
-    color: var(--bs-secondary-color);
-    text-decoration: none;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-.teams-index a:hover {
-    color: var(--bs-emphasis-color);
-    border-left-color: var(--rtb-accent);
-}
-.teams-index .rank {
-    display: inline-block;
-    min-width: 1.75rem;
-    color: var(--bs-tertiary-color);
-    font-variant-numeric: tabular-nums;
-}
-
 /* Team cards */
 .team-card {
     scroll-margin-top: 5rem;
