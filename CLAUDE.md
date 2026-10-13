@@ -93,6 +93,30 @@ Applied to handler methods:
 
 Tornado's template engine is used (similar to Jinja2 but not identical). Templates inherit from `templates/main.html` using `{% extends %}` and `{% block %}`. The `{% block modals %}` block renders **outside** `<body>` in `main.html` — content placed there becomes a direct child of `<body>` before the `<div class="container-fluid animated fadeIn">` wrapper, which matters for `position: fixed` CSS elements (the animation on that div breaks fixed positioning for children inside it).
 
+The navbar and footer sit in `{% block navbar %}` and `{% block site_footer %}`. A full-screen page (e.g. `scoreboard/projector.html`) overrides both with empty blocks and removes the navbar's `body` padding in its page CSS.
+
+### Frontend Theme (Bootstrap 5.3)
+
+- **One theme, "Default":** vendor Bootstrap (`static/css/themes/bootstrap.min.css`) plus the design layer `static/css/themes/rtb.css`. Dark mode comes from `<html data-bs-theme="dark">` in `main.html`.
+- **`rtb.css` is the single source of design values.** It holds the colour, type, radius and surface tokens (`--rtb-*` plus Bootstrap's `--bs-*`), Inter and JetBrains Mono from Google Fonts, and component styling done by re-declaring Bootstrap's component variables. Don't use `!important` or pixel-calibrated layout.
+- **Shared components in `rtb.css`:**
+  - `.page-title`, `.card-heading`
+  - `.level-title` + `.level-pill` (level name with progress)
+  - `.object-toolbar` / `.object-title` / `.object-actions` (admin title + actions)
+  - `.page-index` (sticky in-page nav)
+  - `.briefing-label` / `.briefing-text`
+  - `tr.locked` (red-tinted rows)
+  - muted Enable/Disable toggle pairs (`.btn-group > .btn:has(> .fa-square-o)`)
+- **Load order in `main.html`:** Font Awesome 4.7 → `main.css` → theme (`{% module Theme() %}`) → page CSS (`{% block header %}`). Page CSS comes last so it can override the theme.
+- **Page CSS** lives in `static/css/pages/<area>/<page>.css`, scoped under a page wrapper class (e.g. `.user-home`, `.missions-box`).
+- **Legacy panels:** the BS2→5 codemod turned every `.well` into `.card.card-body`. `rtb.css` gives that combined form `display: block`, because a flex card stretches loose buttons into full-width rows. New markup should use `.card > .card-body`.
+- **Adding a theme later:**
+  - Add the CSS under `static/css/themes/`.
+  - Add a `Theme` + `ThemeFile` row via an Alembic migration, and in `setup/bootstrap.py` for fresh installs.
+  - The settings-page theme picker appears automatically once more than one theme exists.
+  - `Theme.default()` falls back to the first theme when `options.default_theme` names a theme that no longer exists.
+- **Story-mode terminal text:** pass it through `wrapForTerminal()` (`static/js/libs/terminal-wrap.js`), because jQuery Terminal splits lines mid-word.
+
 ### Admin Toggle Pattern
 
 When adding a boolean toggle to a game object (e.g., `locked`, `review_mode`):

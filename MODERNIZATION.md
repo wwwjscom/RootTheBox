@@ -402,8 +402,8 @@ _(Update as branches land.)_
           moves to 2.1c.
     - Also on this branch: Keycloak/OIDC single sign-on (`210cb22e`). It is an
       unrelated feature that was built on top of this branch and ships with it.
-  - [ ] 2.1c Visual refresh (branch `feature/phase2.1c-visual-refresh`, off
-        develop). The goal is a clean, standard Bootstrap 5 design, not a copy
+  - [x] 2.1c Visual refresh (branch `feature/phase2.1c-visual-refresh`, off
+        develop). **Done; merged to develop 2026-10-13.** The goal is a clean, standard Bootstrap 5 design, not a copy
         of Bootstrap 2. Decisions made:
     - **Ship a single theme for now.** Drop the curated Bootswatch, 386 and
       cyberpunk themes. Keep the Theme model and table so more themes can be
@@ -432,5 +432,29 @@ _(Update as branches land.)_
       (5) **polish pass**, which collects page-specific visual feedback
       deferred during the rollout. Theme-level or broken items are fixed
       straight away instead of waiting; (6) wrap-up (docs, memory, merge).
+    - Progress:
+      - [x] (1) `a9ac99ea`: single Default theme, migration `d4e5f6a7b8c9`,
+            parity CSS stripped, Font Awesome 4.0.3 -> 4.7.0.
+      - [x] (2) `ef549f38`: `rtb.css` design layer (tokens + components).
+      - [x] (3) `f7f27021`: pilot pages (auth, player home with capture map,
+            admin dashboard), reviewed by the user; page CSS now loads after
+            the theme. `0797f91b`: feedback fixes (level pills, scoreboard
+            spacing, briefing label).
+      - [x] (4) Tier 1 `f238acba` (missions, box, scoreboard, teams,
+            settings); tier 2 `7ee682e2` (target management, users, game
+            levels, statistics; legacy `.card.card-body` back to block flow;
+            admin navbar collapses below xl); tier 3 `fafa8e16` (overflow
+            fixes, CTFtime feed crash, story-mode pages). Every checked page is
+            free of horizontal overflow from 375 to 1920px.
+      - [x] (5) Polish pass: `dc78db1e` (projector scoreboard rebuilt
+            without navbar/footer via new `navbar`/`site_footer` blocks; no
+            podium colours or lock icons; green scoreboard bars on a visible
+            grey track) and `81be7cfb` (multiple choice rows as BS5 input
+            groups, broken remove-choice button fixed, create-flag pages
+            widened). Later visual nitpicks go on small branches off develop.
+      - [x] (6) Wrap-up: CLAUDE.md "Frontend Theme" section, this entry,
+            merge to develop.
+    - Not visually reviewed, because those features are off in the dev config:
+      black market / upgrade pages, botnets, wall of sheep, password reset.
 - [ ] 2.2 Frontend build pipeline
 - [ ] 2.3 (Optional) framework modernization
