@@ -10,9 +10,9 @@ function text_animation(term) {
         intro_frames.push("  ");
         if (reward.length > 0) {
             if (banking === "$") {
-                intro_frames.push("This is acceptable and I have transferred $" + reward + " to your\naccount.", " ");
+                intro_frames.push("This is acceptable and I have transferred $" + reward + " to your account.", " ");
             } else {
-                intro_frames.push("This is acceptable and I have added " + reward + " points to your\nscore.", " ");
+                intro_frames.push("This is acceptable and I have added " + reward + " points to your score.", " ");
             }
         }
     }
@@ -22,15 +22,15 @@ function text_animation(term) {
             intro_frames.push(msgsplit[x], " ");
         }
     }
-    term.echo("[[b;;]**************** BEGIN SECURE COMMUNIQUE ****************]\n");
+    term.echo("[[b;;]*** BEGIN SECURE COMMUNIQUE ***]\n");
 
     function display(term, index) {
-        term.echo(intro_frames[index]);
+        term.echo(wrapForTerminal(intro_frames[index], term.cols()));
         index += 1;
         if (index < intro_frames.length) {
             setTimeout(display, 2000, term, index);
         } else {
-            term.echo("[[b;;]**************** END OF TRANSMISSION ****************]");
+            term.echo("[[b;;]*** END OF TRANSMISSION ***]");
         }
     }
     setTimeout(display, 1500, term, index);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
     <head>
         <meta charset="utf-8">
         <title>{% block title %} handler.application.settings['game_name'] {% end %}</title>
@@ -22,8 +22,8 @@
         <script src="/static/js/pages/main.js" type="text/javascript"></script>
         <script src="/static/js/libs/countdown.js" type="text/javascript"></script>
         <script src="/static/js/libs/notifier.js" type="text/javascript"></script>
-        {% block header %}{% end %}
         {% module Theme() %}
+        {% block header %}{% end %}
     </head>
     {% block modals %}{% end %}
     <!--
@@ -34,19 +34,18 @@
         or data to non-admins in the first place.
     -->
     <body data-is-admin="{% if handler.current_user and handler.current_user.is_admin() %}true{% else %}false{% end %}">
-        {% module Menu() %}
+        {% block navbar %}{% module Menu() %}{% end %}
         <div class="container-fluid animated fadeIn">
             {% block content %} {{ _("Content Missing") }} {% end %}
            
         </div><!--/.fluid-container-->
+        {% block site_footer %}
         <footer>
             {% from tornado.options import options %}
-            <hr style="margin-bottom: -1px;">
-            <div class="footernav">
-                Powered by <a href="https://github.com/wwwjscom/RootTheBox" target="_blank">Root the Box</a> &copy; {{ datetime.date.today().year }}{% if options.privacy_policy_link %} • <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a>{% end %} • <a href="https://github.com/moloch--/RootTheBox" target="_blank">{{ _("Original Repo") }}</a>
-                <span style="float:right; padding-right: 5px;">{% raw options.org_footer %}</span>
-            </div>
+            Powered by <a href="https://github.com/wwwjscom/RootTheBox" target="_blank">Root the Box</a> &copy; {{ datetime.date.today().year }}{% if options.privacy_policy_link %} • <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a>{% end %} • <a href="https://github.com/moloch--/RootTheBox" target="_blank">{{ _("Original Repo") }}</a>
+            <span class="footer-extra">{% raw options.org_footer %}</span>
          </footer>
+        {% end %}
    
     </body>
 </html>

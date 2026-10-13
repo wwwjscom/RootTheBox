@@ -4,6 +4,7 @@
 
 {% block header %}
 <script src="/static/js/libs/terminal.min.js" type="text/javascript"></script>
+<script src="/static/js/libs/terminal-wrap.js" type="text/javascript"></script>
 <script src="/static/js/libs/mousewheel-min.js" type="text/javascript"></script>
 <script src="/static/js/pages/missions/captured.js" type="text/javascript"></script>
 <link href="/static/css/terminal.css" rel="stylesheet" />
@@ -11,15 +12,13 @@
 
 {% block content %}
 {% from tornado.options import options %}
-<div class="container">
-    <br />
+<div class="transmission">
     <div class="card card-body">
-        <span style="float: right; padding-right: 6px; margin-top: -15px;"><button id="closebutton" type="button" class="close" value="{{ '' if box else flag.box.uuid }}"><h2>×</h2></button></span>
-        <h3>
-            <i class="fa fa-globe"></i>
-            {{ _("Incoming Transmission") }}
-        </h3>
-        
+        <div class="transmission-header">
+            <h3><i class="fa fa-globe"></i> {{ _("Incoming Transmission") }}</h3>
+            <button id="closebutton" type="button" class="btn-close" aria-label="{{ _('Close') }}" value="{{ '' if box else flag.box.uuid }}"></button>
+        </div>
+
         {% set message = "" %}
         {% if box and flag %}
             {% set message = str(flag.capture_message + "\n\n" + box.capture_message).strip() %}

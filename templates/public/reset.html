@@ -3,16 +3,16 @@
 {% block title %}{{ _("Password Reset") }}{% end %}
 
 {% block header %}
-<link href="/static/css/pages/public/login.css" rel="stylesheet">
+<link href="/static/css/pages/public/auth.css" rel="stylesheet">
 <script src="/static/js/pages/public/reset.js"></script>
 {% from tornado.options import options %}
 {% end %}
 
 {% block content %}
-<div class="container">
+<div class="auth-page"><div class="card auth-card"><div class="card-body">
     <form class="form-signin" action="/reset/token" method="post">
     {% raw xsrf_form_html() %}
-        <h3 class="form-signin-heading">
+        <h3 class="auth-title mb-4">
             <i class="fa fa-lock"></i>
             {{ _("Password Reset") }}
         </h3>
@@ -39,23 +39,23 @@
             <div>
                 <input type="hidden" name="uuid" value="{{uuid}}" />
                 <input type="hidden" name="token" value="{{token}}" />
-                <input class="w-100 form-control" required id="pass1" name="pass1" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Password') }}" type="password"
+                <input class="form-control mb-3" required id="pass1" name="pass1" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Password') }}" type="password"
                     autocomplete="off"
                     rel="popover"
                     data-bs-title="{{_('Password')}}"
                     data-bs-content="{{_('Enter a complex password of')}} {{ options.min_user_password_length }}+ {{_('Characters')}}" />
-                <input class="w-100 form-control" required id="pass2" name="pass2" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Confirm Password') }}" type="password"
+                <input class="form-control mb-3" required id="pass2" name="pass2" minlength="{{ options.min_user_password_length }}"  placeholder="{{ _('Confirm Password') }}" type="password"
                     autocomplete="off"
                     rel="popover"
                     data-bs-title="{{_('Confirm Password')}}"
                     data-bs-content="{{_('Enter the same password as before')}}" />
             </div>
-            <button class="btn btn-primary" type="submit">
+            <button class="btn btn-primary w-100" type="submit">
                 <i class="fa fa-sign-in"></i>
                 {{ _("Reset") }}
             </button>
         {% end %}
     </form>
-</div> <!-- /container -->
+</div></div></div>
 <br />
 {% end %}

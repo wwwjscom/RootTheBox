@@ -70,7 +70,7 @@
                             {% if not link.get("target") %}
                                 {% set link["target"] = "_blank" %}
                             {% end %}
-                            {% if link.get('name') == 'CyberChef' and (user.theme == 'Cyborg' or user.theme == 'Slate') %}
+                            {% if link.get('name') == 'CyberChef' %}
                                 {% set theme="?theme=dark" %}
                             {% else %}
                                 {% set theme="" %}

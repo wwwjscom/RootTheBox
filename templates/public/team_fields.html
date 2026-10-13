@@ -1,0 +1,31 @@
+{% from tornado.options import options %}
+{% if options.teams %}
+    {% if options.public_teams %}
+    <div class="btn-group w-100 mb-3" role="group" aria-label="{{ _('Team') }}">
+        <input type="radio" class="btn-check teammode" name="teammode" id="teammode-join-radio" value="join" autocomplete="off" checked>
+        <label class="btn btn-outline-primary" for="teammode-join-radio"><i class="fa fa-sign-in"></i> {{ _("Join Existing Team") }}</label>
+        <input type="radio" class="btn-check teammode" name="teammode" id="teammode-create-radio" value="create" autocomplete="off">
+        <label class="btn btn-outline-primary" for="teammode-create-radio"><i class="fa fa-plus"></i> {{ _("Start a New Team") }}</label>
+    </div>
+    <div id="teammode-create" class="row g-3" style="display: none;">
+        <div class="col-md-6">
+            <label class="form-label" for="team-name">{{ _("Team Name") }}</label>
+            <input class="form-control" id="team-name" name="team_name" maxlength="24" minlength="3" type="text"
+                pattern="^[a-zA-Z0-9 _\-\.]{3,24}$">
+            <div class="form-text">{{ _("3-24 characters") }}</div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label" for="motto">{{ _("Motto") }} <span class="text-body-secondary">({{ _("Optional") }})</span></label>
+            <input class="form-control" id="motto" name="motto" maxlength="32" type="text">
+        </div>
+    </div>
+    {% end %}
+    <div id="teammode-join">
+        <label class="form-label" for="team-code">{{ _("Team Code") }}</label>
+        <input class="form-control font-mono" id="team-code" name="team-code" type="text">
+        <div class="form-text">{{ _("Ask a teammate: the code is shown on their home page.") }}</div>
+    </div>
+{% else %}
+    <label class="form-label" for="motto">{{ _("Motto") }} <span class="text-body-secondary">({{ _("Optional") }})</span></label>
+    <input class="form-control" id="motto" name="motto" maxlength="32" type="text">
+{% end %}

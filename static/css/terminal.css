@@ -108,8 +108,9 @@
 }
 
 .consoleview {
-    height: 480px; 
-    width: 400px; 
+    height: 480px;
+    width: 400px;
+    max-width: 100%;
     padding: 3px 20px 10px 30px;
 }
 
@@ -607,4 +608,27 @@
       -webkit-transform: translate3d(0, 0, 0);
               transform: translate3d(0, 0, 0);
     }
+}
+/* Story-mode transmission pages (missions/captured.html, firstlogin.html) */
+.transmission {
+    max-width: 960px;
+    margin: 0 auto;
+}
+.transmission-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.transmission-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+.transmission-header h3 > .fa {
+    color: var(--rtb-accent);
+}
+.transmission .terminalbg {
+    border-radius: var(--bs-border-radius);
+    overflow: hidden;
 }

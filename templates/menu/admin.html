@@ -3,7 +3,7 @@
 <link href="/static/css/menu.css" rel="stylesheet" />
 {% end %}
 {% from tornado.options import options %}
-<nav class="navbar navbar-expand-lg bg-dark fixed-top" data-bs-theme="dark">
+<nav class="navbar navbar-expand-xl bg-dark fixed-top" data-bs-theme="dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
             {% if options.debug %}
@@ -147,7 +147,7 @@
                             {% if not link.get("target") %}
                                 {% set link["target"] = "_blank" %}
                             {% end %}
-                            {% if link.get('name') == 'CyberChef' and (user.theme == 'Cyborg' or user.theme == 'Slate') %}
+                            {% if link.get('name') == 'CyberChef' %}
                                 {% set theme="?theme=dark" %}
                             {% else %}
                                 {% set theme="" %}

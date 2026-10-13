@@ -1111,7 +1111,7 @@ define(
     type=int,
 )
 
-define("default_theme", default="Cyborg", group="game", help="the default css theme")
+define("default_theme", default="Default", group="game", help="the default css theme")
 
 define(
     "allow_user_to_change_theme",

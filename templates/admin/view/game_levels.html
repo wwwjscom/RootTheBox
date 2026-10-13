@@ -235,64 +235,54 @@
 
 {% block content %}
 {% from models.GameLevel import GameLevel %}
-    <div class="container">
-        {% if errors != None and len(errors) != 0 %}
-            {% for error in errors %}
-                <div class="alert alert-danger alert-dismissible">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    <h4 class="alert-heading">{{ _("ERROR") }}</h4>
-                    {{ error }}
-                </div>
-            {% end %}
+<div class="game-levels">
+    {% if errors != None and len(errors) != 0 %}
+        {% for error in errors %}
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <h4 class="alert-heading">{{ _("ERROR") }}</h4>
+            {{ error }}
+        </div>
         {% end %}
-        <h1>
-            <i class="fa fa-level-up"></i>
-            {{ _("Game Levels") }}
-        </h1>
-        <br />
-        {% for index, level in enumerate(GameLevel.all()) %}
-            <div class="card card-body{% if level.locked %} locked{% end %}">
-                <h2 class="levelheader">
-                    {{ level.name }}&nbsp;
-                    {% if level.review_mode %}<span class="badge text-bg-warning">{{_("Review Mode")}}</span>{% end %}
-                </h2>
-                {% if level.description %}<h4 class="levelheader">({{ level.description }})</h4>{% end %}
-                <a id="delete-game-level-button{{ index }}" style="float: right; margin-top: 5px; margin-right: 10px;" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#delete-game-level-modal" data-uuid="{{ level.uuid }}">
-                    <i class="fa fa-times-circle-o"></i>
-                    {{ _("Delete Game Level") }}
-                </a>
-                <a id="edit-game-level-button{{ index }}" style="float: right; margin-top: 5px; margin-right: 10px;" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-game-level-modal" data-uuid="{{ level.uuid }}">
-                    <i class="fa fa-pencil"></i>
-                    {{ _("Edit Game Level") }}
-                </a>
-                <button type="button" id="edit-access-button{{ index }}" style="float: right; margin-top: 5px; margin-right: 10px;" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-access-modal" data-uuid="{{ level.uuid }}"{% if level.type == "none" %} disabled{%end%}>
-                    <i class="fa fa-pencil"></i>
-                    {{ _("Edit Access") }}
-                </button>
-                {% if level.locked %}
-                    <a id="lock-level-button-{{ level.uuid }}" class="btn btn-sm btn-warning" data-uuid="{{ level.uuid }}" style="float: right; margin-top: 5px; margin-right: 10px;">
-                        <i class="fa fa-fw fa-lock"></i>
-                        {{_("Unlock")}}&nbsp;
-                    </a>
-                {% else %}
-                    <a id="lock-level-button-{{ level.uuid }}" class="btn btn-sm btn-success" data-uuid="{{ level.uuid }}" style="float: right; margin-top: 5px; margin-right: 10px;">
-                        <i class="fa fa-fw fa-unlock"></i>
-                        {{_("Lock")}}&nbsp;
-                    </a>
-                {% end %}
-                {% if level.review_mode %}
-                    <a id="review-mode-level-button-{{ level.uuid }}" class="btn btn-sm btn-warning" data-uuid="{{ level.uuid }}" style="float: right; margin-top: 5px; margin-right: 10px;">
-                        <i class="fa fa-fw fa-eye-slash"></i>
-                        {{_("Disable Review Mode")}}&nbsp;
-                    </a>
-                {% else %}
-                    <a id="review-mode-level-button-{{ level.uuid }}" class="btn btn-sm btn-info" data-uuid="{{ level.uuid }}" style="float: right; margin-top: 5px; margin-right: 10px;">
-                        <i class="fa fa-fw fa-eye"></i>
-                        {{_("Enable Review Mode")}}&nbsp;
-                    </a>
-                {% end %}
-                <div style="padding-left: 3px; margin-bottom: -10px;">
-                {% if level._name  and level._name != level.name %}<strong>{{ _("Level") }} #{{ level.number }}</strong>&nbsp;&nbsp;&ndash;&nbsp;{% end %}
+    {% end %}
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+        <h1 class="mb-0"><i class="fa fa-level-up"></i> {{ _("Game Levels") }}</h1>
+        <a class="btn btn-primary" href="/admin/create/game_level"><i class="fa fa-plus"></i> {{ _("Game Level") }}</a>
+    </div>
+    {% for index, level in enumerate(GameLevel.all()) %}
+    <section class="card level-card mb-4{% if level.locked %} locked{% end %}">
+        <div class="card-body">
+            <header class="object-toolbar">
+                <div>
+                    <h2 class="object-title">
+                        {{ level.name }}
+                        {% if level._name and level._name != level.name %}<span class="badge text-bg-secondary">{{ _("Level") }} #{{ level.number }}</span>{% end %}
+                        {% if level.locked %}<span class="badge text-bg-danger">{{ _("Locked") }}</span>{% end %}
+                        {% if level.review_mode %}<span class="badge text-bg-warning"><i class="fa fa-eye"></i> {{ _("Review Mode") }}</span>{% end %}
+                    </h2>
+                    {% if level.description %}<p class="level-description">{{ level.description }}</p>{% end %}
+                </div>
+                <div class="object-actions">
+                    {% if level.review_mode %}
+                    <a id="review-mode-level-button-{{ level.uuid }}" class="btn btn-sm btn-warning" data-uuid="{{ level.uuid }}"><i class="fa fa-fw fa-eye-slash"></i> {{ _("Disable Review Mode") }}</a>
+                    {% else %}
+                    <a id="review-mode-level-button-{{ level.uuid }}" class="btn btn-sm btn-secondary" data-uuid="{{ level.uuid }}"><i class="fa fa-fw fa-eye"></i> {{ _("Review Mode") }}</a>
+                    {% end %}
+                    {% if level.locked %}
+                    <a id="lock-level-button-{{ level.uuid }}" class="btn btn-sm btn-warning" data-uuid="{{ level.uuid }}"><i class="fa fa-fw fa-lock"></i> {{ _("Unlock") }}</a>
+                    {% else %}
+                    <a id="lock-level-button-{{ level.uuid }}" class="btn btn-sm btn-secondary" data-uuid="{{ level.uuid }}"><i class="fa fa-fw fa-unlock"></i> {{ _("Lock") }}</a>
+                    {% end %}
+                    <button type="button" id="edit-access-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-access-modal" data-uuid="{{ level.uuid }}"{% if level.type == "none" %} disabled{% end %}><i class="fa fa-key"></i> {{ _("Access") }}</button>
+                    <a id="edit-game-level-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-game-level-modal" data-uuid="{{ level.uuid }}"><i class="fa fa-pencil"></i> {{ _("Edit") }}</a>
+                    <a id="delete-game-level-button{{ index }}" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" href="#delete-game-level-modal" data-uuid="{{ level.uuid }}"><i class="fa fa-times-circle-o"></i> {{ _("Delete") }}</a>
+                </div>
+            </header>
+
+            <dl class="level-facts">
+                <div>
+                    <dt>{{ _("Access") }}</dt>
+                    <dd>
                     {% if level.type == "hidden" %}
                         <i class="fa fa-lock"></i> {{ _("Managed") }}
                     {% elif level.type == "locked" %}
@@ -313,45 +303,45 @@
                         {% set last = GameLevel.last_level(level.id) %}
                         <i class="fa fa-lock"></i> {{ _("Unlocks after") }} {{ level.buyout }}% {{ _("completion of Level") }} {% if last %}{{ last.number }}{% end %}
                     {% end %}
-                    <span style="float: right; padding-right: 15px;">
-                        <strong>{{ _("Reward") }}: {{ level._reward }}</strong>
-                        {% if level.flag_submission_timer_minutes > 0 %}
-                            {# Show the configured timer at a glance in admin level list. #}
-                            &nbsp;|&nbsp;<strong>{{ _("Timer") }}: {{ level.flag_submission_timer_minutes }} {{ _("min") }}</strong>
-                        {% end %}
-                    </span>
+                    </dd>
                 </div>
-                <hr />
-                {% if len(level.boxes) != 0 %}
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>{{ _("Box Name") }}</th>
-                                <th class="shortcolumn">{{ _("Number of Flags") }}</th>
-                                <th><!-- Switch Level --></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for index, box in enumerate(sorted(level.boxes)) %}
-                                <tr>
-                                    <td class="shortcolumn">{{ index + 1 }}</td>
-                                    <td>{{ box.name }}</td>
-                                    <td class="shortcolumn" style="text-align: center;">{{ len(box.flags) }}</td>
-                                    <td class="shortcolumn" style="margin-right: 10px;">
-                                          <a id="switch-level-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#switch-level-modal" data-level-uuid="{{ level.uuid }}" data-box-uuid="{{ box.uuid }}">
-                                            <i class="fa fa-arrows-v"></i>
-                                            {{ _("Switch Level") }}
-                                          </a>
-                                    </td>
-                                </tr>
-                            {% end %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <strong>{{ _("No boxes on this level yet") }}, <a href="/admin/create/box">{{ _("add some") }}</a></strong>
+                <div><dt>{{ _("Reward") }}</dt><dd>{{ level._reward }}</dd></div>
+                {% if level.flag_submission_timer_minutes > 0 %}
+                {# Show the configured timer at a glance in admin level list. #}
+                <div><dt>{{ _("Timer") }}</dt><dd>{{ level.flag_submission_timer_minutes }} {{ _("min") }}</dd></div>
                 {% end %}
+            </dl>
+
+            {% if len(level.boxes) != 0 %}
+            <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>{{ _("Box Name") }}</th>
+                        <th class="text-center">{{ _("Flags") }}</th>
+                        <th class="text-end">{{ _("Actions") }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, box in enumerate(sorted(level.boxes)) %}
+                    <tr>
+                        <td class="shortcolumn text-body-secondary">{{ index + 1 }}</td>
+                        <td class="fw-semibold">{{ box.name }}</td>
+                        <td class="shortcolumn text-center">{{ len(box.flags) }}</td>
+                        <td class="shortcolumn text-end">
+                            <a id="switch-level-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#switch-level-modal" data-level-uuid="{{ level.uuid }}" data-box-uuid="{{ box.uuid }}"><i class="fa fa-arrows-v"></i> {{ _("Move to level") }}</a>
+                        </td>
+                    </tr>
+                    {% end %}
+                </tbody>
+            </table>
             </div>
-        {% end %}
-    </div>
+            {% else %}
+            <p class="text-body-secondary mb-0">{{ _("No boxes on this level yet") }}, <a href="/admin/create/box">{{ _("add some") }}</a>.</p>
+            {% end %}
+        </div>
+    </section>
+    {% end %}
+</div>
 {% end %}

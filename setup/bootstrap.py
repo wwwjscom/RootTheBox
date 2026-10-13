@@ -65,18 +65,9 @@ else:
         os._exit(1)
 
 # Theme objects
+# One theme for now: vendor Bootstrap 5 + the RootTheBox design layer.
 css_files = [
-    ("Bootstrap", ["bootstrap.min.css"]),
-    ("Cyborg", ["cyborg.min.css"]),
-    ("Slate", ["slate.min.css"]),
-    ("United", ["united.min.css"]),
-    ("Cerulean", ["cerulean.min.css"]),
-    ("Journal", ["journal.min.css"]),
-    ("Simplex", ["simplex.min.css"]),
-    ("Spacelab", ["spacelab.min.css"]),
-    ("Superhero", ["superhero.min.css"]),
-    ("386", ["386.min.css", "386.js"]),
-    ("cyberpunk", ["cyberpunk.min.css"]),
+    ("Default", ["bootstrap.min.css", "rtb.css"]),
 ]
 for css in css_files:
     theme = Theme(name=css[0])

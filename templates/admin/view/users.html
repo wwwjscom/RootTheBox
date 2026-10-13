@@ -5,6 +5,7 @@
 {% block header %}
 <link rel="stylesheet" href="/static/css/jquery-ui.css">
 <script src="/static/js/pages/admin/users.js"></script>
+<link rel="stylesheet" href="/static/css/pages/admin/users.css">
 {% end %}
 
 {% block modals %}
@@ -404,201 +405,150 @@
 {% block content %}
 {% from models.User import User %}
 {% from models.Team import Team %}
-    <!-- Lock Form -->
-    <form id="lock-user-form" action="/admin/lock/user" method="post">
-        {% raw xsrf_form_html() %}
-        <input id="lock-user-uuid" name="uuid" type="hidden" />
-    </form>
-    <!-- Start Visible -->
-    <div class="row">
-        <div class="col-md-10 offset-md-1">
-            <h1>
-                <i class="fa fa-fw fa-group"></i>
-                {{_("User Management")}}
-                <a style="float: right; margin-right: 5px; margin-top: 12px;" id="edit-scores-button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-scores-modal">
-                    <i class="fa fa-fw fa-plus"></i> {{_("add")}} {% if options.banking %}{{_("money")}}{% else %}{{_("points")}}{% end %}
-                </a>
-            </h1>
-            <br />
-            {% if errors is not None and len(errors) != 0 %}
-                {% for error in errors %}
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        <h4 class="alert-heading">{{_("ERROR")}}</h4>
-                        {{ error }}
-                    </div>
-                {% end %}
-            {% end %}
-            {% if len(teams) == 0 %}
-                <p class="card card-body"><strong>{{_("No Users")}}</strong></p>
-            {% end %}
-            {% set admins = [] %}
-            {% for user in User.all() %}
-                {% if user.is_admin() %}
-                    {% set admins.append(user) %}
-                {% end %}
-            {% end %}
-            {% if len(admins) > 0 %}
-                <div class="card card-body">
-                    <h2 style="display:inline;"> {{_("Admins")}}&nbsp;&nbsp;</h2>
-                    <hr style="border: 2px solid green;" />
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th> {{_("Handle")}} </th>
-                                <th> {{_("Name")}} </th>
-                                <th> {{_("Last Login")}} </th>
-                                <th> {{_("Admin Notes")}} </th>
-                                <th><!-- Edit Button --></th>
-                                <th><!-- Delete Button --></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for index, user in enumerate(admins) %}
-                            {% if user.locked %}
-                                <tr class="error">
-                            {% else %}
-                                <tr>
-                            {% end %}
-                                <td class="shortcolumn">{{ index + 1 }}</td>
-                                <td class="shortcolumn"> {{ user.handle }} </td>
-                                <td class="shortcolumn"> {%if user.name %}{{user.name}}{% else %}{{_("Unknown")}}{% end %} </td>
-                                {% if 0 < user.logins %}
-                                    <td class="shortcolumn"> {{ user.last_login }} </td>
-                                {% else %}
-                                    <td class="shortcolumn"> {{_("Never")}} </td>
-                                {% end %}
-                                <td> {% if user.notes %}{{ user.notes }}{% end %} </td>
-                                <td class="shortcolumn">
-                                    <a id="edit-user-button-{{ user.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}">
-                                        <i class="fa fa-fw fa-pencil"></i>
-                                        {{_("Edit Account")}}
-                                    </a>
-                                </td>
-                                <td class="shortcolumn">
-                                    <a id="delete-user-button-{{ user.uuid }}" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#delete-user-modal" data-uuid="{{ user.uuid }}">
-                                        <i class="fa fa-fw fa-times-circle-o"></i>
-                                        {{_("Delete")}}
-                                    </a>
-                                </td>
-                            </tr>
-                        {% end %}
-                        </tbody>
-                    </table>
-                    <hr style="border: 2px solid green;" />
-                </div>
-            {% end %}
-            {% for team_index, team in enumerate(teams) %}
-                {% if options.teams or len(team.members) > 0 %}
-                <div class="card card-body">
-                    <h2 style="display:inline;"> {{ team.name }}&nbsp;&nbsp;</h2>
-                    <h4 style="display:inline;">
-                        {% if options.banking %}{{_("$")}}{% end %}{{ team.money }}{% if not options.banking %} <span style="font-size: small;">{{_("points")}}</span>{% end %}
-                    </h4>
-                    <a id="delete-team-button{{ team_index }}" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#delete-team-modal" data-uuid="{{ team.uuid }}" style="float:right;">
-                        <i class="fa fa-fw fa-times-circle-o"></i>
-                        {% if options.teams %}{{_("Delete Team")}}{% else %}{{_("Delete Player")}}{% end %}
-                    </a>
-                    <a id="edit-team-button{{ team_index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-team-modal" data-uuid="{{ team.uuid }}" style="float:right; margin-right:10px;">
-                        <i class="fa fa-fw fa-pencil"></i>
-                        {% if options.teams %}{{_("Edit Team")}}{% else %}{{_("Edit Player")}}{% end %}
-                    </a>
-                    {% if options.teams %}<div style="margin-bottom: -10px;">&nbsp;<strong>{{_("Team Code")}}:</strong> {{ team.code }}{% if team.notes %}
-                        <span style="padding-left: 15px;"><strong>{{ _("Admin Notes")}}:</strong> {{ team.notes }}</span>{% end %}</div>{% if team.motto %}<span style="margin-top: -10px; float: right;"><strong>{{_("Motto")}}:</strong> {{ team.motto }}&nbsp;&nbsp;</span>{% end %}{% end %}
-                    <hr />
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>{{_("Handle")}}</th>
-                                <th> {{_("Name")}} </th>
-                                <th> {{_("Last Login")}} </th>
-                                <th> {{_("Expire")}} </th>
-                                {% if options.require_email and options.validate_email %}
-                                <th> {{_("Validation")}} </th>
-                                {% end %}
-                                {% if options.banking %}
-                                    <th> {{_("Bank Password Hash")}} </th>
-                                {% end %}
-                                <th> {{_("Admin Notes")}} </th>
-                                <th><!-- Lock Button --></th>
-                                <th><!-- Stats Button --></th>
-                                <th><!-- Edit Button --></th>
-                                {% if options.teams %}<th><!-- Delete Button --></th>{% end %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for index, user in enumerate(team.members) %}
-                                {% if user.locked %}
-                                    <tr class="error">
-                                {% else %}
-                                    <tr>
-                                {% end %}
-                                    <td class="shortcolumn">{{ index + 1 }}</td>
-                                    <td class="shortcolumn"> {{ user.handle }} </td>
-                                    <td class="shortcolumn"> {%if user.name %}{{user.name}}{% else %}{{_("Unknown")}}{% end %} </td>
-                                    {% if 0 < user.logins %}
-                                        <td class="shortcolumn"> {{ user.last_login }} </td>
-                                    {% else %}
-                                        <td class="shortcolumn"> {{_("Never")}} </td>
-                                    {% end %}
-                                    <td class="shortcolumn"> {%if user.expire %}{{user.expire}}{% else %}Never{% end %} </td>
-                                    {% if options.require_email and options.validate_email %}
-                                        <td class="shortcolumn"> {{ user.is_email_valid() }} </td>
-                                    {% end %}
-                                    {% if options.banking %}
-                                        {% if 40 < len(user.bank_password) %}
-                                            <td>
-                                                <a id="reveal-hash-button-{{ user.uuid }}" data-bank-hash="{{ user.bank_password }}">
-                                                    {{ user.algorithm }}: {{ user.bank_password[:40] }}...
-                                                </a>
-                                            </td>
-                                        {% else %}
-                                            <td> {{ user.algorithm }}: {{ user.bank_password }} </td>
-                                        {% end %}
-                                    {% end %}
-                                    <td> {% if user.notes %}{{ user.notes }}{% end %} </td>
-                                    <td class="shortcolumn">
-                                        {% if user.locked %}
-                                            <a id="lock-user-button-{{ user.uuid }}" class="btn btn-sm btn-warning" data-uuid="{{ user.uuid }}">
-                                                <i class="fa fa-fw fa-lock"></i>
-                                                {{_("Unlock")}}
-                                            </a>
-                                        {% else %}
-                                            <a id="lock-user-button-{{ user.uuid }}" class="btn btn-sm btn-success" data-uuid="{{ user.uuid }}">
-                                                <i class="fa fa-fw fa-unlock"></i>
-                                                {{_("Lock")}}
-                                            </a>
-                                        {% end %}
-                                    </td>
-                                    <td class="shortcolumn">
-                                        <a class="btn btn-sm btn-secondary" href="/user?id={{ user.uuid }}">
-                                            <i class="fa fa-fw fa-bar-chart-o"></i>
-                                            {{_("Statistics")}}
-                                        </a>
-                                    </td>
-                                    <td class="shortcolumn">
-                                        <a id="edit-user-button-{{ user.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}" data-hash-algorithm="{{ user.algorithm }}" data-team-uuid="{{ user.team.uuid }}">
-                                            <i class="fa fa-fw fa-pencil"></i>
-                                            {{_("Edit Account")}}
-                                        </a>
-                                    </td>
-                                    {% if options.teams %}
-                                    <td class="shortcolumn">
-                                        <a id="delete-user-button-{{ user.uuid }}" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#delete-user-modal" data-uuid="{{ user.uuid }}">
-                                            <i class="fa fa-fw fa-times-circle-o"></i>
-                                            {{_("Delete")}}
-                                        </a>
-                                    </td>
-                                    {% end %}
-                                </tr>
-                            {% end %}
-                        </tbody>
-                    </table>
-                </div>
-                {% end %}
-            {% end %}
-        </div>
+<!-- Lock Form -->
+<form id="lock-user-form" action="/admin/lock/user" method="post">
+    {% raw xsrf_form_html() %}
+    <input id="lock-user-uuid" name="uuid" type="hidden" />
+</form>
+<div class="user-management">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+        <h1 class="mb-0"><i class="fa fa-fw fa-users"></i> {{ _("User Management") }}</h1>
+        <a id="edit-scores-button" class="btn btn-secondary" data-bs-toggle="modal" href="#edit-scores-modal">
+            <i class="fa fa-fw fa-plus"></i> {% if options.banking %}{{ _("Add money") }}{% else %}{{ _("Add points") }}{% end %}
+        </a>
     </div>
+    {% if errors is not None and len(errors) != 0 %}
+        {% for error in errors %}
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <h4 class="alert-heading">{{ _("ERROR") }}</h4>
+            {{ error }}
+        </div>
+        {% end %}
+    {% end %}
+    {% if len(teams) == 0 %}
+    <p class="text-body-secondary">{{ _("No Users") }}</p>
+    {% end %}
+
+    {% set admins = [u for u in User.all() if u.is_admin()] %}
+    {% if len(admins) > 0 %}
+    <section class="card mb-4">
+        <div class="card-body">
+            <header class="object-toolbar">
+                <h2 class="object-title"><i class="fa fa-shield"></i> {{ _("Admins") }}</h2>
+            </header>
+            <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>{{ _("Handle") }}</th>
+                        <th>{{ _("Name") }}</th>
+                        <th>{{ _("Last Login") }}</th>
+                        <th>{{ _("Admin Notes") }}</th>
+                        <th class="text-end">{{ _("Actions") }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for index, user in enumerate(admins) %}
+                    <tr{% if user.locked %} class="locked"{% end %}>
+                        <td class="shortcolumn text-body-secondary">{{ index + 1 }}</td>
+                        <td class="shortcolumn fw-semibold">{{ user.handle }}</td>
+                        <td class="shortcolumn">{% if user.name %}{{ user.name }}{% else %}<span class="text-body-secondary">{{ _("Unknown") }}</span>{% end %}</td>
+                        <td class="shortcolumn">{% if 0 < user.logins %}{{ user.last_login.strftime("%Y-%m-%d %H:%M") }}{% else %}{{ _("Never") }}{% end %}</td>
+                        <td>{% if user.notes %}{{ user.notes }}{% end %}</td>
+                        <td class="shortcolumn text-end text-nowrap">
+                            <a id="edit-user-button-{{ user.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}" title="{{ _('Edit Account') }}"><i class="fa fa-fw fa-pencil"></i></a>
+                            <a id="delete-user-button-{{ user.uuid }}" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" href="#delete-user-modal" data-uuid="{{ user.uuid }}" title="{{ _('Delete') }}"><i class="fa fa-fw fa-times-circle-o"></i></a>
+                        </td>
+                    </tr>
+                {% end %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </section>
+    {% end %}
+
+    {% for team_index, team in enumerate(teams) %}
+    {% if options.teams or len(team.members) > 0 %}
+    <section class="card mb-4">
+        <div class="card-body">
+            <header class="object-toolbar">
+                <h2 class="object-title">
+                    {{ team.name }}
+                    <span class="score-pill">{% if options.banking %}{{ _("$") }}{% end %}{{ team.money }}{% if not options.banking %} {{ _("points") }}{% end %}</span>
+                </h2>
+                <div class="object-actions">
+                    <a id="edit-team-button{{ team_index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-team-modal" data-uuid="{{ team.uuid }}"><i class="fa fa-fw fa-pencil"></i> {% if options.teams %}{{ _("Edit Team") }}{% else %}{{ _("Edit Player") }}{% end %}</a>
+                    <a id="delete-team-button{{ team_index }}" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" href="#delete-team-modal" data-uuid="{{ team.uuid }}"><i class="fa fa-fw fa-times-circle-o"></i> {% if options.teams %}{{ _("Delete Team") }}{% else %}{{ _("Delete Player") }}{% end %}</a>
+                </div>
+            </header>
+            {% if options.teams %}
+            <dl class="team-facts">
+                <div><dt>{{ _("Team Code") }}</dt><dd class="font-mono">{{ team.code }}</dd></div>
+                {% if team.motto %}<div><dt>{{ _("Motto") }}</dt><dd>{{ team.motto }}</dd></div>{% end %}
+                {% if team.notes %}<div><dt>{{ _("Admin Notes") }}</dt><dd>{{ team.notes }}</dd></div>{% end %}
+            </dl>
+            {% end %}
+            <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>{{ _("Handle") }}</th>
+                        <th>{{ _("Name") }}</th>
+                        <th>{{ _("Last Login") }}</th>
+                        <th>{{ _("Expire") }}</th>
+                        {% if options.require_email and options.validate_email %}
+                        <th>{{ _("Validation") }}</th>
+                        {% end %}
+                        {% if options.banking %}
+                        <th>{{ _("Bank Password Hash") }}</th>
+                        {% end %}
+                        <th>{{ _("Admin Notes") }}</th>
+                        <th class="text-end">{{ _("Actions") }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for index, user in enumerate(team.members) %}
+                    <tr{% if user.locked %} class="locked"{% end %}>
+                        <td class="shortcolumn text-body-secondary">{{ index + 1 }}</td>
+                        <td class="shortcolumn fw-semibold">{{ user.handle }}{% if user.locked %} <span class="badge text-bg-danger">{{ _("Locked") }}</span>{% end %}</td>
+                        <td class="shortcolumn">{% if user.name %}{{ user.name }}{% else %}<span class="text-body-secondary">{{ _("Unknown") }}</span>{% end %}</td>
+                        <td class="shortcolumn">{% if 0 < user.logins %}{{ user.last_login.strftime("%Y-%m-%d %H:%M") }}{% else %}{{ _("Never") }}{% end %}</td>
+                        <td class="shortcolumn">{% if user.expire %}{{ user.expire }}{% else %}{{ _("Never") }}{% end %}</td>
+                        {% if options.require_email and options.validate_email %}
+                        <td class="shortcolumn">{{ user.is_email_valid() }}</td>
+                        {% end %}
+                        {% if options.banking %}
+                            {% if 40 < len(user.bank_password) %}
+                            <td><a id="reveal-hash-button-{{ user.uuid }}" class="font-mono small" data-bank-hash="{{ user.bank_password }}">{{ user.algorithm }}: {{ user.bank_password[:40] }}...</a></td>
+                            {% else %}
+                            <td class="font-mono small">{{ user.algorithm }}: {{ user.bank_password }}</td>
+                            {% end %}
+                        {% end %}
+                        <td>{% if user.notes %}{{ user.notes }}{% end %}</td>
+                        <td class="shortcolumn text-end text-nowrap">
+                            {% if user.locked %}
+                            <a id="lock-user-button-{{ user.uuid }}" class="btn btn-sm btn-warning" data-uuid="{{ user.uuid }}" title="{{ _('Unlock') }}"><i class="fa fa-fw fa-lock"></i></a>
+                            {% else %}
+                            <a id="lock-user-button-{{ user.uuid }}" class="btn btn-sm btn-secondary" data-uuid="{{ user.uuid }}" title="{{ _('Lock') }}"><i class="fa fa-fw fa-unlock"></i></a>
+                            {% end %}
+                            <a class="btn btn-sm btn-secondary" href="/user?id={{ user.uuid }}" title="{{ _('Statistics') }}"><i class="fa fa-fw fa-bar-chart"></i></a>
+                            <a id="edit-user-button-{{ user.uuid }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#edit-user-modal" data-uuid="{{ user.uuid }}" data-hash-algorithm="{{ user.algorithm }}" data-team-uuid="{{ user.team.uuid }}" title="{{ _('Edit Account') }}"><i class="fa fa-fw fa-pencil"></i></a>
+                            {% if options.teams %}
+                            <a id="delete-user-button-{{ user.uuid }}" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" href="#delete-user-modal" data-uuid="{{ user.uuid }}" title="{{ _('Delete') }}"><i class="fa fa-fw fa-times-circle-o"></i></a>
+                            {% end %}
+                        </td>
+                    </tr>
+                    {% end %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </section>
+    {% end %}
+    {% end %}
+</div>
 {% end %}

@@ -12,16 +12,13 @@ $(document).ready(function() {
                 backgroundColor:'transparent',
                 polar: true,
                 type: 'line',
-                marginTop: 55
+                marginTop: 20
             },
             title: {
-                text: '<strong>' + $("#spider_skills").data("name") + '</strong>',
-                style: {
-                    color: '#FFFFFF',
-                    font: 'bold 16px "Trebuchet MS", Verdana, sans-serif',
-                    'text-shadow': '-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black',
-                },
+                text: $("#spider_skills").data("name") || null,
             },
+            colors: ['#22b5e8'],
+            credits: { enabled: false },
             tooltip: {
                 shared: true,
                 pointFormat: '<span style="color:{series.color}">{series.name}: <b>{point.y:,.0f}</b><br/>'
@@ -29,12 +26,16 @@ $(document).ready(function() {
             xAxis: {
                 categories: "",
                 tickmarkPlacement: 'on',
-                lineWidth: 0
+                lineWidth: 0,
+                gridLineColor: '#253041',
+                labels: { style: { color: '#8a97a8', fontSize: '12px' } }
             },
             yAxis: {
                 gridLineInterpolation: 'polygon',
+                gridLineColor: '#253041',
                 lineWidth: 0,
-                min: 0
+                min: 0,
+                labels: { enabled: false }
             },
             legend: {
                 enabled: false,
@@ -62,4 +63,15 @@ $(document).ready(function() {
             skill_chart.series[0].setData($.parseJSON(skillvalues), true);
         });
     }
+});
+
+/* Copy-to-clipboard buttons (team code) */
+$(document).ready(function() {
+    $("[data-copy-target]").click(function() {
+        var button = $(this);
+        var text = $(button.data("copy-target")).text().trim();
+        navigator.clipboard.writeText(text).then(function() {
+            button.html('<i class="fa fa-check"></i> Copied');
+        });
+    });
 });

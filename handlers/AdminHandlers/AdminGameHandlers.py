@@ -646,11 +646,6 @@ class AdminImportXmlHandler(BaseHandler):
         return tmp_file.name
 
     def refresh_app_config(self):
-        # Update default theme
-        self.application.ui_modules["Theme"].theme = Theme.by_name(
-            options.default_theme
-        )
-
         # Callback functions  - updates and starts/stops the botnet callback
         self.application.settings["score_bots_callback"].stop()
         self.application.score_bots_callback = PeriodicCallback(

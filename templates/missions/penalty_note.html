@@ -1,0 +1,12 @@
+{% from tornado.options import options %}
+{% if options.penalize_flag_value and team and not user.is_admin() %}
+{% set ordinal = lambda n: str(n) + ("th" if 4 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")) %}
+<div class="penalty-note">
+    <i class="fa fa-fw fa-minus-circle"></i>
+    <span>
+        {{ _("Wrong answers cost") }} {{ options.flag_penalty_cost }}% {{ _("of the flag's value, from your") }}
+        {{ ordinal(options.flag_start_penalty) }} {{ _("attempt through your") }} {{ ordinal(options.flag_stop_penalty - 1) }}.
+        {{ _("No further penalty after that.") }}
+    </span>
+</div>
+{% end %}

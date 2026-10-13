@@ -1,158 +1,111 @@
-/* Page-specific layout for the admin dashboard.
-   The overall look (body font, panel/card styling, headings, buttons, alerts)
-   now comes from the Cyborg theme's restored design tokens, so this file only
-   carries dashboard-specific layout that the theme can't express. */
-
-/* Grid-architecture offset: BS2's admin dashboard used the row-fluid/span
-   percentage grid (container-fluid 20px padding, row-fluid flush against it,
-   spans getting a ~2.13% gutter), which put the main-content column's left
-   edge at x=317.89 (measured live at 1117px viewport width). BS5's .row
-   instead bleeds -12px (half the 1.5rem gutter) past the container's 20px
-   padding, with col-md-8 adding only 12px of padding back, landing at
-   x=295.25 — 22.64px short. col-md-3 (25%) + col-md-8 (66.67%) only account
-   for 11 of 12 grid columns, leaving ~91.75px of unused trailing space in
-   the row, so col-md-8 can simply borrow some of that slack via margin-left
-   instead of resizing the whole row (which would also shrink both columns'
-   widths via their flex-basis percentages). See the col-md-3 padding
-   correction below for the sidebar's own (different) residual offset. */
-.admin-dashboard > .col-md-8 {
-    margin-left: 22.64px;
+/* Admin dashboard (templates/admin/home.html). */
+.game-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
 }
-
-/* Sidebar (Game Control etc.) inner card: BS2's equivalent (.span11.offset1
-   inside .span3) landed at x=46.06 with a width of 248.91px. col-md-3's own
-   box position/width is untouched by the col-md-8 fix above; its nested
-   .col-md-11.offset-md-1 card lands at x=30.94, width 252.31 by default
-   (15.12px short on the left edge). Widening col-md-3's own padding to push
-   the card right would also shrink the card's own percentage-based width
-   (it did, down to 237px, which then threw off the Game Control button-row
-   text-wrap thresholds downstream) — so instead override the card's
-   position AND width directly in px, decoupling it from Bootstrap's
-   percentage grid math entirely, to match BOTH BS2 measurements at once. */
-.admin-dashboard > .col-md-3 .row > .col-md-11.offset-md-1 {
-    margin-left: 38.06px;
-    /* Bootstrap's col-md-11 is a flex item (flex-grow/shrink:1) inside the
-       flex .row, with its own max-width:100% cap — an explicit width alone
-       gets flex-shrunk back down (measured: shrank to 237px) since
-       margin-left + width exceeds the row's available flex-line space.
-       flex: 0 0 <width> pins it to the exact width without growing/shrinking,
-       and max-width: none removes Bootstrap's cap so it can't clamp it back. */
-    flex: 0 0 248.91px;
-    max-width: none;
-}
-
-/* Game Control: measured live, BS2's button+label row was NOT a flexbox — a
-   small inline-block icon button (44x30px, padding 4px 12px, margin-right
-   12px) immediately followed by a genuinely inline <h4> label (font-size
-   17.5px, margin 10px 0). That lets the label wrap around the button like
-   ordinary text once the row is too narrow for both: for the longest label
-   ("Resume Registration"/"Pause Registration" depending on game state), the
-   text actually wraps to 2 lines, with the *second* line reflowing to the
-   row's full width (not staying indented beside the button), since the
-   button is only inline-block, not floated. A flexbox row can't reproduce
-   that float-style wrap, so recreate the original inline layout instead of
-   faking it. Measured .game_button_area margin: 18px 10px (not flex gap). */
-.game_button_area {
-    margin: 18px 10px;
-}
-/* .game_button_area is a direct flex-item child of .card (flex column), so
-   its own top/bottom margins ADD against the next .game_button_area instead
-   of collapsing like BS2's plain-block ".well" did (measured live: BS2's
-   button-row gap was 18px; BS5 was rendering 36px = 18+18). Zero the
-   margin-top on every area that follows another one so only one 18px margin
-   survives between rows, matching BS2's collapsed 18px — the first area's
-   own margin-top (spacing under the "Game Control" heading) and every area's
-   margin-bottom (trailing spacing) are left untouched. */
-.game_button_area + .game_button_area {
-    margin-top: 0;
-}
-.game_button {
-    display: inline-block;
-    margin-right: 12px;
-    padding: 4px 12px;
-    font-size: 14px;
-}
-.game_button_text {
-    display: inline;
-    margin: 10px 0;
-    vertical-align: middle;
-}
-/* The optional "Closes in approximately…" sub-line (Pause-Registration
-   branch) is a plain <p>, block-level by default, so it already drops to its
-   own full-width line below the inline button+label content with no extra
-   CSS needed; the template sets its own margin: 0 inline. */
-
-/* Notification list rows: the original showed the small status icon inline-left,
-   vertically aligned with its text. The BS5 markup left the icon (floated inside
-   a col) sitting above the text. Neutralize the float/padding and vertically
-   center the icon column against the message so each row reads as one line. */
-.admin-dashboard .card .row:has(> .msgdescription) {
+.status-pill {
+    display: inline-flex;
     align-items: center;
-    flex-wrap: nowrap;
+    gap: 0.4rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+    background: var(--rtb-surface-overlay);
+    border: 1px solid var(--bs-border-color);
 }
-.admin-dashboard .card .row > .col-md-1 img {
-    float: none !important;
-    padding-bottom: 0 !important;
+.status-pill::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--bs-danger);
 }
-.admin-dashboard .msgdescription {
-    padding-top: 0 !important;
+.status-pill.is-on::before {
+    background: var(--bs-success);
 }
-.admin-dashboard .msgdescription p {
+.game-action {
+    text-align: left;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+    gap: 0.75rem;
+}
+.metric {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.5rem;
+    align-items: center;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--bs-border-radius);
+    background: var(--rtb-surface-overlay);
+}
+.metric > .fa {
+    grid-row: span 2;
+    color: var(--rtb-accent);
+}
+.metric-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+    line-height: 1.2;
+}
+.metric-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--bs-secondary-color);
+}
+
+.kv-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+.kv-list dt {
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+.kv-list dd {
+    margin: 0;
+}
+
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.notification-list > li {
+    display: flex;
+    gap: 0.85rem;
+    padding: 0.75rem 0;
+}
+.notification-list > li + li {
+    border-top: 1px solid var(--bs-border-color);
+}
+.notification-list img,
+.notification-icon-placeholder {
+    flex: none;
+    width: 28px;
+    height: 28px;
+}
+.notification-time {
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+    margin-left: 0.25rem;
+}
+.notification-message {
+    color: var(--bs-body-color);
+    overflow-wrap: anywhere;
+}
+
+.admin-dashboard .row > [class*="col-"] > .card:last-child {
     margin-bottom: 0;
-}
-
-/* Automatic Ban form: the sidebar column (col-md-11 offset-md-1 inside
-   col-md-3, ~262px wide) is too narrow for a side-by-side col-sm-3/col-sm-9
-   label+input layout — "Threshold" wraps to two lines. Stack label above
-   input (full width) to match the original block layout. */
-.admin-dashboard .card form .row.mb-3 > label.col-form-label,
-.admin-dashboard .card form .row.mb-3 > [class*="col-sm-"] {
-    flex: 0 0 100%;
-    max-width: 100%;
-}
-.admin-dashboard .card form .row.mb-3 > label.col-form-label {
-    padding-bottom: 0;
-    margin-bottom: 5px;
-}
-
-/* Automatic Ban form rows: BS2's equivalent rows were plain ".control-group"
-   divs with the Bootstrap 2 default margin-bottom: 10px. The BS5 markup uses
-   ".row.mb-3" (Bootstrap's spacing utility, 16px !important) instead, which
-   has no exact 10px utility equivalent — measured live, the Enable/Disable ->
-   Threshold -> Save row gaps were 10px on BS2 vs 16px on BS5. These rows sit
-   in a plain-block <form> (not a flex container), so they collapse normally
-   in both versions; this is just a bigger utility value, not a flex/collapse
-   bug. Override back to the BS2 value. */
-.admin-dashboard .card form .row.mb-3 {
-    margin-bottom: 10px !important;
-}
-
-/* Threshold input: BS2's #threshold-size was a plain, unclassed <input
-   type="text"> with no width property at all (display: inline-block, so it
-   just took the browser's natural text-input width — measured live at
-   ~220x30px border-box). BS5's .form-control is display:block; width:100%
-   by design (Bootstrap's intentional default — do not change that globally,
-   it would break every other form on the site), which is why this one input
-   stretches to fill the card. Pin just this input back to BS2's measured
-   width. */
-#threshold-size {
-    width: 220px;
-}
-
-.gitstatus {
-    padding-left: 15px;
-    font-size: 150%;
-}
-.gitstatus.info {
-    color: #4d9ecb;
-}
-.gitstatus.ok {
-    color: #adff2f;
-}
-.gitstatus.warn {
-    color: #eff834;
-}
-.gitform {
-    padding-top: 15px;
-    padding-left: 15px;
 }

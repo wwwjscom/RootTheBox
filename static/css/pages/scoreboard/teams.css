@@ -1,64 +1,117 @@
-/* Scoreboard teams/players page (/teams, templates/scoreboard/teams.html).
-   Scoped under `.scoreboard-teams` (added to the template's content
-   wrapper) so these rules never leak onto the History/Projector pages that
-   share static/css/pages/public/summary.css. */
-
-/* Same float-inside-a-flex-row bug as summary.html's header (see that
-   file's comment for the full mechanism): BS2's floated
-   `<div style="float:right;margin-top:-15px;">` (pagination + "per page"
-   selector) shrink-wrapped and hugged the row's right edge; BS5's `.row`
-   is flex, float is a no-op on a flex item, and the div's unconstrained
-   width resolved to the row's full width instead, landing the controls
-   flush left. This div has no `margin-right` override (unlike summary.html
-   -- teams.html's pagination sits directly against the column edge), so
-   `right:0` alone reproduces it. */
-.scoreboard-teams > .row > .col-md-10 {
-  position: relative;
+/* Teams / players scoreboard (templates/scoreboard/teams.html). */
+.scoreboard-teams {
+    max-width: 1320px;
+    margin: 0 auto;
 }
-.scoreboard-teams > .row > .col-md-10 > div[style*="float:right"] {
-  position: absolute;
-  float: none !important;
-  top: 0;
-  left: auto;
-  right: 0;
-  width: auto;
+.teams-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.teams-header h1 > .fa {
+    color: var(--rtb-accent);
+}
+.teams-paging {
+    margin-left: auto;
 }
 
-/* BS2's real `.row-fluid` percentages (measured live): span2
-   14.893617021276595%, span10 82.97872340425532%, gutter
-   2.127659574468085%. BS5's default `col-md-2`/`col-md-10` (16.667%/
-   83.333%, gutter folded into --bs-gutter-x padding instead of a visible
-   margin) are close enough at 1280px to be easy to miss (~3px off) but
-   drift further apart at wider viewports (measured ~13px off at 1920px).
-   Zero the built-in gutter and rebuild BS2's model explicitly: span2 width
-   + a real gutter margin + span10 width, summing to exactly 100% at every
-   breakpoint instead of approximating it. */
-.scoreboard-teams > .row {
-  --bs-gutter-x: 0;
+/* Team cards */
+.team-card {
+    scroll-margin-top: 5rem;
 }
-.scoreboard-teams > .row > .col-md-2 {
-  flex: 0 0 14.893617021276595%;
-  max-width: 14.893617021276595%;
+.team-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
 }
-.scoreboard-teams > .row > .col-md-10 {
-  flex: 0 0 82.97872340425532%;
-  max-width: 82.97872340425532%;
-  margin-left: 2.127659574468085%;
+.team-avatar {
+    width: 120px;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+    border-radius: var(--bs-border-radius);
+    border: 1px solid var(--bs-border-color);
 }
-
-/* Sticky sidebar (`#navWrapper.affix`): the `.affix{position:fixed}`
-   restoration lives sitewide in cyborg.min.css (it's a generic BS2 utility
-   class also used by 2 admin/view pages), since that's where the actual
-   positioning behavior comes from. Nothing page-specific needed here --
-   `templates/js/pages/anchor.js`'s existing `adjustNavigation()` (already
-   `<script>`-included by this template) does the rest, computing `top`/
-   `bottom` inline styles to keep the sidebar clear of the footer exactly
-   like it did before the port. */
-
-/* BS5's `.form-select` reserves ~48px of right padding for its caret icon
-   on top of BS2's plain native `<select style="width:80px">` -- at the
-   inherited 80px width that leaves ~16px for the actual digits, clipping
-   "100"/"250". Widen just this control (not `.form-select` globally). */
-.scoreboard-teams #page_count {
-  width: 100px !important;
+.team-card-title {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+.team-card-title h2 {
+    font-size: 1.35rem;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+.team-rank {
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
+}
+.team-motto {
+    margin: 0.2rem 0 0;
+    color: var(--bs-secondary-color);
+    font-style: italic;
+}
+.team-stats {
+    display: flex;
+    gap: 1.75rem;
+    margin: 0;
+}
+.team-stats dt {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+.team-stats dd {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+    font-variant-numeric: tabular-nums;
+}
+.team-members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+.team-member {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+    border-radius: 999px;
+    background: var(--rtb-surface-overlay);
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-body-color);
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+.team-member:hover {
+    border-color: var(--rtb-accent);
+    color: var(--bs-emphasis-color);
+    text-decoration: none;
+}
+.team-member img {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.team-levels {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+.team-level {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex: 1;
+}
+.team-level .progress {
+    flex: 1;
+    --bs-progress-height: 6px;
+    --bs-progress-bar-bg: var(--bs-success);
 }

@@ -94,6 +94,23 @@ class Theme(DatabaseObject):
         return dbsession.query(cls).filter_by(_name=str(name)).first()
 
     @classmethod
+    def default(cls):
+        """The configured default theme, or the first theme if it no longer exists
+        (e.g. an old rootthebox.cfg still naming a theme dropped by 2.1c)"""
+        theme = cls.by_name(options.default_theme)
+        if theme is None:
+            theme = dbsession.query(cls).order_by(cls.id).first()
+            if theme is not None and not cls._warned_missing_default:
+                cls._warned_missing_default = True
+                logging.warning(
+                    "default_theme '%s' not found; using '%s'"
+                    % (options.default_theme, theme.name)
+                )
+        return theme
+
+    _warned_missing_default = False
+
+    @classmethod
     def _filter_string(cls, string, extra_chars=""):
         """Remove any non-white listed chars from a string"""
         char_white_list = ascii_letters + digits + extra_chars
@@ -115,10 +132,5 @@ class Theme(DatabaseObject):
             for _file in self.files:
                 yield _file
         except:
-            logging.error(
-                "Session Expired - returning default theme: %s" % options.default_theme
-            )
-            if self.name == "386":
-                yield "386.js"
-            else:
-                yield "%s.min.css" % self.name.lower()
+            logging.error("Session Expired - returning plain Bootstrap theme")
+            yield "bootstrap.min.css"
