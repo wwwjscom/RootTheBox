@@ -3,12 +3,6 @@
 {% block title %}{{ _("Home") }}{% end %}
 
 {% block header %}
-{% from models.Category import Category %}
-<script>
-    var categories = '{{ Category.list() }}'.replaceAll('&quot;','"');
-</script>
-<script src="/static/js/libs/highcharts-all.js"></script>
-<script src="/static/js/libs/highcharts-more.js"></script>
 <script src="/static/js/pages/user/home.js"></script>
 <link href="/static/css/pages/user/home.css" rel="stylesheet" />
 {% end %}
@@ -97,10 +91,9 @@
     </section>
 
     {% set show_team_code = options.teams and team is not None and not visitor %}
-    {% set show_skills = team is not None and game_started and len(Category.all()) > 2 %}
     <div class="row g-4">
         <!-- Targets -->
-        <div class="{% if show_team_code or show_skills %}col-lg-8{% else %}col-12{% end %}">
+        <div class="{% if show_team_code %}col-lg-8{% else %}col-12{% end %}">
             {% if team is not None and game_started %}
             {% for (level, unlocked, boxes) in targets %}
             <section class="target-level{% if not unlocked %} is-locked{% end %}">
@@ -144,9 +137,8 @@
         </div>
 
         <!-- Sidebar -->
-        {% if show_team_code or show_skills %}
+        {% if show_team_code %}
         <aside class="col-lg-4">
-            {% if show_team_code %}
             <section class="side-panel">
                 <h2>{{ _("Invite teammates") }}</h2>
                 <p>{{ _("Players join") }} {{ team.name }} {{ _("with this code.") }}</p>
@@ -155,16 +147,6 @@
                     <button type="button" class="btn btn-sm btn-secondary" data-copy-target="#team-code-value"><i class="fa fa-clipboard"></i> {{ _("Copy") }}</button>
                 </div>
             </section>
-            {% end %}
-
-            {% if show_skills %}
-            <!-- The spider chart only reads well with at least 3 categories -->
-            <section class="side-panel">
-                <h2>{{ _("Skills") }}</h2>
-                <div id="spider_skills" class="skill-chart" data-uuid="{{ team.uuid }}" data-name=""></div>
-            </section>
-            {% end %}
-
         </aside>
         {% end %}
     </div>

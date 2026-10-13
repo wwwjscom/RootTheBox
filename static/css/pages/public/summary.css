@@ -23,8 +23,3 @@
     text-shadow: 0 0 2px #e69d00, 0 0 6px #e69d00, 0 0 18px #e69d00, 0 0 24px #e69d00, 0 0 30px #e69d00;
   }
 }
-/* History page chart toolbar: let its items wrap on narrow screens */
-.history-toolbar .container-fluid,
-.history-toolbar .navbar-nav {
-    flex-wrap: wrap;
-}
