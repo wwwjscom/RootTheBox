@@ -28,8 +28,8 @@
         {% end %}
     {% end %}
     <div class="card card-body">
-        <div class="row">
-            <div class="col-md-4">
+        <div class="row g-4">
+            <div class="col-lg-8">
                 <form class="form-horizontal" action="/admin/create/flag/choice" method="post">
                     {% raw xsrf_form_html() %}
                     <input id="flagtype" type="hidden" value="choice" />
@@ -79,14 +79,13 @@
                             </textarea>
                         </div>
                     </div>
-                    <div class="row mb-3" style="margin-bottom: 10px;">
-                        <label class="col-sm-3 col-form-label" for="token" style="margin-left: -20px;">{{_("Multiple Choice")}}</label>
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">{{_("Multiple Choice")}}</label>
                         <div class="col-sm-9">
-                                <div class="input-group row mb-3 after-add-more" style="position: relative; margin-bottom: 10px;">
-                                    <input class="form-check-input" type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" required /><input type="text" name="addmore[]" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
-                                    <div class="input-group-btn" style="position: absolute; left: 228px; top: 0px;"> 
-                                        <button class="btn btn-success add-more" type="button"style="padding: 4px 10px 0px; vertical-align: middle;"><i class="fa fa-plus" style="font-size: 160%;"></i></button>
-                                    </div>
+                                <div class="choice-row input-group mb-2 after-add-more">
+                                    <div class="input-group-text" title="{{_('Correct answer')}}"><input class="form-check-input mt-0" type="radio" name="multichoice" aria-label="{{_('Correct answer')}}" required /></div>
+                                    <input type="text" name="addmore[]" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
+                                    <button class="btn btn-success add-more" type="button" title="{{_('Add choice')}}" aria-label="{{_('Add choice')}}"><i class="fa fa-plus"></i></button>
                                 </div>
                             <input required id="token" name="token" type="hidden" placeholder="{{_('Multiple Choice Flag')}}" autocomplete="off">
                         </div>
@@ -110,7 +109,7 @@
                     </div>
                     {% end %}
                     <div class="row mb-3">
-                        <div class="col-sm-9">
+                        <div class="offset-sm-3 col-sm-9">
                             <button id="createflag" class="btn btn-primary" type="submit">{{_("Create Flag")}}</button>
                         </div>
                     </div>
@@ -118,14 +117,13 @@
             </div>
             <!-- Copy Fields -->
             <div class="copy d-none">
-                <div class="choice-row mb-3 input-group" style="margin-bottom: 10px; position: relative;">
-                    <input class="form-check-input" type="radio" name="multichoice" style="position: absolute; left: -22px; top: 4px;" /><input type="text" name="addmore[]" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
-                    <div class="input-group-btn" style="position: absolute; left: 228px; top: 0px;"> 
-                        <button class="btn btn-danger remove" type="button" style="padding: 3px 10px 1px; vertical-align: middle;"><i class="fa fa-times" style="font-size: 160%;"></i></button>
-                    </div>
+                <div class="choice-row input-group mb-2">
+                    <div class="input-group-text" title="{{_('Correct answer')}}"><input class="form-check-input mt-0" type="radio" name="multichoice" aria-label="{{_('Correct answer')}}" /></div>
+                    <input type="text" name="addmore[]" maxlength="256" class="form-control" placeholder="{{_('Enter Choice')}}">
+                    <button class="btn btn-danger remove" type="button" title="{{_('Remove choice')}}" aria-label="{{_('Remove choice')}}"><i class="fa fa-times"></i></button>
                 </div>
             </div>
-            <div class="offset-md-3 col-md-4">
+            <div class="col-lg-4">
                 <p>
                     <blockquote>
                         <small>

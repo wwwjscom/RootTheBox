@@ -100,12 +100,12 @@ $(document).ready(function() {
     });
 
     $("body").on("click",".remove",function(){ 
-        $(this).parents(".choice-control-group").remove();
+        $(this).closest(".choice-row").remove();
     });
 
     $("form").submit(function(){
         if ($("#flagtype").val() === "choice") {
-            $("#token").val($('input[name=multichoice]:checked').next('input').val());
+            $("#token").val($('input[name=multichoice]:checked').closest('.choice-row').find('input[type=text]').val());
         }
     });
     let searchParams = new URLSearchParams(window.location.search)

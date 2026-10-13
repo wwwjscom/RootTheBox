@@ -28,8 +28,8 @@
         {% end %}
     {% end %}
     <div class="card card-body">
-        <div class="row">
-            <div class="col-md-4">
+        <div class="row g-4">
+            <div class="col-lg-8">
                 <form class="form-horizontal" action="/admin/create/flag/datetime" method="post">
                     {% raw xsrf_form_html() %}
                     <input id="flagtype" type="hidden" value="datetime" />
@@ -116,13 +116,13 @@
                     </div>
                     {% end %}
                     <div class="row mb-3">
-                        <div class="col-sm-9">
+                        <div class="offset-sm-3 col-sm-9">
                             <button class="btn btn-primary" type="submit">{{_("Create Flag")}}</button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="offset-md-3 col-md-4">
+            <div class="col-lg-4">
                 <p>
                     <blockquote>
                         <small>
