@@ -34,16 +34,18 @@
         or data to non-admins in the first place.
     -->
     <body data-is-admin="{% if handler.current_user and handler.current_user.is_admin() %}true{% else %}false{% end %}">
-        {% module Menu() %}
+        {% block navbar %}{% module Menu() %}{% end %}
         <div class="container-fluid animated fadeIn">
             {% block content %} {{ _("Content Missing") }} {% end %}
            
         </div><!--/.fluid-container-->
+        {% block site_footer %}
         <footer>
             {% from tornado.options import options %}
             Powered by <a href="https://github.com/wwwjscom/RootTheBox" target="_blank">Root the Box</a> &copy; {{ datetime.date.today().year }}{% if options.privacy_policy_link %} • <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a>{% end %} • <a href="https://github.com/moloch--/RootTheBox" target="_blank">{{ _("Original Repo") }}</a>
             <span class="footer-extra">{% raw options.org_footer %}</span>
          </footer>
+        {% end %}
    
     </body>
 </html>

@@ -29,9 +29,6 @@
     color: var(--bs-secondary-color);
     font-variant-numeric: tabular-nums;
 }
-#summary_table .rank-cell.rank-1 { color: #f5c542; }
-#summary_table .rank-cell.rank-2 { color: #c8d3df; }
-#summary_table .rank-cell.rank-3 { color: #d99a5b; }
 #summary_table .team-line {
     display: flex;
     flex-wrap: wrap;
@@ -67,16 +64,10 @@
     gap: 4px;
     flex: 1;
 }
-#summary_table .progress-segment > .fa {
-    font-size: 0.75rem;
-    color: var(--bs-secondary-color);
-}
-#summary_table .progress-segment > .fa.is-locked {
-    color: var(--rtb-border-strong);
-}
 #summary_table .progress-segment .progress {
     flex: 1;
     --bs-progress-height: 6px;
+    --bs-progress-bar-bg: var(--bs-success);
 }
 #summary_table .stat-cell {
     width: 5rem;

@@ -48,9 +48,6 @@
     color: var(--bs-secondary-color);
     font-variant-numeric: tabular-nums;
 }
-.team-rank.rank-1 { color: #f5c542; }
-.team-rank.rank-2 { color: #c8d3df; }
-.team-rank.rank-3 { color: #d99a5b; }
 .team-motto {
     margin: 0.2rem 0 0;
     color: var(--bs-secondary-color);
@@ -113,14 +110,8 @@
     gap: 0.35rem;
     flex: 1;
 }
-.team-level > .fa {
-    font-size: 0.8rem;
-    color: var(--bs-secondary-color);
-}
-.team-level > .fa.is-locked {
-    color: var(--rtb-border-strong);
-}
 .team-level .progress {
     flex: 1;
     --bs-progress-height: 6px;
+    --bs-progress-bar-bg: var(--bs-success);
 }

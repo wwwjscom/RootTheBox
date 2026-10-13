@@ -472,9 +472,10 @@ pre code {
     --bs-badge-font-weight: 600;
     letter-spacing: 0.02em;
 }
+/* The empty track uses the strong border colour so it stays visible on cards. */
 .progress,
 .progress-stacked {
-    --bs-progress-bg: var(--rtb-surface-overlay);
+    --bs-progress-bg: var(--rtb-border-strong);
     --bs-progress-bar-bg: var(--rtb-accent);
     --bs-progress-height: 0.6rem;
     --bs-progress-border-radius: 999px;
@@ -506,7 +507,7 @@ pre code {
     height: 5px;
     border-radius: 3px;
     overflow: hidden;
-    background: var(--rtb-surface-hover);
+    background: var(--rtb-border-strong);
 }
 .level-pill-bar > span {
     display: block;
@@ -554,7 +555,8 @@ pre code {
     --bs-table-bg: var(--bs-danger-bg-subtle);
 }
 
-/* Sticky in-page index (teams scoreboard, target management) */
+/* Sticky in-page index (teams scoreboard, target management, statistics):
+   a raised panel so it reads as separate navigation, not page content. */
 .page-index {
     position: sticky;
     top: 5.5rem;
@@ -562,11 +564,14 @@ pre code {
     flex-direction: column;
     max-height: calc(100vh - 7rem);
     overflow-y: auto;
-    border-left: 1px solid var(--bs-border-color);
+    padding: 0.5rem 0;
+    background: var(--rtb-surface-raised);
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-lg);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 .page-index a {
-    padding: 0.35rem 0.85rem;
-    margin-left: -1px;
+    padding: 0.4rem 1rem;
     border-left: 2px solid transparent;
     color: var(--bs-secondary-color);
     text-decoration: none;
@@ -574,9 +579,12 @@ pre code {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.page-index a:hover {
+.page-index a:hover,
+.page-index a:focus-visible {
     color: var(--bs-emphasis-color);
+    background: var(--rtb-surface-hover);
     border-left-color: var(--rtb-accent);
+    text-decoration: none;
 }
 .page-index .rank {
     display: inline-block;
@@ -588,13 +596,19 @@ pre code {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 0.85rem 0.35rem;
+    padding: 0.6rem 1rem 0.5rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid var(--bs-border-color);
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--bs-body-color);
+    color: var(--bs-emphasis-color);
 }
 .page-index-heading:first-child {
-    padding-top: 0;
+    padding-top: 0.25rem;
+}
+.page-index a + .page-index-heading {
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--bs-border-color);
 }
 
 /* Box briefing text (box page, target management) */
@@ -677,4 +691,19 @@ footer a {
 }
 footer a:hover {
     color: var(--rtb-accent);
+}
+
+/* --------------------------------------------------------- page background */
+/* "Aurora": faint cyan (top-left) and violet (bottom-right) corner glows over a
+   deep-navy wash, on a fixed layer behind all content. */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 60% 50% at 0% 0%, rgba(var(--rtb-accent-rgb), 0.11), transparent 70%),
+        radial-gradient(ellipse 55% 45% at 100% 100%, rgba(139, 124, 246, 0.09), transparent 70%),
+        linear-gradient(180deg, #0c1420 0%, var(--rtb-surface-page) 60%);
 }

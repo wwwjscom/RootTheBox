@@ -3,10 +3,17 @@
     min-width: 375px !important;
 }
 
-/* Game countdown in the navbar. Flex alignment handles vertical centring in
-   Bootstrap 5, so no line-height hack is needed. */
+/* Game countdown in the navbar: fill the nav item's height and centre the
+   content, so it lines up with the neighbouring nav links. */
+#nav-countdown:not([style*="display: none"]) {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 100%;
+}
 #nav-countdown {
     padding: 0 15px;
+    font-variant-numeric: tabular-nums;
     font-size: 20px;
     font-weight: bold;
     white-space: nowrap;
@@ -17,8 +24,8 @@
 }
 /* Endgame warnings - under 5 minutes, then under 1 minute */
 #nav-countdown.countdown-warning {
-    color: #f89406;
+    color: var(--bs-warning);
 }
 #nav-countdown.countdown-critical {
-    color: #ee5f5b;
+    color: var(--bs-danger);
 }

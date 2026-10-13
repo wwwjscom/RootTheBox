@@ -51,6 +51,7 @@
     <div class="row g-4">
         <nav class="col-lg-3 d-none d-lg-block">
             <div class="page-index">
+                <div class="page-index-heading"><i class="fa fa-users"></i> {{ noun }}</div>
                 {% for t_index, team in enumerate(teams) %}
                 {% set rank = page * display - display + t_index + 1 %}
                 <a href="#{{ team.uuid }}"><span class="rank">{{ rank }}</span> {{ team.name }}</a>
@@ -66,7 +67,7 @@
                     <header class="team-card-header">
                         <img class="team-avatar" src="/avatars/{{ team.avatar }}" alt="">
                         <div class="team-card-title">
-                            <h2><span class="team-rank{% if rank <= 3 %} rank-{{ rank }}{% end %}">#{{ rank }}</span> {{ team.name }}</h2>
+                            <h2><span class="team-rank">#{{ rank }}</span> {{ team.name }}</h2>
                             {% if team.motto %}<p class="team-motto">&ldquo;{{ team.motto }}&rdquo;</p>{% end %}
                         </div>
                         <dl class="team-stats">
@@ -94,9 +95,6 @@
                         {% set captured = len(team.level_flags(level.number)) %}
                         {% set pct = (100.0 * captured / len(level.flags)) if len(level.flags) else 0 %}
                         <div class="team-level" title="{% if len(gamelevels) > 1 %}{{ level.name }} &ndash; {% end %}{{ int(pct) }}%">
-                            {% if len(gamelevels) > 1 %}
-                            <i class="fa {% if level.type == 'none' or level in team.game_levels %}fa-unlock-alt{% else %}fa-lock is-locked{% end %}"></i>
-                            {% end %}
                             <div class="progress"><div class="progress-bar" style="width: {{ pct }}%;"></div></div>
                         </div>
                         {% end %}

@@ -1,0 +1,47 @@
+/* Projector scoreboard (templates/scoreboard/projector.html). Builds on
+   scoreboard/summary.css, scaled up to be read from across a room. */
+
+/* The page has no navbar, so drop the space main.css reserves for one. */
+body:has(.scoreboard-projector) {
+    padding-top: 0;
+}
+.scoreboard-projector {
+    padding: 2rem 1rem;
+}
+.scoreboard-projector .scoreboard-header {
+    justify-content: space-between;
+}
+.scoreboard-projector #timercount {
+    font-variant-numeric: tabular-nums;
+}
+
+#summary_table .rank-cell {
+    width: 4.5rem;
+    font-size: 1.6rem;
+}
+#summary_table .team-name {
+    font-size: 1.35rem;
+}
+#summary_table .team-meta {
+    font-size: 0.95rem;
+}
+#summary_table .team-progress {
+    gap: 8px;
+}
+#summary_table .progress-segment .progress {
+    --bs-progress-height: 8px;
+}
+#summary_table .stat-cell {
+    width: 7rem;
+    font-size: 1.2rem;
+}
+#summary_table .stat-cell.is-rank-metric {
+    font-size: 1.6rem;
+}
+
+/* No player names or Details buttons on a public display. */
+#summary_table .admin-player-name,
+#summary_table th:last-child,
+#summary_table td:last-child {
+    display: none;
+}

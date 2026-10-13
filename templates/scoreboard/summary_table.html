@@ -10,7 +10,7 @@
     {% if team.get('members_count') > 0 %}
     {% set rank = page * display - display + t_index + 1 %}
     <tr id="{{ team.get('uuid') }}">
-        <td class="summarycolumn shortcolumn rank-cell{% if rank <= 3 %} rank-{{ rank }}{% end %}">{{ rank }}</td>
+        <td class="summarycolumn shortcolumn rank-cell">{{ rank }}</td>
         <td style="display:none;">{{ team.get('uuid') }}</td>
         <td class="summarycolumn anim:hold">
             <div class="team-line">
@@ -34,10 +34,8 @@
                         {% continue %}
                     {% end %}
                     {% if level_count_all > 1 and box_count_lvl > 0 and box_count_lvl < box_count_all %}
-                        {% set unlocked = level.get("type") == 'none' or not team or team_level.get("lvl_unlock") %}
                         {% set pct = (team_count_lvl / float(level.get('flag_count')) * 100.0) if level.get("number") >= 0 and team_count_lvl != 0 else 0 %}
                         <div class="summarycolumn progress-segment" title="{% if level_count_all > 1 %}{{ level_name }} &ndash; {% end %}{{ int(pct) }}%">
-                            <i class="fa {% if unlocked %}fa-unlock-alt{% else %}fa-lock is-locked{% end %}"></i>
                             <div class="progress"><div class="progress-bar" style="width: {{ pct }}%;"></div></div>
                         </div>
                     {% elif box_count_lvl > 0 %}
