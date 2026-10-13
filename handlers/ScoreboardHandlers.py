@@ -43,8 +43,6 @@ from libs.SecurityDecorators import (
     use_black_market,
 )
 from models import dbsession
-from models.Box import Box
-from models.Category import Category
 from models.Team import Team
 from models.User import ADMIN_PERMISSION, User
 from models.WallOfSheep import WallOfSheep
@@ -132,11 +130,9 @@ class ScoreboardAjaxHandler(BaseHandler):
         uri = {
             "summary": self.summary_table,
             "team": self.team_details,
-            "skills": self.team_skills,
             "mvp": self.mvp_table,
             "timer": self.timediff,
             "feed": self.json_feed,
-            "history": self.history_data,
         }
         if len(args) and args[0] in uri:
             uri[args[0]]()
@@ -236,118 +232,12 @@ class ScoreboardAjaxHandler(BaseHandler):
             self.write({"error": "Team does not exist"})
         self.finish()
 
-    def team_skills(self):
-        """Returns team details in JSON form"""
-        uuid = self.get_argument("uuid", "")
-        if uuid == "":
-            user = self.get_current_user()
-            if user:
-                team = user.team
-        else:
-            team = Team.by_uuid(uuid)
-        if team is not None:
-            categories = Category.all()
-            catlist = {}
-            for cat in categories:
-                catbox = Box.by_category(cat.id)
-                if len(catbox) > 0:
-                    catlist[int(cat.id)] = 0
-            for flag in team.flags:
-                box = flag.box
-                if box and box.category_id is not None:
-                    catlist[int(box.category_id)] += 1
-            skillvalues = []
-            for val in catlist:
-                skillvalues.append(catlist[val])
-            self.write(str(skillvalues))
-        else:
-            self.write({"error": "Team does not exist"})
-        self.finish()
-
-    def history_data(self):
-        """Send history in JSON"""
-        top = int(self.get_argument("top", 10))
-        teams = self.application.settings["scoreboard_state"]["teams"]
-        score_teams = [
-            team["uuid"]
-            for team in sorted(teams.values(), key=lambda d: d["money"], reverse=True)[
-                0:top
-            ]
-        ]
-        flag_teams = [
-            team["uuid"]
-            for team in sorted(
-                teams.values(), key=lambda d: len(d["flags"]), reverse=True
-            )[0:top]
-        ]
-        bot_teams = [
-            team["uuid"]
-            for team in sorted(
-                teams.values(), key=lambda d: d["bot_count"], reverse=True
-            )[0:top]
-        ]
-        history = {
-            "history": {
-                "bot_count": {},
-                "flag_count": {},
-                "score_count": {},
-            }
-        }
-        for uuid in flag_teams:
-            team = Team.by_uuid(uuid)
-            if team:
-                history["history"]["flag_count"][team.name] = team.get_history("flags")
-        for uuid in score_teams:
-            team = Team.by_uuid(uuid)
-            if team:
-                history["history"]["score_count"][team.name] = team.get_history("score")
-        for uuid in bot_teams:
-            team = Team.by_uuid(uuid)
-            if team:
-                history["history"]["bot_count"][team.name] = team.get_history("bots")
-        self.write(json.dumps(history))
-        self.finish()
-
-
-class ScoreboardHistoryHandler(BaseHandler):
-    def get(self, *args, **kwargs):
-        user = self.get_current_user()
-        if scoreboard_visible(user):
-            self.render(
-                "scoreboard/history.html",
-                hide_scoreboard=self.application.settings["hide_scoreboard"],
-                timer=self.seconds_remaining(),
-            )
-        elif not user:
-            self.redirect("/login")
-        else:
-            self.render("public/404.html")
-
 
 class ScoreboardFeedHandler(BaseHandler):
     def get(self, *args, **kwargs):
         """Renders the scoreboard feed page"""
         hostname = "%s://%s" % (self.request.protocol, self.request.host)
         self.render("scoreboard/feed.html", hostname=hostname)
-
-
-class ScoreboardHistorySocketHandler(WebSocketHandler):
-    connections = set()
-
-    def open(self):
-        """When we receive a new websocket connect"""
-        self.connections.add(self)
-
-    def on_message(self, message):
-        """We ignore messages if there are more than 1 every 3 seconds"""
-        if self.application.settings["hide_scoreboard"]:
-            self.write_message("pause")
-        else:
-            self.write_message("update")
-
-    def on_close(self):
-        """Lost connection to client"""
-        self.connections.remove(self)
 
 
 class ScoreboardWallOfSheepHandler(BaseHandler):

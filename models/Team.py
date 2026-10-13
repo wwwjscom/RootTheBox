@@ -182,19 +182,6 @@ class Team(DatabaseObject):
         add_flag = GameHistory(type="flag_count", value=len(self.flags))
         self.game_history.append(add_flag)
 
-    def get_history(self, _type=None):
-        history = []
-        for item in self.game_history:
-            if _type == "bots":
-                if item.type == "bot_count":
-                    history.append(item.to_dict())
-            elif _type == "flags":
-                if item.type == "flag_count":
-                    history.append(item.to_dict())
-            elif item.type != "flag_count" and item.type != "bot_count":
-                history.append(item.to_dict())
-        return history
-
     @name.setter
     def name(self, value):
         if not 3 <= len(value) <= 24:
