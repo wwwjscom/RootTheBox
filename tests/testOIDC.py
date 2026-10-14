@@ -3,6 +3,8 @@
 Unit tests for OIDC (Keycloak) single sign-on: libs/OIDCClient.py and
 handlers/OIDCHandlers.py.  The identity provider is never contacted; token
 exchange and ID token validation are mocked at the libs.OIDCClient boundary.
+Memcached (login state, pending identities, sessions) is replaced by
+tests.FakeMemcached, so the suite needs no memcached server.
 """
 
 import time
@@ -24,6 +26,7 @@ from models import dbsession
 from models.Permission import Permission
 from models.Team import Team
 from models.User import ADMIN_PERMISSION, User
+from tests.FakeMemcached import FakeMemcached
 
 ISSUER = "http://idp.test/realms/rootthebox"
 XSRF = "3858f62230ac3c915f300c664312c63f"
@@ -168,6 +171,46 @@ class TestOIDCModel(unittest.TestCase):
             dbsession.commit()
 
 
+class TestFakeMemcached(unittest.TestCase):
+    """The fake must behave like python-binary-memcached where the app relies on it"""
+
+    def test_get_returns_what_was_set(self):
+        cache = FakeMemcached()
+        cache.set("k", '{"a": 1}', 60)
+        cache.set("t", "x", time=60)
+        self.assertEqual(cache.get("k"), '{"a": 1}')
+        self.assertIsInstance(cache.get("k"), str)
+        self.assertEqual(cache.get("t"), "x")
+        self.assertIsNone(cache.get("missing"))
+
+    def test_delete(self):
+        cache = FakeMemcached()
+        cache.set("k", "v", 60)
+        self.assertTrue(cache.delete("k"))
+        self.assertIsNone(cache.get("k"))
+
+    def test_values_are_copies(self):
+        cache = FakeMemcached()
+        value = {"roles": ["a"]}
+        cache.set("k", value, 60)
+        value["roles"].append("b")
+        cache.get("k")["roles"].append("c")
+        self.assertEqual(cache.get("k"), {"roles": ["a"]})
+
+    def test_rejects_keys_memcached_would_reject(self):
+        cache = FakeMemcached()
+        cache.set("with space", "v", 60)  # allowed by the binary protocol
+        for key in ("x" * 251, "a\nb", "a\x00b"):
+            with self.assertRaises(ValueError):
+                cache.set(key, "v", 60)
+            with self.assertRaises(ValueError):
+                cache.get(key)
+
+    def test_unsupported_operation_fails_loudly(self):
+        with self.assertRaises(AttributeError):
+            FakeMemcached().incr("k", 1)
+
+
 class TestOIDCHandlers(OptionsMixin, AsyncHTTPTestCase):
     """End-to-end SSO flows against the Tornado app with the IdP mocked"""
 
@@ -182,6 +225,12 @@ class TestOIDCHandlers(OptionsMixin, AsyncHTTPTestCase):
         self.cookies = {"_xsrf": XSRF}
         self.created = []
         patcher = mock.patch.object(OIDCClient, "discovery", return_value=DISCOVERY)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        # One store per test, shared by every request in it.
+        patcher = mock.patch(
+            "handlers.BaseHandlers.MemcachedConnect", return_value=FakeMemcached()
+        )
         patcher.start()
         self.addCleanup(patcher.stop)
 
