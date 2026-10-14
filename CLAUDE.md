@@ -124,7 +124,7 @@ The navbar and footer sit in `{% block navbar %}` and `{% block site_footer %}`.
 - **To upgrade a library:** change its version in `package.json`, run `npm install` then `npm run vendor`, check the affected pages, and commit `package.json`, the lockfile and `static/vendor/` together. Never hand-edit files under `static/vendor/`.
 - **To add a library:** add it to `package.json` and to the `LIBRARIES` list in `tools/vendor.mjs`. Every destination stays under `static/vendor/`.
 - **Not on npm:** a few small scripts stay hand-maintained in `static/js/libs/` (Animator, countdown, notifier, markdown-toolbar, the BS5 jQuery bridge, the clipboard helpers).
-- **CI drift check** (`.github/workflows/vendor.yml`): re-vendors and fails if `static/vendor/` changes. **Dependabot** (`.github/dependabot.yml`) opens weekly npm PRs against `develop`; they fail the drift check until someone re-vendors on the PR branch (steps in that file's header).
+- **CI drift check** (`.github/workflows/vendor.yml`): re-vendors and fails if `static/vendor/` changes. **Dependabot** (`.github/dependabot.yml`) opens weekly npm and uv (Python) PRs and monthly GitHub Actions PRs against `develop`. npm PRs fail the drift check until someone re-vendors on the PR branch (steps in that file's header); uv and Actions PRs need only review and green CI.
 - **Static URLs:** templates reference static files with `{{ static_url('path/under/static') }}`, never a literal `/static/...` path. The URL carries a content hash (`?v=`), so browsers fetch the new file after an upgrade.
 
 ### Admin Toggle Pattern
