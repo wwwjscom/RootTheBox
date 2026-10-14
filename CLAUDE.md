@@ -97,7 +97,7 @@ The navbar and footer sit in `{% block navbar %}` and `{% block site_footer %}`.
 
 ### Frontend Theme (Bootstrap 5.3)
 
-- **One theme, "Default":** vendor Bootstrap (`static/css/themes/bootstrap.min.css`) plus the design layer `static/css/themes/rtb.css`. Dark mode comes from `<html data-bs-theme="dark">` in `main.html`.
+- **One theme, "Default":** the design layer `static/css/themes/rtb.css`, over vendor Bootstrap (`static/vendor/bootstrap/bootstrap.min.css`), which `main.html` loads on every page and is not a theme file. Dark mode comes from `<html data-bs-theme="dark">` in `main.html`.
 - **`rtb.css` is the single source of design values.** It holds the colour, type, radius and surface tokens (`--rtb-*` plus Bootstrap's `--bs-*`), Inter and JetBrains Mono from Google Fonts, and component styling done by re-declaring Bootstrap's component variables. Don't use `!important` or pixel-calibrated layout.
 - **Shared components in `rtb.css`:**
   - `.page-title`, `.card-heading`
@@ -107,7 +107,7 @@ The navbar and footer sit in `{% block navbar %}` and `{% block site_footer %}`.
   - `.briefing-label` / `.briefing-text`
   - `tr.locked` (red-tinted rows)
   - muted Enable/Disable toggle pairs (`.btn-group > .btn:has(> .fa-square-o)`)
-- **Load order in `main.html`:** Font Awesome 4.7 → `main.css` → theme (`{% module Theme() %}`) → page CSS (`{% block header %}`). Page CSS comes last so it can override the theme.
+- **Load order in `main.html`:** Font Awesome 4.7 → `main.css` → Bootstrap → theme (`{% module Theme() %}`) → page CSS (`{% block header %}`). Page CSS comes last so it can override the theme.
 - **Page CSS** lives in `static/css/pages/<area>/<page>.css`, scoped under a page wrapper class (e.g. `.user-home`, `.missions-box`).
 - **Legacy panels:** the BS2→5 codemod turned every `.well` into `.card.card-body`. `rtb.css` gives that combined form `display: block`, because a flex card stretches loose buttons into full-width rows. New markup should use `.card > .card-body`.
 - **Adding a theme later:**

@@ -15,8 +15,8 @@ const VENDOR_DIR = 'static/vendor';
 
 // Each library: npm package, then [source in the package, destination in the
 // repo, optional filename filter]. Sources may be files or directories (the
-// filter picks which files of a directory to copy). Destinations are under
-// static/vendor/ unless there is a reason noted below. `dir` names the
+// filter picks which files of a directory to copy). Every destination is under
+// static/vendor/, the one directory CI checks for drift. `dir` names the
 // folder for the licence when the package name is scoped.
 const LIBRARIES = [
     { pkg: 'jquery', files: [['dist/jquery.min.js', 'static/vendor/jquery/jquery.min.js']] },
@@ -33,10 +33,7 @@ const LIBRARIES = [
         pkg: 'bootstrap',
         files: [
             ['dist/js/bootstrap.bundle.min.js', 'static/vendor/bootstrap/bootstrap.bundle.min.js'],
-            // The theme system loads theme CSS from static/css/themes/, and the
-            // Default theme's file list (stored in the database) names
-            // bootstrap.min.css, so it stays at that path.
-            ['dist/css/bootstrap.min.css', 'static/css/themes/bootstrap.min.css'],
+            ['dist/css/bootstrap.min.css', 'static/vendor/bootstrap/bootstrap.min.css'],
         ],
     },
     {

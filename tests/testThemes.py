@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Tests for the single-theme setup (MODERNIZATION.md 2.1c): default theme
-resolution, the Theme UI module, the settings-page picker, and the migration
-that collapses every legacy theme into "Default".
+resolution, the Theme UI module, the settings-page picker, and the migrations
+that collapse every legacy theme into "Default" and then take Bootstrap out of
+it (2.2: Bootstrap loads from static/vendor/ on every page, under any theme).
 """
 
 import os
@@ -24,7 +25,7 @@ from modules.AppTheme import AppTheme
 from tests.HTTPClient import ApplicationTest
 
 XSRF = "3858f62230ac3c915f300c664312c63f"
-DEFAULT_FILES = ["bootstrap.min.css", "rtb.css"]
+DEFAULT_FILES = ["rtb.css"]
 
 
 def _file_names(theme):
@@ -87,8 +88,12 @@ class TestAppTheme(unittest.TestCase):
 class TestThemeInPages(ApplicationTest):
     def test_pages_load_default_theme_css(self):
         _, body = self.get("/login")
-        self.assertIn(b"/static/css/themes/bootstrap.min.css", body)
-        self.assertIn(b"/static/css/themes/rtb.css", body)
+        bootstrap = body.find(b"/static/vendor/bootstrap/bootstrap.min.css")
+        theme = body.find(b"/static/css/themes/rtb.css")
+        self.assertNotIn(b"/static/css/themes/bootstrap.min.css", body)
+        # Both load, Bootstrap first so the theme can override it.
+        self.assertGreater(bootstrap, -1)
+        self.assertGreater(theme, bootstrap)
         self.assertIn(b'data-bs-theme="dark"', body)
 
     def test_picker_hidden_with_single_theme(self):
@@ -177,3 +182,12 @@ class TestSingleThemeMigration(unittest.TestCase):
         command.downgrade(self.cfg, "c3d4e5f6a7b8")
         command.upgrade(self.cfg, "head")
         self.assertEqual(self._state(), (themes, files, user_themes))
+
+    def test_bootstrap_leaves_theme_and_comes_back_on_downgrade(self):
+        command.stamp(self.cfg, "c3d4e5f6a7b8")
+        command.upgrade(self.cfg, "d4e5f6a7b8c9")
+        self.assertEqual(self._state()[1], ["bootstrap.min.css", "rtb.css"])
+        command.upgrade(self.cfg, "head")
+        self.assertEqual(self._state()[1], DEFAULT_FILES)
+        command.downgrade(self.cfg, "d4e5f6a7b8c9")
+        self.assertEqual(self._state()[1], ["bootstrap.min.css", "rtb.css"])
