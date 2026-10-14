@@ -11,6 +11,24 @@ body {
 body > .container-fluid {
     flex: 1 0 auto;
 }
+/* Page fade-in on load ("animated fadeIn"; these were the only animate.css
+   classes in use). */
+.animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+.fadeIn {
+    animation-name: fadeIn;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .animated {
+        animation: none;
+    }
+}
 footer {
     font-size: 0.8125rem;
     padding: 1rem 1.5rem;

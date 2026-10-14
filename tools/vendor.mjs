@@ -44,9 +44,25 @@ const LIBRARIES = [
             ['fonts', 'static/vendor/font-awesome/fonts'],
         ],
     },
+    {
+        pkg: 'jquery.terminal',
+        files: [
+            ['js/jquery.terminal.min.js', 'static/vendor/jquery.terminal/jquery.terminal.min.js'],
+            ['css/jquery.terminal.min.css', 'static/vendor/jquery.terminal/jquery.terminal.min.css'],
+        ],
+    },
+    {
+        pkg: 'jstree',
+        files: [
+            ['dist/jstree.min.js', 'static/vendor/jstree/jstree.min.js'],
+            ['dist/themes/default-dark', 'static/vendor/jstree/themes/default-dark'],
+        ],
+    },
+    { pkg: 'commonmark', files: [['dist/commonmark.min.js', 'static/vendor/commonmark/commonmark.min.js']] },
+    { pkg: 'clipboard', files: [['dist/clipboard.min.js', 'static/vendor/clipboard/clipboard.min.js']] },
 ];
 
-const LICENSE_NAMES = ['LICENSE', 'LICENSE.txt', 'LICENSE.md'];
+const LICENSE_NAMES = ['LICENSE', 'LICENSE.txt', 'LICENSE.md', 'LICENSE-MIT'];
 
 function copy(from, to) {
     if (!existsSync(from)) {

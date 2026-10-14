@@ -115,7 +115,7 @@ The navbar and footer sit in `{% block navbar %}` and `{% block site_footer %}`.
   - Add a `Theme` + `ThemeFile` row via an Alembic migration, and in `setup/bootstrap.py` for fresh installs.
   - The settings-page theme picker appears automatically once more than one theme exists.
   - `Theme.default()` falls back to the first theme when `options.default_theme` names a theme that no longer exists.
-- **Story-mode terminal text:** pass it through `wrapForTerminal()` (`static/js/libs/terminal-wrap.js`), because jQuery Terminal splits lines mid-word.
+- **Story-mode terminal text:** echo it with `term.echo(text, {keepWords: true})`, otherwise jQuery Terminal splits lines mid-word.
 
 ### Admin Toggle Pattern
 
