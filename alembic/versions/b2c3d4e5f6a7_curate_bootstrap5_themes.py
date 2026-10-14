@@ -74,7 +74,9 @@ def upgrade():
             continue  # already removed by a prior run of this migration
         if default_id is not None and _has_table("user"):
             bind.execute(
-                sa.text("UPDATE user SET theme_id = :default_id WHERE theme_id = :dropped_id"),
+                sa.text(
+                    "UPDATE user SET theme_id = :default_id WHERE theme_id = :dropped_id"
+                ),
                 {"default_id": default_id, "dropped_id": dropped_id},
             )
         bind.execute(
