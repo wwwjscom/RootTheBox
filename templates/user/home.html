@@ -3,8 +3,8 @@
 {% block title %}{{ _("Home") }}{% end %}
 
 {% block header %}
-<script src="/static/js/pages/user/home.js"></script>
-<link href="/static/css/pages/user/home.css" rel="stylesheet" />
+<script src="{{ static_url('js/pages/user/home.js') }}"></script>
+<link href="{{ static_url('css/pages/user/home.css') }}" rel="stylesheet" />
 {% end %}
 
 {% block content %}

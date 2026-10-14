@@ -3,7 +3,7 @@
 {% block title %}{{ _("Authenticate") }}{% end %}
 
 {% block header %}
-<link href="/static/css/pages/public/auth.css" rel="stylesheet">
+<link href="{{ static_url('css/pages/public/auth.css') }}" rel="stylesheet">
 {% from tornado.options import options %}
 {% end %}
 

@@ -3,10 +3,10 @@
 {% block title %}{{ _("Game Materials") }}{% end %}
 
 {% block header %}
-<script src="/static/js/pages/file_upload/material_files.js"></script>
-<script src="/static/js/libs/jstree.js"></script>
-<link rel="stylesheet" href="/static/css/jstree.css" />
-<link rel="stylesheet" href="/static/css/icons.css" />
+<script src="{{ static_url('js/pages/file_upload/material_files.js') }}"></script>
+<script src="{{ static_url('vendor/jstree/jstree.min.js') }}"></script>
+<link rel="stylesheet" href="{{ static_url('vendor/jstree/themes/default-dark/style.min.css') }}" />
+<link rel="stylesheet" href="{{ static_url('css/icons.css') }}" />
 {% end %}
 
 {% block content %}

@@ -1,3 +1,11 @@
+// A bold "*** LABEL ***" banner as wide as the terminal (one column spare so
+// it never wraps), with the label centred.
+function banner(term, label) {
+    var stars = Math.max(6, term.cols() - 1 - label.length - 2);
+    var left = Math.floor(stars / 2);
+    return "[[b;;]" + "*".repeat(left) + " " + label + " " + "*".repeat(stars - left) + "]";
+}
+
 function text_animation(term) {
     var index = 0;
     var flag = $('#flag').val();
@@ -22,15 +30,16 @@ function text_animation(term) {
             intro_frames.push(msgsplit[x], " ");
         }
     }
-    term.echo("[[b;;]*** BEGIN SECURE COMMUNIQUE ***]\n");
+    term.echo(banner(term, "BEGIN SECURE COMMUNIQUE") + "\n");
 
     function display(term, index) {
-        term.echo(wrapForTerminal(intro_frames[index], term.cols()));
+        term.echo(intro_frames[index], {keepWords: true});
         index += 1;
         if (index < intro_frames.length) {
             setTimeout(display, 2000, term, index);
         } else {
-            term.echo("[[b;;]*** END OF TRANSMISSION ***]");
+            term.echo(banner(term, "END OF TRANSMISSION"));
+            term.resume();
         }
     }
     setTimeout(display, 1500, term, index);
@@ -59,8 +68,12 @@ function loading(term) {
 }
 
 function greetings(term) {
-    term.pause();
-    loading(term);
+    // Hide the prompt until the transmission ends. Deferred, because jQuery
+    // Terminal 2.x resumes itself after onInit returns.
+    setTimeout(function() {
+        term.pause();
+        loading(term);
+    }, 0);
 }
 
 $(document).ready(function() {

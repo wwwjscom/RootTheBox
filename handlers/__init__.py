@@ -167,7 +167,7 @@ urls = [
     (r"/connect/notifications/updates", NotifySocketHandler),
     # Static Handlers - StaticFileHandler.py
     (
-        r"/static/(.*\.(jpg|png|gif|css|js|ico|mp3|eot|svg|ttf|woff|otf))",
+        r"/static/(.*\.(jpg|png|gif|css|js|ico|mp3|eot|svg|ttf|woff2?|otf))",
         StaticFileHandler,
         {"path": "static/"},
     ),

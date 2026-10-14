@@ -3,10 +3,10 @@
 {% block title %}{{_("Create Hint")}}{% end %}
 
 {% block header %}
-<link rel="stylesheet" href="/static/css/markdown-toolbar.css" type="text/css" />
-<script src="/static/js/libs/commonmark.min.js"></script>
-<script src="/static/js/libs/markdown-toolbar.js"></script>
-<script src="/static/js/pages/admin/create/hint.js"></script>
+<link rel="stylesheet" href="{{ static_url('css/markdown-toolbar.css') }}" type="text/css" />
+<script src="{{ static_url('vendor/commonmark/commonmark.min.js') }}"></script>
+<script src="{{ static_url('js/libs/markdown-toolbar.js') }}"></script>
+<script src="{{ static_url('js/pages/admin/create/hint.js') }}"></script>
 {% end %}
 
 {% block content %}

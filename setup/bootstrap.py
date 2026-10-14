@@ -65,9 +65,10 @@ else:
         os._exit(1)
 
 # Theme objects
-# One theme for now: vendor Bootstrap 5 + the RootTheBox design layer.
+# One theme for now: the RootTheBox design layer. Bootstrap itself loads from
+# static/vendor/ on every page (main.html), so it is not a theme file.
 css_files = [
-    ("Default", ["bootstrap.min.css", "rtb.css"]),
+    ("Default", ["rtb.css"]),
 ]
 for css in css_files:
     theme = Theme(name=css[0])

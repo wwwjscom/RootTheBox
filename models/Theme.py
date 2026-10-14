@@ -132,5 +132,5 @@ class Theme(DatabaseObject):
             for _file in self.files:
                 yield _file
         except:
-            logging.error("Session Expired - returning plain Bootstrap theme")
-            yield "bootstrap.min.css"
+            logging.error("Session Expired - returning the default design layer")
+            yield "rtb.css"

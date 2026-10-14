@@ -1,10 +1,10 @@
 {% extends "../main.html" %}
 
 {% block header %}
-<script src="/static/js/pages/scoreboard/teams.js"></script>
-<script src="/static/js/pages/anchor.js"></script>
-<link href="/static/css/pages/public/summary.css" rel="stylesheet" />
-<link href="/static/css/pages/scoreboard/teams.css" rel="stylesheet" />
+<script src="{{ static_url('js/pages/scoreboard/teams.js') }}"></script>
+<script src="{{ static_url('js/pages/anchor.js') }}"></script>
+<link href="{{ static_url('css/pages/public/summary.css') }}" rel="stylesheet" />
+<link href="{{ static_url('css/pages/scoreboard/teams.css') }}" rel="stylesheet" />
 {% end %}
 {% block title %}
 {% from tornado.options import options %}

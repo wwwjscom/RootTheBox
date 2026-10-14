@@ -2,7 +2,7 @@
 
 {% block title %}{{ _("Botnet") }} C &amp; C{% end %}
 {% block header %}
-<script src="/static/js/pages/botnet/monitor.js"></script>
+<script src="{{ static_url('js/pages/botnet/monitor.js') }}"></script>
     {% if not teamname %}
     <style>
         .teamname {
