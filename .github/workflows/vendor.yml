@@ -1,0 +1,53 @@
+name: Vendor
+
+# Checks that static/vendor/ matches package-lock.json: re-vendor, then fail if
+# anything changed. Catches a version bump that was not re-vendored (every
+# Dependabot PR, until someone runs `npm ci && npm run vendor` on its branch and
+# pushes), a hand-edited library file, or a vendor.mjs change that was not re-run.
+on:
+  push:
+    branches: [main, develop]
+    paths: &vendor-paths
+      - package.json
+      - package-lock.json
+      - tools/vendor.mjs
+      - static/vendor/**
+      - .github/workflows/vendor.yml
+  pull_request:
+    branches: [main, develop]
+    paths: *vendor-paths
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    name: static/vendor matches lockfile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # --ignore-scripts: the vendored packages need no install scripts, and
+      # this way a compromised package cannot run code in CI.
+      - name: Install pinned packages
+        run: npm ci --ignore-scripts
+
+      - name: Re-vendor
+        run: npm run vendor
+
+      # --porcelain lists modified, deleted and new files alike.
+      - name: Check for drift
+        run: |
+          drift=$(git status --porcelain -- static/vendor)
+          if [ -n "$drift" ]; then
+            echo "$drift"
+            echo '::error::static/vendor/ does not match package-lock.json. Run `npm ci && npm run vendor` and commit the result.'
+            exit 1
+          fi
