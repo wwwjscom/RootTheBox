@@ -98,7 +98,7 @@ The navbar and footer sit in `{% block navbar %}` and `{% block site_footer %}`.
 ### Frontend Theme (Bootstrap 5.3)
 
 - **One theme, "Default":** the design layer `static/css/themes/rtb.css`, over vendor Bootstrap (`static/vendor/bootstrap/bootstrap.min.css`), which `main.html` loads on every page and is not a theme file. Dark mode comes from `<html data-bs-theme="dark">` in `main.html`.
-- **`rtb.css` is the single source of design values.** It holds the colour, type, radius and surface tokens (`--rtb-*` plus Bootstrap's `--bs-*`), Inter and JetBrains Mono from Google Fonts, and component styling done by re-declaring Bootstrap's component variables. Don't use `!important` or pixel-calibrated layout.
+- **`rtb.css` is the single source of design values.** It holds the colour, type, radius and surface tokens (`--rtb-*` plus Bootstrap's `--bs-*`), Inter and JetBrains Mono (self-hosted, imported from `static/vendor/`), and component styling done by re-declaring Bootstrap's component variables. Don't use `!important` or pixel-calibrated layout.
 - **Shared components in `rtb.css`:**
   - `.page-title`, `.card-heading`
   - `.level-title` + `.level-pill` (level name with progress)
@@ -116,6 +116,16 @@ The navbar and footer sit in `{% block navbar %}` and `{% block site_footer %}`.
   - The settings-page theme picker appears automatically once more than one theme exists.
   - `Theme.default()` falls back to the first theme when `options.default_theme` names a theme that no longer exists.
 - **Story-mode terminal text:** echo it with `term.echo(text, {keepWords: true})`, otherwise jQuery Terminal splits lines mid-word.
+
+### Vendored libraries (npm, no bundler)
+
+- **npm only manages versions.** `package.json` pins exact versions (`.npmrc` `save-exact=true`) with a committed `package-lock.json`. There is no bundler; page scripts are plain `<script>` tags.
+- **`npm ci && npm run vendor`** runs `tools/vendor.mjs`, which copies each library's built files and licence into `static/vendor/<lib>/`. That directory **is committed**, so running the app needs only Python; Node is for maintainers and CI.
+- **To upgrade a library:** change its version in `package.json`, run `npm install` then `npm run vendor`, check the affected pages, and commit `package.json`, the lockfile and `static/vendor/` together. Never hand-edit files under `static/vendor/`.
+- **To add a library:** add it to `package.json` and to the `LIBRARIES` list in `tools/vendor.mjs`. Every destination stays under `static/vendor/`.
+- **Not on npm:** a few small scripts stay hand-maintained in `static/js/libs/` (Animator, countdown, notifier, markdown-toolbar, the BS5 jQuery bridge, the clipboard helpers).
+- **CI drift check** (`.github/workflows/vendor.yml`): re-vendors and fails if `static/vendor/` changes. **Dependabot** (`.github/dependabot.yml`) opens weekly npm PRs against `develop`; they fail the drift check until someone re-vendors on the PR branch (steps in that file's header).
+- **Static URLs:** templates reference static files with `{{ static_url('path/under/static') }}`, never a literal `/static/...` path. The URL carries a content hash (`?v=`), so browsers fetch the new file after an upgrade.
 
 ### Admin Toggle Pattern
 

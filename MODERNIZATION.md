@@ -464,8 +464,8 @@ _(Update as branches land.)_
             merge to develop.
     - Not visually reviewed, because those features are off in the dev config:
       black market / upgrade pages, botnets, wall of sheep, password reset.
-- [ ] 2.2 Frontend build pipeline (branch `feature/phase2.2-build-pipeline`, off
-      develop). Decisions made (2026-10-13):
+- [x] 2.2 Frontend build pipeline (branch `feature/phase2.2-build-pipeline`, off
+      develop). **Done; merged to develop 2026-10-14.** Decisions made (2026-10-13):
     - **npm manages versions; no bundler.** Options weighed: npm + bundler
       (Vite/esbuild), npm as a version manager only, Python-only vendoring,
       CDN + import maps. A bundler only pays off once page scripts are ES
@@ -490,12 +490,51 @@ _(Update as branches land.)_
       (`feature/remove-charts`, merged `9bcb249c`).
     - Libraries with no usable npm package stay hand-maintained in
       `static/js/libs/`: Animator, countdown, notifier, markdown-toolbar,
-      terminal-wrap, the BS5 jQuery bridge, and the clipboard helper scripts.
-    - Steps: (1) npm scaffolding + vendor script; move the libraries whose
-      current version is on npm, unchanged; (2) the outdated libraries with no
-      matching npm version (jQuery Terminal 0.7.12, jsTree, mousewheel,
-      commonmark, animate.css, clipboard) upgraded to current releases and
-      checked page by page; (3) self-hosted fonts; (4) `static_url()`
-      cache-busting; (5) CI drift check + Dependabot; (6) wrap-up (docs,
-      merge).
+      the BS5 jQuery bridge, and the clipboard helper scripts. (terminal-wrap
+      was on this list but went in step 2: jQuery Terminal 2's `keepWords`
+      replaces it.)
+    - Steps:
+      - [x] (0) `9b096bbf` Plan.
+      - [x] (1) `fdb35bc2` npm scaffolding + `tools/vendor.mjs`; the libraries
+            whose current version is on npm moved to `static/vendor/`, unchanged.
+      - [x] (2) `2917ebb6` The outdated libraries with no matching npm version
+            (jQuery Terminal 0.7.12, jsTree, mousewheel, commonmark,
+            animate.css, clipboard) upgraded to current releases and checked
+            page by page.
+      - [x] (3) `ae6fdd3c` Self-hosted Inter and JetBrains Mono.
+      - [x] (4) `5fd539e1` `static_url()` cache-busting: every template
+            reference carries a content hash (`?v=`).
+      - [x] (5) `8872bd6d` Bootstrap's CSS moved out of the theme to
+            `static/vendor/bootstrap/` (added during 2.2, see below).
+      - [x] (6) `c859ab25` CI drift check (`.github/workflows/vendor.yml`) +
+            Dependabot (`.github/dependabot.yml`).
+      - [x] (7) Wrap-up: CLAUDE.md "Vendored libraries" section, this entry,
+            merge to develop.
+    - **Plan change: Bootstrap left the theme (step 5).** Theme files are bare
+      file names in the database, served from `static/css/themes/`, so
+      Bootstrap's CSS had to live there, the one vendored file outside
+      `static/vendor/`. Bootstrap is the base every theme sits on, so
+      `main.html` now loads it directly (same cascade position) and migration
+      `e5f6a7b8c9d0` drops its ThemeFile row. Everything vendored is now under
+      one directory, which keeps the drift check and Dependabot steps simple.
+    - **The drift check** is inline in the workflow (no helper script): it runs
+      `npm ci --ignore-scripts && npm run vendor` and fails if
+      `git status --porcelain -- static/vendor` is not empty, i.e. a version
+      bump that was not re-vendored, a hand-edited library file, or a
+      `vendor.mjs` change that was not re-run.
+    - **Dependabot** opens one weekly PR against develop for npm minor/patch
+      bumps (each major separately) and a monthly one for GitHub Actions. Its
+      PRs only touch `package.json` + the lockfile, so they fail the drift
+      check until re-vendored by hand on the branch (steps in the
+      `dependabot.yml` header). Re-vendor right before merging: once the branch
+      has a non-Dependabot commit, Dependabot stops rebasing it.
+      **Manual setting:** Dependabot alerts and security updates are switched
+      on in the repo's Settings → Code security, not by the config file.
+    - **Follow-up (not done):** have CI re-vendor Dependabot PRs automatically,
+      at least the minor/patch group. Needs a workflow with write access to
+      PR branches, so the security side needs care.
+    - Found while wrapping up, fixed separately on develop (`510feb50`): CI had
+      been red since `41c03435`. The SSO tests needed memcached, which the
+      Tests workflow does not run (now `tests/FakeMemcached.py`), and 7 files
+      had skipped `ruff format` (the pre-commit hook was not installed).
 - [ ] 2.3 (Optional) framework modernization
