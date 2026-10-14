@@ -160,7 +160,9 @@ class OIDCCallbackHandler(OIDCMixin, BaseHandler):
             return None
         self.memcached.delete(STATE_PREFIX + state)  # single use
         try:
-            tokens = oidc.exchange_code(self.get_argument("code", ""), stored["verifier"])
+            tokens = oidc.exchange_code(
+                self.get_argument("code", ""), stored["verifier"]
+            )
             claims = oidc.validate_id_token(tokens["id_token"], stored["nonce"])
         except OIDCError as error:
             logging.warning("OIDC login failed: %s" % error)

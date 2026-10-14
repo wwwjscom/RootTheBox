@@ -33,6 +33,8 @@ def _modal_opens(text):
     for m in DIV_OPEN_RE.finditer(text):
         if "modal hide fade" in m.group(0):
             yield m
+
+
 DIV_TOKEN_RE = re.compile(r"<div\b|</div>", re.IGNORECASE)
 WRAP_OPEN = '\n    <div class="modal-dialog">\n    <div class="modal-content">'
 WRAP_CLOSE = "\n    </div>\n    </div>"
@@ -68,7 +70,7 @@ def transform_text(text, report):
             report.append(("UNBALANCED", m.group(0)[:60]))
             continue
         close_start, close_end = close
-        inner = text[m.end():close_start]
+        inner = text[m.end() : close_start]
         if "modal-body" not in inner:
             report.append(("NO-MODAL-BODY", m.group(0)[:60]))
             continue

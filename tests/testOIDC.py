@@ -111,9 +111,7 @@ class TestOIDCClient(OptionsMixin, unittest.TestCase):
     def test_expired(self):
         old = int(time.time()) - 3600
         with self.assertRaises(OIDCError):
-            OIDCClient.validate_id_token(
-                self._token(iat=old - 300, exp=old), "n-123"
-            )
+            OIDCClient.validate_id_token(self._token(iat=old - 300, exp=old), "n-123")
 
     def test_bad_nonce(self):
         with self.assertRaises(OIDCError):
@@ -223,11 +221,14 @@ class TestOIDCHandlers(OptionsMixin, AsyncHTTPTestCase):
         query = parse_qs(urlparse(login.headers["Location"]).query)
         state, nonce = query["state"][0], query["nonce"][0]
         full = dict({"name": "Jane Player", "email": "jane@example.com"}, **claims)
-        with mock.patch.object(
-            OIDCClient, "exchange_code", return_value={"id_token": "raw-id-token"}
-        ) as exchange, mock.patch.object(
-            OIDCClient, "validate_id_token", return_value=full
-        ) as validate:
+        with (
+            mock.patch.object(
+                OIDCClient, "exchange_code", return_value={"id_token": "raw-id-token"}
+            ) as exchange,
+            mock.patch.object(
+                OIDCClient, "validate_id_token", return_value=full
+            ) as validate,
+        ):
             response = self._request("/oidc/callback?state=%s&code=abc" % state)
         if response.code == 302 and exchange.called:
             validate.assert_called_with("raw-id-token", nonce)
@@ -284,10 +285,13 @@ class TestOIDCHandlers(OptionsMixin, AsyncHTTPTestCase):
     def test_callback_rejects_invalid_token(self):
         login = self._request("/login")
         state = parse_qs(urlparse(login.headers["Location"]).query)["state"][0]
-        with mock.patch.object(
-            OIDCClient, "exchange_code", return_value={"id_token": "x"}
-        ), mock.patch.object(
-            OIDCClient, "validate_id_token", side_effect=OIDCError("bad")
+        with (
+            mock.patch.object(
+                OIDCClient, "exchange_code", return_value={"id_token": "x"}
+            ),
+            mock.patch.object(
+                OIDCClient, "validate_id_token", side_effect=OIDCError("bad")
+            ),
         ):
             response = self._request("/oidc/callback?state=%s&code=abc" % state)
         self.assertIn(b"Single sign-on failed", response.body)
