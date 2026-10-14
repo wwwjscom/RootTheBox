@@ -102,7 +102,9 @@ FORM_TAG_RE = re.compile(
     re.IGNORECASE | re.DOTALL,
 )
 TYPE_RE = re.compile(r"""type\s*=\s*(["'])(?P<t>.*?)\1""", re.IGNORECASE)
-TAG_CLASS_RE = re.compile(r"""class\s*=\s*(?P<q>["'])(?P<val>.*?)(?P=q)""", re.IGNORECASE | re.DOTALL)
+TAG_CLASS_RE = re.compile(
+    r"""class\s*=\s*(?P<q>["'])(?P<val>.*?)(?P=q)""", re.IGNORECASE | re.DOTALL
+)
 # input types that are NOT text-like form controls
 _SKIP_TYPES = {"hidden", "submit", "button", "reset", "image"}
 _CHECK_TYPES = {"radio", "checkbox"}
@@ -115,7 +117,7 @@ def _form_class_for(tag, attrs):
         return "form-control"
     # input: decide by type
     m = TYPE_RE.search(attrs)
-    itype = (m.group("t").lower() if m else "text")
+    itype = m.group("t").lower() if m else "text"
     if itype in _SKIP_TYPES:
         return None
     if itype in _CHECK_TYPES:
@@ -134,13 +136,20 @@ def _form_tag_sub(match):
     cm = TAG_CLASS_RE.search(attrs)
     if cm:
         tokens = cm.group("val").split()
-        if any(t == target or t.startswith("form-control") or t == "form-select" or t == "form-check-input" or t == "form-range" for t in tokens):
+        if any(
+            t == target
+            or t.startswith("form-control")
+            or t == "form-select"
+            or t == "form-check-input"
+            or t == "form-range"
+            for t in tokens
+        ):
             return match.group(0)  # already a BS5 control (idempotent)
         new_val = (cm.group("val").rstrip() + " " + target).strip()
         new_attrs = (
             attrs[: cm.start()]
             + "class=%s%s%s" % (cm.group("q"), new_val, cm.group("q"))
-            + attrs[cm.end():]
+            + attrs[cm.end() :]
         )
     else:
         # no class attr: add one right after the tag name. `attrs` (captured
@@ -197,8 +206,15 @@ def _sub_plain(segment):
 # A bare `.btn` (no colour variant) is unstyled in BS5; give it btn-secondary,
 # the BS5 equivalent of BS2's default grey button.
 _BTN_VARIANTS = {
-    "btn-primary", "btn-secondary", "btn-success", "btn-danger", "btn-warning",
-    "btn-info", "btn-light", "btn-dark", "btn-link",
+    "btn-primary",
+    "btn-secondary",
+    "btn-success",
+    "btn-danger",
+    "btn-warning",
+    "btn-info",
+    "btn-light",
+    "btn-dark",
+    "btn-link",
 }
 
 
@@ -222,7 +238,7 @@ def transform_class_value(value):
     out = []
     last = 0
     for tag in TEMPLATE_TAG_RE.finditer(value):
-        out.append(_sub_plain(value[last:tag.start()]))
+        out.append(_sub_plain(value[last : tag.start()]))
         out.append(tag.group(0))  # template tag, untouched
         last = tag.end()
     out.append(_sub_plain(value[last:]))

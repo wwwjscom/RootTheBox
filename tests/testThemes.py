@@ -150,7 +150,9 @@ class TestSingleThemeMigration(unittest.TestCase):
                 ).lastrowid
                 for f in files:
                     conn.execute(
-                        text("INSERT INTO theme_file (theme_id, _file_name) VALUES (:t, :f)"),
+                        text(
+                            "INSERT INTO theme_file (theme_id, _file_name) VALUES (:t, :f)"
+                        ),
                         {"t": theme_id, "f": f},
                     )
                 conn.execute(
@@ -167,7 +169,9 @@ class TestSingleThemeMigration(unittest.TestCase):
             files = conn.execute(
                 text("SELECT _file_name FROM theme_file ORDER BY _file_name")
             ).fetchall()
-            user_themes = conn.execute(text("SELECT DISTINCT theme_id FROM user")).fetchall()
+            user_themes = conn.execute(
+                text("SELECT DISTINCT theme_id FROM user")
+            ).fetchall()
         return themes, [f[0] for f in files], [u[0] for u in user_themes]
 
     def test_legacy_themes_collapse_into_default(self):

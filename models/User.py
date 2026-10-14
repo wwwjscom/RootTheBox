@@ -92,7 +92,9 @@ class User(DatabaseObject):
     # Stable OIDC 'sub' claim linking this account to the identity provider.
     oidc_subject = Column(String(255), unique=True, index=True, nullable=True)
 
-    theme_id = Column(Integer, ForeignKey("theme.id"), default=_default_theme_id, nullable=False)
+    theme_id = Column(
+        Integer, ForeignKey("theme.id"), default=_default_theme_id, nullable=False
+    )
 
     algorithm = Column(String(8), default=DEFAULT_HASH_ALGORITHM, nullable=False)
 
