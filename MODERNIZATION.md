@@ -182,7 +182,7 @@ decide on a real framework migration as a separate initiative.
 | # | Work | Why | Risk | Effort |
 |---|------|-----|------|--------|
 | 2.1 | **Patch-bump vendored libs to final releases** — jQuery 2.2.4 → 3.7.x, jQuery UI, Bootstrap **2.x** → 3.4.1 or 5.x, review Backbone/Underscore | Immediate known-CVE relief, features unchanged | med — jQuery 3 / Bootstrap majors have breaking markup changes | M–L |
-| 2.2 | **Introduce a build pipeline** — npm + bundler (Vite/esbuild) instead of committed `.min.js` | Future updates become `npm update`, not manual re-vendoring | med | L |
+| 2.2 | **Introduce a build pipeline** — npm as the version manager for vendored libraries (no bundler; see the 2.2 entry in the progress log) | Future updates become `npm update`, not manual re-vendoring | med | L |
 | 2.3 | **(Optional, separate project) Framework modernization** — evaluate replacing Backbone/jQuery UI patterns. Scope only after 2.1/2.2 | Long-term maintainability; out of scope for "features unchanged" unless desired | high | XL |
 
 ---
@@ -204,6 +204,14 @@ phase that surfaced them and were intentionally left for a dedicated fix:
 - **`setup/xmlsetup.py` ElementTree deprecations** (visible under 2.0): uses
   `defusedxml.cElementTree` and truth-tests elements (`if parent and box:`),
   both deprecated. Candidate for the 1.7 (ruff) / general-cleanup pass.
+- **Content Security Policy is switched off** (found during 2.2).
+  `BaseHandler` builds a CSP (`default-src 'self'`, etc.), but the line that
+  sends it, `handlers/BaseHandlers.py` `_refresh_csp()`, is commented out
+  ("Disabled until i can figure out the bug"). So the app has no CSP
+  protection against injected scripts. Re-enabling it needs the original bug
+  found, inline `<script>` blocks and `style=` attributes audited (`style-src`
+  already allows `'unsafe-inline'`), and every page checked for violations.
+  Its own branch; 2.2's self-hosted fonts keep `font-src 'self'` workable.
 
 ## Progress log
 
@@ -456,5 +464,38 @@ _(Update as branches land.)_
             merge to develop.
     - Not visually reviewed, because those features are off in the dev config:
       black market / upgrade pages, botnets, wall of sheep, password reset.
-- [ ] 2.2 Frontend build pipeline
+- [ ] 2.2 Frontend build pipeline (branch `feature/phase2.2-build-pipeline`, off
+      develop). Decisions made (2026-10-13):
+    - **npm manages versions; no bundler.** Options weighed: npm + bundler
+      (Vite/esbuild), npm as a version manager only, Python-only vendoring,
+      CDN + import maps. A bundler only pays off once page scripts are ES
+      modules (a 2.3-sized rewrite of ~44 scripts), and would make Docker and
+      source installs need Node. Python-only vendoring loses Dependabot /
+      `npm audit`; a CDN breaks isolated event networks.
+    - `package.json` pins **exact** versions (`.npmrc` `save-exact=true`) with a
+      committed `package-lock.json`. `npm run vendor` (`npm ci` + a copy script)
+      writes each library's built files, plus its licence, into
+      `static/vendor/<lib>/`, which **is committed**. Running the app still
+      needs only Python + uv; Node is for maintainers and CI.
+    - CI fails if `static/vendor/` does not match the lockfile. Dependabot
+      watches npm.
+    - Templates load static files through `static_url()` so each URL carries a
+      content hash (`?v=`): browsers pick up new files after an upgrade instead
+      of serving stale cached copies.
+    - Self-host Inter and JetBrains Mono (`@fontsource`) instead of Google
+      Fonts: works on isolated networks, no player IPs sent to Google, fits a
+      `font-src 'self'` CSP.
+    - Remove html5shiv (IE < 9 only). Highcharts is gone already: the Charts
+      page and skills chart were removed instead of upgraded
+      (`feature/remove-charts`, merged `9bcb249c`).
+    - Libraries with no usable npm package stay hand-maintained in
+      `static/js/libs/`: Animator, countdown, notifier, markdown-toolbar,
+      terminal-wrap, the BS5 jQuery bridge, and the clipboard helper scripts.
+    - Steps: (1) npm scaffolding + vendor script; move the libraries whose
+      current version is on npm, unchanged; (2) the outdated libraries with no
+      matching npm version (jQuery Terminal 0.7.12, jsTree, mousewheel,
+      commonmark, animate.css, clipboard) upgraded to current releases and
+      checked page by page; (3) self-hosted fonts; (4) `static_url()`
+      cache-busting; (5) CI drift check + Dependabot; (6) wrap-up (docs,
+      merge).
 - [ ] 2.3 (Optional) framework modernization
