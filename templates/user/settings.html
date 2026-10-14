@@ -3,9 +3,9 @@
 {% block title %}{{ _("Settings") }}{% end %}
 
 {% block header %}
-<script src="/static/js/pages/user/settings.js"></script>
-<link href="/static/css/pages/public/auth.css" rel="stylesheet" />
-<link href="/static/css/pages/user/settings.css" rel="stylesheet" />
+<script src="{{ static_url('js/pages/user/settings.js') }}"></script>
+<link href="{{ static_url('css/pages/public/auth.css') }}" rel="stylesheet" />
+<link href="{{ static_url('css/pages/user/settings.css') }}" rel="stylesheet" />
 {% end %}
 
 {% block modals %}

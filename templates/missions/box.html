@@ -3,13 +3,13 @@
 {% block title %}Missions{% end %}
 
 {% block header %}
-<link rel="stylesheet" href="/static/vendor/jstree/themes/default-dark/style.min.css" />
-<link rel="stylesheet" href="/static/css/icons.css" />
-<link rel="stylesheet" href="/static/css/pages/missions/box.css" />
-<script src="/static/js/pages/missions/view.js"></script>
-<script src="/static/js/pages/missions/box.js"></script>
-<script src="/static/vendor/commonmark/commonmark.min.js"></script>
-<script src="/static/vendor/jstree/jstree.min.js"></script>
+<link rel="stylesheet" href="{{ static_url('vendor/jstree/themes/default-dark/style.min.css') }}" />
+<link rel="stylesheet" href="{{ static_url('css/icons.css') }}" />
+<link rel="stylesheet" href="{{ static_url('css/pages/missions/box.css') }}" />
+<script src="{{ static_url('js/pages/missions/view.js') }}"></script>
+<script src="{{ static_url('js/pages/missions/box.js') }}"></script>
+<script src="{{ static_url('vendor/commonmark/commonmark.min.js') }}"></script>
+<script src="{{ static_url('vendor/jstree/jstree.min.js') }}"></script>
 {% end %}
 
 {% block modals %}

@@ -1,11 +1,11 @@
 {% extends "../main.html" %}
 
 {% block header %}
-<script src="/static/js/libs/animator.min.js"></script>
-<script src="/static/js/pages/scoreboard/rankingTableUpdate.js"></script>
-<script src="/static/js/pages/scoreboard/summary.js"></script>
-<link href="/static/css/pages/public/summary.css" rel="stylesheet" />
-<link href="/static/css/pages/scoreboard/summary.css" rel="stylesheet" />
+<script src="{{ static_url('js/libs/animator.min.js') }}"></script>
+<script src="{{ static_url('js/pages/scoreboard/rankingTableUpdate.js') }}"></script>
+<script src="{{ static_url('js/pages/scoreboard/summary.js') }}"></script>
+<link href="{{ static_url('css/pages/public/summary.css') }}" rel="stylesheet" />
+<link href="{{ static_url('css/pages/scoreboard/summary.css') }}" rel="stylesheet" />
 {% end %}
 
 {% block title %}{{ _("Scoreboard") }}{% end %}

@@ -3,13 +3,13 @@
 {% block title %}{{ _("Game Management")}}{% end %}
 
 {% block header %}
-<link rel="stylesheet" href="/static/css/pages/admin/game_objects.css" type="text/css" />
-<link rel="stylesheet" href="/static/css/markdown-toolbar.css" type="text/css" />
-<script src="/static/vendor/commonmark/commonmark.min.js"></script>
-<script src="/static/js/libs/markdown-toolbar.js"></script>
-<script src="/static/js/pages/admin/view/game_objects.js"></script>
-<script src="/static/js/pages/admin/view/statistics.js"></script>
-<script src="/static/js/pages/anchor.js"></script>
+<link rel="stylesheet" href="{{ static_url('css/pages/admin/game_objects.css') }}" type="text/css" />
+<link rel="stylesheet" href="{{ static_url('css/markdown-toolbar.css') }}" type="text/css" />
+<script src="{{ static_url('vendor/commonmark/commonmark.min.js') }}"></script>
+<script src="{{ static_url('js/libs/markdown-toolbar.js') }}"></script>
+<script src="{{ static_url('js/pages/admin/view/game_objects.js') }}"></script>
+<script src="{{ static_url('js/pages/admin/view/statistics.js') }}"></script>
+<script src="{{ static_url('js/pages/anchor.js') }}"></script>
 <script>$(function() { $('[data-bs-toggle="tooltip"]').tooltip(); });</script>
 <style>
   .tooltip-inner { font-size: 13px; max-width: 320px; background-color: #2c3e50 !important; border: 1px solid #f89406 !important; }

@@ -3,9 +3,9 @@
 {% block title %}{{ _("Statistics") }}{% end %}
 
 {% block header %}
-<script src="/static/js/pages/admin/view/statistics.js"></script>
-<script src="/static/js/pages/anchor.js"></script>
-<link rel="stylesheet" href="/static/css/pages/admin/game_objects.css" />
+<script src="{{ static_url('js/pages/admin/view/statistics.js') }}"></script>
+<script src="{{ static_url('js/pages/anchor.js') }}"></script>
+<link rel="stylesheet" href="{{ static_url('css/pages/admin/game_objects.css') }}" />
 {% end %}
 
 {% block modals %}

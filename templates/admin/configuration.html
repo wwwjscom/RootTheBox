@@ -3,8 +3,8 @@
 {% block title %}{{ _("Configuration") }}{% end %}
 
 {% block header %}
-<script src="/static/js/pages/admin/configuration.js"></script>
-<link href="/static/css/pages/admin/configuration.css" rel="stylesheet" />
+<script src="{{ static_url('js/pages/admin/configuration.js') }}"></script>
+<link href="{{ static_url('css/pages/admin/configuration.css') }}" rel="stylesheet" />
 {% end %}
 
 {% block content %}

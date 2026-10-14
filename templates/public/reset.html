@@ -3,8 +3,8 @@
 {% block title %}{{ _("Password Reset") }}{% end %}
 
 {% block header %}
-<link href="/static/css/pages/public/auth.css" rel="stylesheet">
-<script src="/static/js/pages/public/reset.js"></script>
+<link href="{{ static_url('css/pages/public/auth.css') }}" rel="stylesheet">
+<script src="{{ static_url('js/pages/public/reset.js') }}"></script>
 {% from tornado.options import options %}
 {% end %}
 

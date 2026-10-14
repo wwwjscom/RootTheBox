@@ -37,6 +37,7 @@ from tornado.options import options
 from tornado.web import RequestHandler
 from tornado.websocket import WebSocketHandler
 
+from handlers.StaticFileHandler import versioned_static_url
 from libs import GameState
 from libs.EventManager import EventManager
 from libs.SecurityDecorators import *
@@ -78,6 +79,10 @@ class BaseHandler(RequestHandler):
         # present too much of a security risk - TODO: no longer require
         # inline styles
         self.add_content_policy("style-src", "'unsafe-inline'")
+
+    def static_url(self, path, include_host=None, **kwargs):
+        """Content-hashed URL for a file under static/ (see versioned_static_url)"""
+        return versioned_static_url(path)
 
     def get_current_user(self):
         """Get current user object from database"""

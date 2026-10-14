@@ -3,10 +3,10 @@
 {% block title %}{{ _("Capture Message") }}{% end %}
 
 {% block header %}
-<script src="/static/vendor/jquery.terminal/jquery.terminal.min.js" type="text/javascript"></script>
-<script src="/static/js/pages/missions/captured.js" type="text/javascript"></script>
-<link href="/static/vendor/jquery.terminal/jquery.terminal.min.css" rel="stylesheet" />
-<link href="/static/css/terminal.css" rel="stylesheet" />
+<script src="{{ static_url('vendor/jquery.terminal/jquery.terminal.min.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('js/pages/missions/captured.js') }}" type="text/javascript"></script>
+<link href="{{ static_url('vendor/jquery.terminal/jquery.terminal.min.css') }}" rel="stylesheet" />
+<link href="{{ static_url('css/terminal.css') }}" rel="stylesheet" />
 {% end %}
 
 {% block content %}

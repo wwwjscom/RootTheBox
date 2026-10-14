@@ -3,8 +3,8 @@
 {% block title %}{{ _("Admin Home") }}{% end %}
 
 {% block header %}
-<script src="/static/js/pages/admin/home.js"></script>
-<link href="/static/css/pages/admin/home.css" rel="stylesheet" />
+<script src="{{ static_url('js/pages/admin/home.js') }}"></script>
+<link href="{{ static_url('css/pages/admin/home.css') }}" rel="stylesheet" />
 {% end %}
 
 {% block modals %}
