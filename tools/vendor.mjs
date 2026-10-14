@@ -6,7 +6,7 @@
 // this script and fails if the committed files differ from the lockfile's
 // versions. Never edit the copied files by hand: change the version in
 // package.json, run the commands above, and commit the result.
-import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, rmSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -14,8 +14,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const VENDOR_DIR = 'static/vendor';
 
 // Each library: npm package, then [source in the package, destination in the
-// repo]. Sources may be files or directories. Destinations are under
-// static/vendor/ unless there is a reason noted below.
+// repo, optional filename filter]. Sources may be files or directories (the
+// filter picks which files of a directory to copy). Destinations are under
+// static/vendor/ unless there is a reason noted below. `dir` names the
+// folder for the licence when the package name is scoped.
 const LIBRARIES = [
     { pkg: 'jquery', files: [['dist/jquery.min.js', 'static/vendor/jquery/jquery.min.js']] },
     { pkg: 'jquery-migrate', files: [['dist/jquery-migrate.min.js', 'static/vendor/jquery-migrate/jquery-migrate.min.js']] },
@@ -60,31 +62,51 @@ const LIBRARIES = [
     },
     { pkg: 'commonmark', files: [['dist/commonmark.min.js', 'static/vendor/commonmark/commonmark.min.js']] },
     { pkg: 'clipboard', files: [['dist/clipboard.min.js', 'static/vendor/clipboard/clipboard.min.js']] },
+    // Self-hosted fonts (no requests to Google Fonts). index.css declares
+    // the upright variable font, one file per character set; browsers only
+    // download the sets a page uses.
+    {
+        pkg: '@fontsource-variable/inter',
+        dir: 'inter',
+        files: [
+            ['index.css', 'static/vendor/inter/index.css'],
+            ['files', 'static/vendor/inter/files', /-wght-normal\.woff2$/],
+        ],
+    },
+    {
+        pkg: '@fontsource-variable/jetbrains-mono',
+        dir: 'jetbrains-mono',
+        files: [
+            ['index.css', 'static/vendor/jetbrains-mono/index.css'],
+            ['files', 'static/vendor/jetbrains-mono/files', /-wght-normal\.woff2$/],
+        ],
+    },
 ];
 
 const LICENSE_NAMES = ['LICENSE', 'LICENSE.txt', 'LICENSE.md', 'LICENSE-MIT'];
 
-function copy(from, to) {
+function copy(from, to, only) {
     if (!existsSync(from)) {
         throw new Error(`Missing ${from}. Run \`npm ci\` first.`);
     }
     mkdirSync(dirname(to), { recursive: true });
-    cpSync(from, to, { recursive: true });
+    const filter = only ? (src) => statSync(src).isDirectory() || only.test(src) : undefined;
+    cpSync(from, to, { recursive: true, filter });
 }
 
 // Start clean so a library removed from the list disappears from the repo.
 rmSync(join(ROOT, VENDOR_DIR), { recursive: true, force: true });
 
-for (const { pkg, files } of LIBRARIES) {
+for (const { pkg, dir, files } of LIBRARIES) {
     const pkgDir = join(ROOT, 'node_modules', pkg);
-    for (const [from, to] of files) {
-        copy(join(pkgDir, from), join(ROOT, to));
+    for (const [from, to, only] of files) {
+        copy(join(pkgDir, from), join(ROOT, to), only);
     }
     // Ship each library's licence next to it (not served: the static route
     // only serves an allow-list of file extensions).
     const license = LICENSE_NAMES.find((name) => existsSync(join(pkgDir, name)));
     if (license) {
-        copy(join(pkgDir, license), join(ROOT, VENDOR_DIR, pkg, license));
+        copy(join(pkgDir, license), join(ROOT, VENDOR_DIR, dir || pkg, license));
     }
     console.log(`vendored ${pkg}`);
 }
