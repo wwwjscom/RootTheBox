@@ -7,7 +7,7 @@ $(document).ready(function() {
     };
 
     monitor_ws.onmessage = function (evt) {
-        msg = jQuery.parseJSON(evt.data);
+        msg = JSON.parse(evt.data);
         if ('opcode' in msg) {
             if (msg['opcode'] == 'update' && 'bots' in msg) {
                 bots = msg['bots'];

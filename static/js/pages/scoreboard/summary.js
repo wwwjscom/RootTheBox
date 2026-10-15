@@ -6,7 +6,7 @@ var game_data = [];
 var tableOptions = {
     onComplete: function(){ /*do nothing*/ },
     duration: [1000, 0, 700, 0, 500], //The milliseconds to do each phase and the delay between them
-    extractIdFromCell: function(td){ return $.trim($(td).text()); }, //the function to use to extract the id value from a cell in the id column.
+    extractIdFromCell: function(td){ return $(td).text().trim(); }, //the function to use to extract the id value from a cell in the id column.
     animationSettings: {
         up: {
             left: -25, // Move left
@@ -50,7 +50,7 @@ $(document).ready(function() {
             if (event.data === "pause") {
                 location.reload();
             } else {
-                game_data = jQuery.parseJSON(event.data);
+                game_data = JSON.parse(event.data);
                 
                 /* Update Summary Table */
                 let count = $("#parameters").data("count");

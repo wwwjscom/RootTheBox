@@ -9,7 +9,7 @@ function banner(term, label) {
 
 function text_animation(term) {
     var index = 0;
-    var intro_frames = $.parseJSON(dialog);
+    var intro_frames = JSON.parse(dialog);
 
     term.echo(banner(term, "BEGIN SECURE COMMUNIQUE") + "\n");
 

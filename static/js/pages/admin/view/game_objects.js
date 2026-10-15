@@ -52,7 +52,7 @@ function getDetails(obj, uuid) {
                 }
             } else if (obj === "flag" && key === "choices") {
                 var token = response["token"];
-                var choices = $.parseJSON(value);
+                var choices = JSON.parse(value);
                 var appendarea = $(".after-add-more");
                 appendarea.nextAll().remove();
                 if (choices.length > 0) {

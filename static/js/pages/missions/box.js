@@ -183,7 +183,7 @@ $(document).ready(function() {
             $('#box-materials-tree').jstree({
                 'core' : {
                     'themes' : { name : 'default-dark' },
-                    'data' : $.parseJSON(response)["children"]
+                    'data' : JSON.parse(response)["children"]
                 }
             });
         });
