@@ -25,6 +25,7 @@ from alembic.config import Config
 from alembic.migration import MigrationContext
 from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import IntegrityError
 
 from alembic import command
 
@@ -90,6 +91,49 @@ class TestMigrationsRunOnSqlAlchemy2(MigrationTestCase):
             self._scalar("SELECT version_num FROM alembic_version"), "ffe623ae412"
         )
         self.assertGreater(after, before, "team_to_flag rows were not converted")
+
+    def test_flag_order_backfill(self):
+        # Seed flags as they exist before the migration: empty orders,
+        # duplicates and gaps in box 1; box 2 is already 1..n.
+        self._create_all()
+        command.stamp(self.cfg, "head")
+        command.downgrade(self.cfg, "e5f6a7b8c9d0")  # _order nullable again
+        seed = [
+            # (id, box_id, _order)
+            (1, 1, None),
+            (2, 1, 2),
+            (3, 1, 2),
+            (4, 1, None),
+            (5, 1, 5),
+            (6, 2, 1),
+            (7, 2, 2),
+        ]
+        with self.engine.begin() as conn:
+            for flag_id, box_id, order in seed:
+                conn.execute(
+                    text(
+                        "INSERT INTO flag (id, uuid, box_id, _token, _description,"
+                        " _value, _order, _locked)"
+                        " VALUES (:id, :uuid, :box, 't', 'd', 1, :order, 0)"
+                    ),
+                    {
+                        "id": flag_id,
+                        "uuid": str(flag_id),
+                        "box": box_id,
+                        "order": order,
+                    },
+                )
+
+        command.upgrade(self.cfg, "head")
+
+        # Box 1 keeps its visible order (numbered first, ties by id, empty
+        # last) but is renumbered 1..n; box 2 is unchanged.
+        with self.engine.connect() as conn:
+            orders = dict(conn.execute(text("SELECT id, _order FROM flag")).all())
+        self.assertEqual(orders, {2: 1, 3: 2, 5: 3, 1: 4, 4: 5, 6: 1, 7: 2})
+        with self.assertRaises(IntegrityError):
+            with self.engine.begin() as conn:
+                conn.execute(text("UPDATE flag SET _order = NULL WHERE id = 1"))
 
     def test_single_linear_head(self):
         sd = ScriptDirectory.from_config(self.cfg)

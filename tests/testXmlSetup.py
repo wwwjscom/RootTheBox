@@ -136,8 +136,15 @@ class TestXmlRoundTrip(unittest.TestCase):
         self.corp.to_xml(corps_elem)
         return ET.tostring(root)
 
-    def test_export_import_round_trip(self):
+    def _reimport(self, strip_flag_order=False):
+        """Export the game, tear it down, and import it back from the XML."""
         xml_bytes = self._serialize_game()
+        if strip_flag_order:
+            # Exports made before flags carried <order>.
+            root = ET.fromstring(xml_bytes)
+            for flag_elem in root.iter("flag"):
+                flag_elem.remove(flag_elem.find("order"))
+            xml_bytes = ET.tostring(root)
 
         # Tear the game down so the import rebuilds it from scratch.
         dbsession.delete(self.corp)
@@ -154,6 +161,29 @@ class TestXmlRoundTrip(unittest.TestCase):
             self.assertTrue(import_xml(tmp.name))
         finally:
             os.unlink(tmp.name)
+        return Corporation.by_name(self.CORP_NAME).boxes[0]
+
+    def test_flag_order_round_trip(self):
+        # Reverse the creation order, and lock one flag: Box.flags hides
+        # locked flags, so the order must survive without relying on it.
+        self.static_flag.order = 2
+        self.regex_flag.order = 1
+        self.regex_flag.locked = True
+        dbsession.commit()
+
+        box = self._reimport()
+
+        orders = {flag.name: flag._order for flag in box.flags_all}
+        self.assertEqual(orders, {"RT Static": 2, "RT Regex": 1})
+
+    def test_import_without_flag_order(self):
+        box = self._reimport(strip_flag_order=True)
+
+        orders = {flag.name: flag.order for flag in box.flags_all}
+        self.assertEqual(orders, {"RT Static": 1, "RT Regex": 2})
+
+    def test_export_import_round_trip(self):
+        self._reimport()
 
         # --- level ---
         level = GameLevel.by_number(self.LEVEL_NUMBER)

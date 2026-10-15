@@ -360,10 +360,6 @@ class AdminCreateHandler(BaseHandler):
         flag = Flag.create_flag(flag_type, box, name, token, description, reward)
         flag.capture_message = self.get_argument("capture_message", "")
         flag.case_sensitive = self.get_argument("case-sensitive", 1)
-        for fl in box.flags:
-            fl.order
-            self.dbsession.add(fl)
-        flag.order = len(box.flags) + 1
         lock = Flag.by_uuid(self.get_argument("lock_uuid", ""))
         if lock:
             flag.lock_id = lock.id
@@ -800,10 +796,7 @@ class AdminEditHandler(BaseHandler):
                     "Updated %s's box %d -> %d" % (flag.name, flag.box_id, box.id)
                 )
                 flag.box_id = box.id
-                for fl in box.flags:
-                    fl.order
-                    self.dbsession.add(fl)
-                flag.order = len(box.flags) + 1  # place flag at end
+                flag.order = box.next_flag_order()  # place flag at end
                 for hint in flag.hints:
                     hint.box_id = box.id
                     self.dbsession.add(hint)

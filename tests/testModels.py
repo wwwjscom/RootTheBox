@@ -7,6 +7,8 @@ import unittest
 from collections import OrderedDict
 from datetime import datetime, timedelta
 
+from sqlalchemy.exc import IntegrityError
+
 from libs.StringCoding import encode
 from libs.ValidationError import ValidationError
 from models import dbsession
@@ -163,6 +165,7 @@ class TestFlag(unittest.TestCase):
             description="A static test token",
             value=100,
         )
+        dbsession.add(self.static_flag)
         self.regex_flag = Flag.create_flag(
             _type=FLAG_REGEX,
             box=self.box,
@@ -171,6 +174,7 @@ class TestFlag(unittest.TestCase):
             description="A regex test token",
             value=200,
         )
+        dbsession.add(self.regex_flag)
         self.file_flag = Flag.create_flag(
             _type=FLAG_FILE,
             box=self.box,
@@ -179,6 +183,7 @@ class TestFlag(unittest.TestCase):
             description="A file test token",
             value=300,
         )
+        dbsession.add(self.file_flag)
         self.choice_flag = Flag.create_flag(
             _type=FLAG_CHOICE,
             box=self.box,
@@ -187,6 +192,7 @@ class TestFlag(unittest.TestCase):
             description="A choice test token",
             value=400,
         )
+        dbsession.add(self.choice_flag)
         self.datetime_flag = Flag.create_flag(
             _type=FLAG_DATETIME,
             box=self.box,
@@ -195,12 +201,8 @@ class TestFlag(unittest.TestCase):
             description="A datetime test token",
             value=500,
         )
-
-        dbsession.add(self.static_flag)
-        dbsession.add(self.regex_flag)
-        dbsession.add(self.file_flag)
-        dbsession.add(self.choice_flag)
         dbsession.add(self.datetime_flag)
+
         dbsession.commit()
 
     def tearDown(self):
@@ -210,6 +212,30 @@ class TestFlag(unittest.TestCase):
     def test_name(self):
         with self.assertRaises(ValidationError):
             self.static_flag.name = "A" * 65
+
+    def test_new_flags_are_numbered_in_creation_order(self):
+        flags = [
+            self.static_flag,
+            self.regex_flag,
+            self.file_flag,
+            self.choice_flag,
+            self.datetime_flag,
+        ]
+        self.assertEqual([flag.order for flag in flags], [1, 2, 3, 4, 5])
+
+    def test_new_flag_order_counts_locked_flags(self):
+        # Box.flags hides locked flags; numbering from it gave a new flag the
+        # same order as a locked one.
+        self.datetime_flag.locked = True
+        dbsession.commit()
+        flag = Flag.create_flag(FLAG_STATIC, self.box, "New", "tok", "new", 10)
+        self.assertEqual(flag.order, 6)
+
+    def test_order_is_required(self):
+        self.regex_flag._order = None
+        with self.assertRaises(IntegrityError):
+            dbsession.commit()
+        dbsession.rollback()
 
     def test_static_capture(self):
         assert self.static_flag.capture("statictoken")

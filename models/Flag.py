@@ -77,7 +77,7 @@ class Flag(DatabaseObject):
     _case_sensitive = Column(Integer, nullable=True)
     _value = Column(Integer, nullable=False)
     _original_value = Column(Integer, nullable=True)
-    _order = Column(Integer, nullable=True, index=True)
+    _order = Column(Integer, nullable=False, index=True)
     _type = Column(Unicode(16), default=False)
     _locked = Column(Boolean, default=False, nullable=False)
 
@@ -172,6 +172,7 @@ class Flag(DatabaseObject):
         assert box is not None and isinstance(box, Box)
         new_flag = creators[_type](box, name, raw_token, description, value)
         new_flag._type = _type
+        new_flag._order = box.next_flag_order()
         return new_flag
 
     @classmethod
@@ -284,8 +285,6 @@ class Flag(DatabaseObject):
 
     @property
     def order(self):
-        if not self._order:
-            self._order = self.box.flags.index(self) + 1
         return self._order
 
     @order.setter
@@ -463,6 +462,7 @@ class Flag(DatabaseObject):
         ET.SubElement(flag_elem, "value").text = str(self.value)
         ET.SubElement(flag_elem, "plain_answer").text = str(self._plain_answer)
         ET.SubElement(flag_elem, "locked").text = str(self.locked)
+        ET.SubElement(flag_elem, "order").text = str(self.order)
         if self.lock_id:
             ET.SubElement(flag_elem, "depends_on").text = Flag.by_id(self.lock_id).name
         ET.SubElement(flag_elem, "case_sensitive").text = str(self.case_sensitive)

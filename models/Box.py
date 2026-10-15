@@ -185,6 +185,23 @@ class Box(DatabaseObject):
     def flags_all(self):
         return self._flags
 
+    def next_flag_order(self):
+        """The order for a flag added to this box: one past its highest,
+        counting locked flags and flags not yet committed."""
+        from models.Flag import Flag
+
+        with dbsession.no_autoflush:
+            orders = [
+                order
+                for (order,) in dbsession.query(Flag._order).filter_by(box_id=self.id)
+            ]
+        orders += [
+            obj._order
+            for obj in dbsession.new
+            if isinstance(obj, Flag) and obj.box_id == self.id
+        ]
+        return max([order for order in orders if order] or [0]) + 1
+
     @property
     def name(self):
         return self._name
