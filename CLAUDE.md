@@ -19,7 +19,7 @@ docker compose up
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
-# Run tests inside the container (correct SQLAlchemy version)
+# Run tests inside the container (pinned Python 3.12 + dependencies)
 docker compose exec webapp python3 /opt/rtb/rootthebox.py --tests
 
 # Run a single test class
@@ -30,13 +30,14 @@ Default admin credentials (created by bootstrap): `admin` / `rootthebox`
 
 `docker-compose.dev.yml` overlays source volume mounts and sets `DEBUG=True` (fixed cookie secret, no template cache) and `AUTORELOAD_SOURCE=True`. Never use the dev overlay in production.
 
-**Do not run tests with the host Python** — SQLAlchemy 2.x is installed there but the app requires 1.x. Always run tests inside the container.
+**Do not run tests with the host Python** — the app needs Python 3.12+ and the exact dependencies in `uv.lock`, which the image provides. Always run tests inside the container.
 
 ## Database & Migrations
 
-- SQLite is used for local/Docker dev; MySQL in production (set via `sql_dialect` config).
+- Docker deployments use SQLite (`files/rootthebox.db`); the image ships no MySQL or Postgres driver. MySQL/Postgres only work on non-Docker installs that add a driver (set via `sql_dialect` config).
 - Schema migrations use Alembic. Migration files live in `alembic/versions/`.
 - Migrations run automatically on every startup via `update_db()` in `handlers/__init__.py`.
+- When migrations are pending, `update_db()` first copies a SQLite DB to `files/backups/<name>-<old revision>-<timestamp>.db` (`libs/DatabaseBackup.py`). If the backup fails, startup stops before migrating. Other dialects only log a warning.
 - When adding a column to a model, also create an Alembic migration. Use the pattern in `alembic/versions/d3b1c5f8a901_add_level_submission_timer.py` as a template — it guards against running twice with `_table_has_column()`.
 - Set `down_revision` to the most recent file in `alembic/versions/` before yours.
 

@@ -28,6 +28,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.exc import IntegrityError
 
 from alembic import command
+from libs.DatabaseBackup import upgrade_with_backup
 
 # All models are imported by the test bootstrap, so metadata is fully populated.
 from models.BaseModels import DatabaseObject
@@ -174,3 +175,65 @@ class TestSchemaParity(MigrationTestCase):
         if isinstance(diff, list):
             return diff[0][0] if diff and diff[0] else None
         return diff[0] if diff else None
+
+
+class TestBackupBeforeUpgrade(MigrationTestCase):
+    """update_db() backs up a SQLite database before migrating it."""
+
+    OLD_REVISION = "e5f6a7b8c9d0"
+
+    def setUp(self):
+        # A private directory, so backups/ never collides with other tests.
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.db_path = os.path.join(self.tmpdir.name, "rootthebox.db")
+        self.engine = create_engine("sqlite:///%s" % self.db_path)
+        self.cfg = _alembic_cfg(self.db_path)
+        self.backups = os.path.join(self.tmpdir.name, "backups")
+
+    def tearDown(self):
+        self.engine.dispose()
+        self.tmpdir.cleanup()
+
+    def _backup_files(self):
+        if not os.path.isdir(self.backups):
+            return []
+        return [os.path.join(self.backups, name) for name in os.listdir(self.backups)]
+
+    def test_backs_up_before_pending_upgrade(self):
+        self._create_all()
+        command.stamp(self.cfg, "head")
+        command.downgrade(self.cfg, self.OLD_REVISION)
+
+        upgrade_with_backup(self.cfg)
+
+        head = ScriptDirectory.from_config(self.cfg).get_current_head()
+        self.assertEqual(self._scalar("SELECT version_num FROM alembic_version"), head)
+        backups = self._backup_files()
+        self.assertEqual(len(backups), 1)
+        self.assertIn(self.OLD_REVISION, os.path.basename(backups[0]))
+        backup = create_engine("sqlite:///%s" % backups[0])
+        with backup.connect() as conn:
+            revision = conn.execute(text("SELECT version_num FROM alembic_version"))
+            self.assertEqual(revision.scalar(), self.OLD_REVISION)
+        backup.dispose()
+
+    def test_no_backup_when_already_at_head(self):
+        self._create_all()
+        command.stamp(self.cfg, "head")
+
+        upgrade_with_backup(self.cfg)
+
+        self.assertEqual(self._backup_files(), [])
+
+    def test_failed_backup_stops_the_upgrade(self):
+        self._create_all()
+        command.stamp(self.cfg, "head")
+        command.downgrade(self.cfg, self.OLD_REVISION)
+        open(self.backups, "w").close()  # a file where the directory should go
+
+        with self.assertRaises(OSError):
+            upgrade_with_backup(self.cfg)
+
+        self.assertEqual(
+            self._scalar("SELECT version_num FROM alembic_version"), self.OLD_REVISION
+        )
