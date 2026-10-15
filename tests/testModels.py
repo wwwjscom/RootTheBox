@@ -3,11 +3,14 @@
 Unit tests for everything in models/
 """
 
+import inspect
 import unittest
 from collections import OrderedDict
 from datetime import datetime, timedelta
+from unittest import mock
 
 from sqlalchemy.exc import IntegrityError
+from tornado.options import options
 
 from libs.StringCoding import encode
 from libs.ValidationError import ValidationError
@@ -352,20 +355,28 @@ class TestScoreboardTopX(unittest.TestCase):
         result = self._handler(6).summary_page(2, 2, top=0)
         assert list(result["teams"].keys()) == ["Team3", "Team4"]
 
-    def test_projector_default_when_unconfigured(self):
-        # When scoreboard_top is 0 (unset), the projector falls back to 25.
+    def _projector_top(self, scoreboard_top):
+        """Run the projector handler's get() and return the top it renders."""
         from handlers.ScoreboardHandlers import ScoreboardProjectorHandler
 
-        top = options.scoreboard_top if options.scoreboard_top > 0 else 25
-        assert top == 25
+        saved = options.scoreboard_top, options.scoreboard_lazy_update
+        options.scoreboard_top = scoreboard_top
+        options.scoreboard_lazy_update = True  # skip the game-state refresh
+        handler = mock.Mock()
+        handler.application.settings = {"hide_scoreboard": False}
+        try:
+            # Past the auth decorators, which are tested elsewhere.
+            inspect.unwrap(ScoreboardProjectorHandler.get)(handler)
+        finally:
+            options.scoreboard_top, options.scoreboard_lazy_update = saved
+        return handler.render.call_args.kwargs["top"]
+
+    def test_projector_default_when_unconfigured(self):
+        # When scoreboard_top is 0 (unset), the projector falls back to 25.
+        self.assertEqual(self._projector_top(0), 25)
 
     def test_projector_uses_configured_value(self):
-        # When scoreboard_top is set, the projector uses that value.
-        original = options.scoreboard_top
-        options.scoreboard_top = 5
-        top = options.scoreboard_top if options.scoreboard_top > 0 else 25
-        assert top == 5
-        options.scoreboard_top = original
+        self.assertEqual(self._projector_top(5), 5)
 
 
 class TestReviewMode(unittest.TestCase):
