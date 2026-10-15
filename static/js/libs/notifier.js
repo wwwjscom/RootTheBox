@@ -79,7 +79,7 @@ $(document).ready(function() {
         notificationElement.delay(timeOut).fadeOut(function() {
             notificationElement.remove();
         });
-        notificationElement.bind("click", function() {
+        notificationElement.on("click", function() {
             notificationElement.hide();
         });
 
@@ -93,7 +93,7 @@ $(document).ready(function() {
 
     window.notifier_ws = new WebSocket(wsUrl() + "/connect/notifications/updates");
     notifier_ws.onmessage = function(evt) {
-        var notification = $.parseJSON(evt.data);
+        var notification = JSON.parse(evt.data);
         //console.log("[Notifier] " + evt.data);
         if ('update' in notification) {
             if (window.history_ws !== undefined) {

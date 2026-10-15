@@ -5,7 +5,7 @@ $(document).ready(function() {
         $('#container').jstree({
             'core' : {
               'themes' : { name : 'default-dark' },
-              'data' : $.parseJSON(response)["children"]
+              'data' : JSON.parse(response)["children"]
             }
         });
     });

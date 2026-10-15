@@ -20,7 +20,6 @@ const VENDOR_DIR = 'static/vendor';
 // folder for the licence when the package name is scoped.
 const LIBRARIES = [
     { pkg: 'jquery', files: [['dist/jquery.min.js', 'static/vendor/jquery/jquery.min.js']] },
-    { pkg: 'jquery-migrate', files: [['dist/jquery-migrate.min.js', 'static/vendor/jquery-migrate/jquery-migrate.min.js']] },
     {
         pkg: 'jquery-ui',
         files: [

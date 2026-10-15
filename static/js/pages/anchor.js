@@ -10,9 +10,9 @@
      */
     init: function () {
       this.scrollToCurrent();
-      $(window).on('load', $.proxy(this, 'scrollToCurrent'));
-      $(window).on('hashchange', $.proxy(this, 'scrollToCurrent'));
-      $('body').on('click', 'a', $.proxy(this, 'delegateAnchors'));
+      $(window).on('load', this.scrollToCurrent.bind(this));
+      $(window).on('hashchange', this.scrollToCurrent.bind(this));
+      $('body').on('click', 'a', this.delegateAnchors.bind(this));
     },
 
     /**
@@ -72,8 +72,7 @@
     }
   };
 
-  $(document).ready($.proxy(anchorScrolls, 'init'));
-  $(document).ready($.proxy(window, 'delegateAnchors'));
+  $(document).ready(anchorScrolls.init.bind(anchorScrolls));
 })(window.document, window.history, window.location);
 
 
