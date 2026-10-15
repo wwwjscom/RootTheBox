@@ -14,6 +14,8 @@ services:
       - ./tests:/opt/rtb/tests:ro
       - ./libs:/opt/rtb/libs:ro
       - ./modules:/opt/rtb/modules:ro
+      - ./setup:/opt/rtb/setup:ro
+      - ./alembic:/opt/rtb/alembic:ro
     environment:
       - COMPOSE_CONVERT_WINDOWS_PATHS=1
       - DEBUG=True
