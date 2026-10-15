@@ -64,6 +64,7 @@ from handlers.UserHandlers import *
 from libs import GameState
 from libs.ConfigHelpers import save_config
 from libs.ConsoleColors import *
+from libs.DatabaseBackup import upgrade_with_backup
 from libs.DatabaseConnection import DatabaseConnection
 from libs.Scoreboard import Scoreboard, score_bots
 from libs.UpdateCheckHelpers import check_for_updates
@@ -324,7 +325,7 @@ def update_db(update=True):
     alembic_cfg.attributes["configure_logger"] = False
     alembic_cfg.set_main_option("sqlalchemy.url", unquote(str(db_connection)))
     if update:
-        command.upgrade(alembic_cfg, "head")
+        upgrade_with_backup(alembic_cfg)
     else:
         command.stamp(alembic_cfg, "head")
 
