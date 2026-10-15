@@ -169,7 +169,10 @@ def create_flags(parent, box):
                 flag.description = get_child_text(flag_elem, "description")
                 flag.capture_message = get_child_text(flag_elem, "capture_message")
                 flag.type = flag_elem.get("type", "static")
+                # Exports made before flags carried <order> go to the end.
                 flag.order = get_child_text(flag_elem, "order", None)
+                if not flag.order:
+                    flag.order = box.next_flag_order()
                 flag.locked = get_child_text(flag_elem, "locked", 0)
                 if flag.type == "file":
                     add_attachments(
