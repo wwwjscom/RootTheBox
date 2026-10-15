@@ -14,7 +14,7 @@
     "commonmark": "0.31.2",
     "font-awesome": "4.7.0",
     "jquery": "3.7.1",
-    "jquery-migrate": "3.5.2",
+    "jquery-migrate": "4.0.2",
     "jquery-ui": "1.14.2",
     "jquery.terminal": "2.48.1",
     "jstree": "3.3.17"
