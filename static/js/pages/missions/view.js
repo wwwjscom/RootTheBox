@@ -30,7 +30,7 @@ function levelTimer() {
 
         function markExpired() {
             valueEl.text(formatDuration(0));
-            timerEl.removeClass("alert-info").addClass("alert-error");
+            timerEl.removeClass("alert-info").addClass("alert-danger");
             if (timerEl.find(".level-submission-timer-expired-msg").length === 0) {
                 timerEl.append('<span class="level-submission-timer-expired-msg"> - Expired. You can still view mission details but cannot submit flags.</span>');
             }

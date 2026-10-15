@@ -2,17 +2,15 @@
 """
 Unit tests for everything in handlers/
 """
+
 import logging
 import time
 import unittest
-
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
 
 from tornado.options import options
 
+from handlers import app
 from handlers.BaseHandlers import BaseHandler
 from handlers.ErrorHandlers import StopHandler
 from libs import GameState
@@ -27,9 +25,35 @@ from tests.HTTPClient import ApplicationTest
 class TestPublicHandlers(ApplicationTest):
     """Test functionality in handlers/PublicHandlers.py"""
 
+    def setUp(self):
+        # Registration is suspended by default; open it so the registration
+        # views under test render the form rather than the closed notice.
+        # Email is likewise required by default, which would short-circuit
+        # form validation before the token/team-name checks these tests target.
+        super().setUp()
+        self._suspend_registration = app.settings["suspend_registration"]
+        self._require_email = options.require_email
+        app.settings["suspend_registration"] = False
+        options.require_email = False
+
+    def tearDown(self):
+        app.settings["suspend_registration"] = self._suspend_registration
+        options.require_email = self._require_email
+        super().tearDown()
+
     def test_home_page_get(self):
         rsp, body = self.get("/")
         self.assertIn(b"home_container", body)
+
+    def test_json_feed_logged_out_when_not_public(self):
+        saved = options.scoreboard_visibility
+        options.scoreboard_visibility = "players"
+        try:
+            rsp, body = self.get("/scoreboard/ajax/feed")
+            self.assertEqual(rsp.code, 200)
+            self.assertIn(b"scoreboard is not set to public", body)
+        finally:
+            options.scoreboard_visibility = saved
 
     def test_login_get(self):
         rsp, body = self.get("/login")
@@ -258,7 +282,9 @@ class TestExpireRegistrationWindow(GameStateTestCase):
 
     def test_disabled_minutes_is_a_noop(self):
         options.registration_open_minutes = 0
-        app = self._app(suspend_registration=False, registration_opened_at=time.time() - 999999)
+        app = self._app(
+            suspend_registration=False, registration_opened_at=time.time() - 999999
+        )
         self.assertFalse(GameState.expire_registration_window(app))
         self.assertFalse(app.settings["suspend_registration"])
         options.registration_open_minutes = 30
@@ -347,9 +373,7 @@ class TestStopHandlerRedirect(unittest.TestCase):
         handler = mock.Mock()
         handler.application.settings = {"game_started": started}
         calls = {"redirected": None, "rendered": None}
-        handler.redirect.side_effect = lambda url: calls.__setitem__(
-            "redirected", url
-        )
+        handler.redirect.side_effect = lambda url: calls.__setitem__("redirected", url)
         handler.render.side_effect = lambda tmpl, **kw: calls.__setitem__(
             "rendered", tmpl
         )
@@ -383,9 +407,7 @@ class TestGameStartedDecorator(unittest.TestCase):
         handler = mock.Mock()
         handler.application.settings = {"game_started": started}
         handler.get_current_user.return_value = user
-        handler.redirect.side_effect = lambda url: calls.__setitem__(
-            "redirected", url
-        )
+        handler.redirect.side_effect = lambda url: calls.__setitem__("redirected", url)
 
         @game_started
         def target(self):
@@ -429,3 +451,48 @@ class TestGameStartedDecorator(unittest.TestCase):
 #    def setUp(self):
 #        self.username = 'foobar'
 #        self.password = 'testpassword123456'
+
+
+class TestPenaltyNote(unittest.TestCase):
+    """The wrong-answer penalty notice shown in flag submission forms"""
+
+    def setUp(self):
+        from tornado.template import Loader
+
+        self.template = Loader("templates").load("missions/penalty_note.html")
+        self._saved = {
+            name: getattr(options, name)
+            for name in (
+                "penalize_flag_value",
+                "flag_penalty_cost",
+                "flag_start_penalty",
+                "flag_stop_penalty",
+            )
+        }
+        options.flag_penalty_cost = 20
+        options.flag_start_penalty = 2
+        options.flag_stop_penalty = 5
+
+    def tearDown(self):
+        for name, value in self._saved.items():
+            setattr(options, name, value)
+
+    def _render(self, admin=False, team=True):
+        user = mock.Mock()
+        user.is_admin.return_value = admin
+        return self.template.generate(
+            user=user, team=team or None, _=lambda text: text
+        ).decode()
+
+    def test_shown_when_penalties_enabled(self):
+        options.penalize_flag_value = True
+        body = self._render()
+        self.assertIn("Wrong answers cost 20%", body)
+        self.assertIn("2nd attempt through your 4th", body)
+
+    def test_hidden_when_disabled_for_admins_or_without_team(self):
+        options.penalize_flag_value = False
+        self.assertNotIn("penalty-note", self._render())
+        options.penalize_flag_value = True
+        self.assertNotIn("penalty-note", self._render(admin=True))
+        self.assertNotIn("penalty-note", self._render(team=False))

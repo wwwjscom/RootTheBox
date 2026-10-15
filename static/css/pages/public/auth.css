@@ -1,0 +1,96 @@
+/* Sign-in, registration and SSO onboarding (templates/public/{login,
+   registration,onboarding}.html): a centered card on the page background. */
+.auth-page {
+    display: flex;
+    justify-content: center;
+    padding: 2.5rem 0 1rem;
+}
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+}
+.auth-card.auth-card-wide {
+    max-width: 780px;
+}
+.auth-card > .card-body {
+    padding: 2rem;
+}
+@media (max-width: 575.98px) {
+    .auth-page {
+        padding-top: 1rem;
+    }
+    .auth-card > .card-body {
+        padding: 1.25rem;
+    }
+}
+.auth-icon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    color: var(--rtb-accent);
+    background: rgba(var(--rtb-accent-rgb), 0.12);
+}
+.auth-title {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.auth-title:has(+ .auth-subtitle) {
+    margin-bottom: 0.25rem;
+}
+.auth-subtitle {
+    text-align: center;
+    color: var(--bs-secondary-color);
+    margin-bottom: 1.75rem;
+}
+.auth-section {
+    padding-top: 1.25rem;
+    margin-top: 1.25rem;
+    border-top: 1px solid var(--bs-border-color);
+}
+.auth-section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+    margin-bottom: 1rem;
+}
+
+/* Avatar preview + picker */
+.avatar-preview {
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+    border-radius: var(--bs-border-radius);
+    border: 1px solid var(--bs-border-color);
+    background: var(--rtb-surface-page);
+}
+.avatar-choice {
+    position: relative;
+    display: block;
+    border: 2px solid transparent;
+    border-radius: var(--bs-border-radius);
+    overflow: hidden;
+}
+.avatar-choice:hover,
+.avatar-choice:focus {
+    border-color: var(--rtb-accent);
+}
+.avatar-choice img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+}
+.avatar-choice .avatar-used {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.45rem;
+    color: var(--bs-warning);
+    text-shadow: 0 1px 3px #000;
+}

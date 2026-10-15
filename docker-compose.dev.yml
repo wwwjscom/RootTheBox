@@ -14,7 +14,18 @@ services:
       - ./tests:/opt/rtb/tests:ro
       - ./libs:/opt/rtb/libs:ro
       - ./modules:/opt/rtb/modules:ro
+      - ./setup:/opt/rtb/setup:ro
+      - ./alembic:/opt/rtb/alembic:ro
     environment:
       - COMPOSE_CONVERT_WINDOWS_PATHS=1
       - DEBUG=True
       - AUTORELOAD_SOURCE=True
+      # Keycloak SSO for local testing (see setup/keycloak/README.md)
+      # - AUTH=oidc
+      # - OIDC_ISSUER=http://localhost:8080/realms/rootthebox
+      # - OIDC_BACKCHANNEL_URL=http://host.docker.internal:8080/realms/rootthebox
+      # - OIDC_CLIENT_ID=rootthebox
+      # - OIDC_CLIENT_SECRET=rtb-dev-secret-DO-NOT-USE-IN-PRODUCTION
+      # - OIDC_REDIRECT_URL=http://localhost:8888/oidc/callback
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

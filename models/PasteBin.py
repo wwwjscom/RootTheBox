@@ -19,8 +19,6 @@ Created on Mar 12, 2012
     limitations under the License.
 """
 
-
-from builtins import str
 from uuid import uuid4
 
 from sqlalchemy import Column, ForeignKey

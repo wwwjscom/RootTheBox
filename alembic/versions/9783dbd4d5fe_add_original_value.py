@@ -1,10 +1,11 @@
 """add original_value
 
 Revision ID: 9783dbd4d5fe
-Revises: 
+Revises:
 Create Date: 2018-12-09 16:53:45.599267
 
 """
+
 import sqlalchemy as sa
 
 from alembic import op

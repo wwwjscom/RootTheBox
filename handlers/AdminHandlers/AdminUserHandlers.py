@@ -24,9 +24,7 @@ Handlers for user-related tasks.
 # pylint: disable=unused-wildcard-import
 # pylint: disable=no-member
 
-
 import logging
-from builtins import str
 
 from netaddr import IPAddress
 from tornado.options import options
@@ -346,7 +344,6 @@ class AdminBanHammerHandler(BaseHandler):
 
 
 class AdminLockHandler(BaseHandler):
-
     """Used to manually lock/unlocked accounts"""
 
     @restrict_ip_address

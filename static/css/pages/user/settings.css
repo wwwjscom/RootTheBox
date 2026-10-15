@@ -1,0 +1,45 @@
+/* User settings (templates/user/settings.html). Sections pair a short
+   description on the left with the form on the right. Avatar picker tiles
+   (.avatar-choice) come from pages/public/auth.css. */
+.settings-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.settings-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem 2rem;
+}
+.settings-section + .settings-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--bs-border-color);
+}
+@media (min-width: 768px) {
+    .settings-section {
+        grid-template-columns: 240px 1fr;
+    }
+}
+.settings-section-intro h2 {
+    font-size: 1.05rem;
+    margin-bottom: 0.3rem;
+}
+.settings-section-intro p {
+    font-size: 0.875rem;
+    color: var(--bs-secondary-color);
+    margin: 0;
+}
+.settings-avatar {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+    border-radius: var(--bs-border-radius);
+    border: 1px solid var(--bs-border-color);
+}
+.settings-form {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--bs-border-color);
+}

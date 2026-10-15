@@ -10,15 +10,15 @@
             {{ _("All Notifications") }}
         </h2>
         <br />
-        <div class="well">
+        <div class="card card-body">
         {% for notify in reversed(list(Notification.admin())) %}
         <div class="row">
-            <div class="span1 offset1">
+            <div class="col-md-1 offset-md-1">
                 {% if notify.icon_url is not None %}
                     <img src="{{ notify.icon_url }}" style="width: 70%; float:right;" />
                 {% end %}
             </div>
-            <div class="span7">
+            <div class="col-md-7">
                 <p>
                     <strong>{{ _(notify.title) }}</strong>
                     {{ notify.created.strftime("%I:%M%p %x") }}

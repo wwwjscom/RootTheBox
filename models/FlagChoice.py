@@ -20,7 +20,6 @@ Created on Jun 22, 2018
 """
 
 import logging
-from builtins import str
 from uuid import uuid4
 
 from sqlalchemy import Column, ForeignKey, asc
@@ -32,7 +31,6 @@ from models.BaseModels import DatabaseObject
 
 
 class FlagChoice(DatabaseObject):
-
     """Flag Choice definition"""
 
     uuid = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid4()))

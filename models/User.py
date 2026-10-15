@@ -24,18 +24,15 @@ indiviudal user, such as handle/account/password/etc
 
 """
 
-
 import os
 import random
 import string
 import xml.etree.cElementTree as ET
-from builtins import str
 from datetime import datetime
 from hashlib import md5, sha1, sha256, sha512
 from string import printable
 from uuid import uuid4
 
-from past.builtins import basestring
 from pbkdf2 import PBKDF2
 from sqlalchemy import Column, ForeignKey, desc, func
 from sqlalchemy.orm import backref, relationship, synonym
@@ -47,9 +44,9 @@ from libs.ValidationError import ValidationError
 from libs.WebhookHelpers import send_user_validated_webhook
 from libs.XSSImageCheck import (
     avatar_validation,
-    save_avatar,
     default_avatar,
-    get_new_avatar,    
+    get_new_avatar,
+    save_avatar,
 )
 from models import dbsession
 from models.BaseModels import DatabaseObject
@@ -65,8 +62,16 @@ DEFAULT_HASH_ALGORITHM = "md5"
 ITERATE = 0x2BAD  # 11181
 
 
-class User(DatabaseObject):
+def _default_theme_id():
+    """
+    Resolve the id of the default theme at row-insert time, rather than
+    hardcoding a numeric id (theme ids depend on seeding order, which has
+    changed over time). bootstrap.py seeds Theme rows before any User row.
+    """
+    return Theme.default().id
 
+
+class User(DatabaseObject):
     """User definition"""
 
     uuid = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid4()))
@@ -84,8 +89,12 @@ class User(DatabaseObject):
     _notes = Column(Unicode(512))
     _expire = Column(DateTime, default=None, nullable=True)
     money = Column(Integer, default=0, nullable=False)
+    # Stable OIDC 'sub' claim linking this account to the identity provider.
+    oidc_subject = Column(String(255), unique=True, index=True, nullable=True)
 
-    theme_id = Column(Integer, ForeignKey("theme.id"), default=3, nullable=False)
+    theme_id = Column(
+        Integer, ForeignKey("theme.id"), default=_default_theme_id, nullable=False
+    )
 
     algorithm = Column(String(8), default=DEFAULT_HASH_ALGORITHM, nullable=False)
 
@@ -136,6 +145,13 @@ class User(DatabaseObject):
     def by_uuid(cls, _uuid):
         """Return and object based on a uuid"""
         return dbsession.query(cls).filter_by(uuid=str(_uuid)).first()
+
+    @classmethod
+    def by_oidc_subject(cls, subject):
+        """Return the user linked to an OIDC subject ('sub' claim)"""
+        if not subject:
+            return None
+        return dbsession.query(cls).filter_by(oidc_subject=str(subject)).first()
 
     @classmethod
     def by_email(cls, email):
@@ -349,7 +365,9 @@ class User(DatabaseObject):
     @avatar.setter
     def avatar(self, image_data):
         ext = avatar_validation(image_data)
-        self._avatar = save_avatar(os.path.join("upload", f"{self.uuid}.{ext}"),image_data)                
+        self._avatar = save_avatar(
+            os.path.join("upload", f"{self.uuid}.{ext}"), image_data
+        )
 
     def has_item(self, item_name):
         """Check to see if a team has purchased an item"""
@@ -426,7 +444,7 @@ class User(DatabaseObject):
 
     def get_algorithm(self, index):
         """Return algorithm tuple based on string or int"""
-        if isinstance(index, basestring) and index in self.algorithms:
+        if isinstance(index, str) and index in self.algorithms:
             return self.algorithms[index]
         elif isinstance(index, int):  # Find by numeric index
             for key in self.algorithms:

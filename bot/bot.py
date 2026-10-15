@@ -27,11 +27,11 @@ Copyright (C) 2010 Hiroki Ohtani(liris)
 """
 # pylint: disable=unused-variable
 
-
 import argparse
 import array
 import base64
 import codecs
+import configparser as ConfigParser
 import hashlib
 import json
 import logging
@@ -43,19 +43,9 @@ import struct
 import sys
 import traceback
 import uuid
-from builtins import str
-
-try:
-    import ConfigParser
-except ImportError:
-    import configparser as ConfigParser
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
-from builtins import chr, object, range
 from datetime import datetime
 from hashlib import sha1, sha512
+from urllib.parse import urlparse
 
 ### Settings
 __version__ = "0.1.1"
@@ -65,7 +55,6 @@ __port__ = "80"
 __path__ = "botnet/connect"
 
 if platform.system().lower() in ["linux", "darwin"]:
-
     # === Text Colors ===
     W = "\033[0m"  # default/white
     BLA = "\033[30m"  # black
@@ -81,7 +70,6 @@ if platform.system().lower() in ["linux", "darwin"]:
     bold = "\033[1m"
 
 else:
-
     # === Text Colors ===
     W = ""
     BLA = ""
@@ -100,8 +88,11 @@ else:
 INFO = bold + C + "[*]" + W
 WARN = bold + R + "[!]" + W
 PROMPT = bold + P + "[?]" + W
+
+
 def current_time():
     return str(datetime.now()).split(" ")[1].split(".")[0]
+
 
 """
 websocket python client.

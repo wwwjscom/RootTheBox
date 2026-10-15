@@ -19,16 +19,13 @@ Created on Mar 12, 2012
     limitations under the License.
 """
 
-
 import hashlib
 import json
 import re
 import xml.etree.cElementTree as ET
-from builtins import str
 from uuid import uuid4
 
 from dateutil.parser import parse
-from past.utils import old_div
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.types import Boolean, Integer, String, Unicode
@@ -54,7 +51,6 @@ FLAG_TYPES = [FLAG_STATIC, FLAG_REGEX, FLAG_FILE, FLAG_DATETIME, FLAG_CHOICE]
 
 
 class Flag(DatabaseObject):
-
     """
     Flags that can be captured by players and what not. This object comes in
     these flavors:
@@ -73,13 +69,15 @@ class Flag(DatabaseObject):
 
     _name = Column(Unicode(64), nullable=True)
     _token = Column(Unicode(256), nullable=False)
-    _plain_answer = Column(Unicode(256)) # https://github.com/moloch--/RootTheBox/issues/601
+    _plain_answer = Column(
+        Unicode(256)
+    )  # https://github.com/moloch--/RootTheBox/issues/601
     _description = Column(Unicode(4096), nullable=False)
     _capture_message = Column(Unicode(4096))
     _case_sensitive = Column(Integer, nullable=True)
     _value = Column(Integer, nullable=False)
     _original_value = Column(Integer, nullable=True)
-    _order = Column(Integer, nullable=True, index=True)
+    _order = Column(Integer, nullable=False, index=True)
     _type = Column(Unicode(16), default=False)
     _locked = Column(Boolean, default=False, nullable=False)
 
@@ -101,9 +99,10 @@ class Flag(DatabaseObject):
         cascade="all,delete,delete-orphan",
     )
 
+    # Hint.flag is provided by a read-only @property (by_id lookup); no backref,
+    # which would collide with it (an error under SQLAlchemy 2.x).
     hints = relationship(
         "Hint",
-        backref=backref("flag", lazy="select"),
         cascade="all,delete,delete-orphan",
     )
 
@@ -173,6 +172,7 @@ class Flag(DatabaseObject):
         assert box is not None and isinstance(box, Box)
         new_flag = creators[_type](box, name, raw_token, description, value)
         new_flag._type = _type
+        new_flag._order = box.next_flag_order()
         return new_flag
 
     @classmethod
@@ -246,7 +246,7 @@ class Flag(DatabaseObject):
         elif len(self.team_captures(self.id)) == 0:
             return self.value
         elif team and self in team.flags:
-            depreciation = float(old_div(options.flag_value_decrease, 100.0))
+            depreciation = float(options.flag_value_decrease / 100.0)
             deduction = self.value * depreciation
             if options.dynamic_flag_type == "decay_all":
                 reduction = (len(self.team_captures(self.id)) - 1) * deduction
@@ -259,7 +259,7 @@ class Flag(DatabaseObject):
                             options.flag_value_minimum, int(self.value - reduction)
                         )
         else:
-            depreciation = float(old_div(options.flag_value_decrease, 100.0))
+            depreciation = float(options.flag_value_decrease / 100.0)
             deduction = self.value * depreciation
             reduction = len(self.team_captures(self.id)) * deduction
             return max(options.flag_value_minimum, int(self.value - reduction))
@@ -285,8 +285,6 @@ class Flag(DatabaseObject):
 
     @property
     def order(self):
-        if not self._order:
-            self._order = self.box.flags.index(self) + 1
         return self._order
 
     @order.setter
@@ -464,6 +462,7 @@ class Flag(DatabaseObject):
         ET.SubElement(flag_elem, "value").text = str(self.value)
         ET.SubElement(flag_elem, "plain_answer").text = str(self._plain_answer)
         ET.SubElement(flag_elem, "locked").text = str(self.locked)
+        ET.SubElement(flag_elem, "order").text = str(self.order)
         if self.lock_id:
             ET.SubElement(flag_elem, "depends_on").text = Flag.by_id(self.lock_id).name
         ET.SubElement(flag_elem, "case_sensitive").text = str(self.case_sensitive)

@@ -1,0 +1,540 @@
+# Root the Box — Modernization Roadmap
+
+Status: planning. This document sequences the modernization of Root the Box.
+Features stay the same throughout — this is about runtime currency, security,
+maintainability, and test safety, not new functionality.
+
+**Deployment assumption:** Docker-only. SQLite is acceptable as the runtime DB,
+so MySQL / `sql_dialect` branching may be simplified or removed where it reduces
+risk (notably during the SQLAlchemy 2.x migration).
+
+**Workflow:** Each numbered item is one `feature/*` branch off `develop`, merged
+back with `--no-ff`, small enough to review and ship independently (per Gitflow —
+see CONTRIBUTING.md). Effort/risk are rough (S/M/L).
+
+Priority order: **urgent → backend → frontend.**
+
+---
+
+## Running the tests & local dev notes
+
+Post-Phase-0 mechanics (things that are non-obvious and easy to trip on):
+
+**Run the test suite (the reliable way — clean container):**
+```bash
+docker build -t rtb-test .
+docker run --rm --entrypoint sh rtb-test -c \
+  "python3 /opt/rtb/rootthebox.py --tests >/dev/null 2>&1; \
+   python3 /opt/rtb/rootthebox.py --tests"
+```
+Why the **two invocations in one container**: the app gates on a config file
+existing — with no `files/rootthebox.cfg`, `--tests` writes a *default* config
+and `os._exit(1)`s before running anything. The first call creates that default
+config (and exits); the second runs the suite against it. Both must run in the
+**same** container so the config persists between them. This is exactly what
+`.github/workflows/tests.yml` does. `--tests` now runs `pytest` (not nose) with
+coverage over `handlers`/`models`/`libs`.
+
+**⚠️ Config-leakage trap:** `docker compose` mounts host `./files` into the
+container, so a stale `files/rootthebox.cfg` from a previous run **overrides
+test defaults** and produces bogus failures (e.g. `scoreboard_top=3` →
+`assert 3 == 25`; `suspend_registration=True` → registration tests fail;
+`debug=True` → the cookie-secret prod path is skipped). Always validate in a
+**clean container with no `files/` mount** (the `docker run` above), not via
+`docker compose`. To reproduce a prod boot locally, ensure `debug = False` in
+the cfg.
+
+**Per CLAUDE.md** (assumes a running dev stack, i.e. config already exists):
+```bash
+docker compose exec webapp python3 /opt/rtb/rootthebox.py --tests
+docker compose exec webapp python3 -m nose ...   # <-- STALE: nose is gone, use pytest
+```
+Single test / class via pytest goes through `--tests` (the runner defines the
+Tornado `options` that a bare `pytest` invocation would be missing).
+
+**Cookie secret** now lives in the config as `cookie_secret` (or the
+`COOKIE_SECRET` env var); it is generated + persisted once on first non-debug
+boot. Don't commit a real one.
+
+**Test DB files** land at `files/<db_name>.db` and are cleaned up by
+`teardown_database`; they're gitignored. (A pre-Phase-0 bug left a pile of
+strays — fixed.)
+
+**Dependencies (post-1.3)** are managed with **uv**: `pyproject.toml` is the
+human-edited spec, `uv.lock` is the resolved, hashed lockfile (both committed).
+The Docker image installs them with `uv sync --frozen` into `/opt/rtb/.venv`,
+which is placed first on `PATH` so `python3`/`pytest` resolve to the locked
+environment. To change a dependency: edit `pyproject.toml`, run `uv lock`, then
+rebuild. `setup/requirements.txt` and `setup/depends.sh` were removed. `sqlalchemy`
+is held at `>=1.4,<2` and `tornado` at `>=6.4,<7` until items 1.5/1.6.
+
+---
+
+## Test coverage baseline (why the plan is shaped this way)
+
+As of Phase 0: **83 tests, pytest-run** (was nose), 22% coverage over
+handlers/models/libs.
+
+**Covered (unit level):**
+- Models — `Flag.capture()` for all 5 flag types (static/regex/file/choice/
+  datetime), User password/bank_password, GameLevel/Corp/Box fields,
+  UserLevelTimer, Scoreboard ranking + pagination, ReviewMode scoring/penalty.
+- A handful of handler paths — login/registration/home/about, game-state
+  countdown & registration-window timers, `@game_started` decorator, Materials
+  lock filtering.
+
+**NOT covered — the risk surface for the SQLAlchemy migration:**
+- Core scoring HTTP flow — `TestMissionHandlers` is commented out
+  (`tests/testHandlers.py:427`). Flag *matching* is unit-tested; the full
+  submit → score → penalty → GameHistory → websocket path is not.
+- All admin CRUD (~2,700 lines of `handlers/AdminHandlers/`).
+- XML game import/export (`setup/xmlsetup.py`) — round-trip touching nearly
+  every model at once.
+- Market/banking, botnet, upgrades, pastebin, notifications, file upload.
+- EventManager / WebSockets.
+
+**Strategy:** Use the existing suite as smoke coverage for the mechanical phases
+(0 and early 1). Before the SQLAlchemy 2.x migration, add a **characterization
+test layer** (item 1.4a) that pins current behavior of the untested critical
+flows, so the migration can be proven behavior-preserving.
+
+**Update (1.4a done):** the characterization layer landed — **104 tests, 28%**
+coverage (was 83 / 21%). New files pin the previously-blind flows below the
+HTTP/session layer (authenticated HTTP can't run under `--tests` — no
+memcached — so scoring/admin/market handler methods are driven directly with
+stubbed request state):
+- `tests/testMissionScoring.py` — submit → score → penalty → GameHistory,
+  duplicate/rejection, box + level completion, single-submission resolution,
+  dynamic `decay_all` value math.
+- `tests/testXmlSetup.py` — XML import/export round-trip across GameLevel/
+  Category/Corporation/Box/Flag/Hint, all five flag types, capture preserved.
+- `tests/testAdminGameObjects.py` — admin create/edit/delete round-trip for
+  corp/box/flag/hint + `create_game_level` linked-list.
+- `tests/testMarketScoreboard.py` — market purchase mechanic + `has_item`
+  gate, and `Team.ranks()` ordering/visibility.
+
+---
+
+## Phase 0 — Urgent: security & EOL  ✅ DONE (branch `feature/phase0-urgent`)
+
+| # | Work | Why | Risk | Effort |
+|---|------|-----|------|--------|
+| 0.1 | **Fix the CodeQL workflow** — retarget `branches: [master]` → `main`/`develop`; add python+javascript matrix; bump actions v2→v3/v4 | It has never run; free security scanning once fixed | none | S |
+| 0.2 | **Bump base image Python 3.8 → 3.12** in `Dockerfile` + `.devcontainer` | 3.8 is EOL (no security patches since Oct 2024) | med — surfaced dep issues (see below) | S–M |
+| 0.3 | **Persist the cookie secret** — `cookie_secret` option (config/`COOKIE_SECRET` env); generated once and saved on first prod boot | Every restart logged out all users; broke multi-process runs | low | S |
+| 0.4 | **Remove the admin self-update RCE** — dropped `os.system("git pull")` + auto-restart in `AdminGitStatusHandler` / `rootthebox.py` (handler, route, CLI `--update`, template UI, JS all removed) | Admin-token compromise → arbitrary code execution; nonsensical under immutable Docker images | low | S–M |
+| 0.5 | **Removed `.travis.yml`**; added `.github/workflows/tests.yml` running the suite (with `--cov`) on PRs | No tests ran in CI; Travis is defunct | none | S |
+
+### Plan changes forced during Phase 0 (Python 3.12 coupling)
+
+Bumping to 3.12 pulled two later items forward because the app literally would
+not boot or test otherwise:
+
+- **`enum34` removed from requirements** (part of item 1.1) — it won't install
+  on 3.12 and would shadow stdlib `enum`. The code already uses stdlib `enum`,
+  so this was vestigial. The rest of the Py2 cleanup remains in 1.1.
+- **nose → pytest migration done now** (item **1.2**, pulled into Phase 0) —
+  `nose` imports the removed `imp` module and `rootthebox.py` imported `nose`
+  at top level, so *the whole app failed to import on 3.12*. Changes: removed
+  the top-level `import nose`; `tests()` now provisions the sqlite DB then runs
+  `pytest.main` with coverage; added `pytest.ini` (matches the legacy
+  `testFoo.py` names); swapped `nose` → `pytest`/`pytest-cov` in requirements.
+- **Fixed 3 pre-existing broken/non-hermetic tests** surfaced by the clean run
+  (not regressions): `teardown_database` looked in the wrong dir for the sqlite
+  file (left a pile of `files/test-*.db`); `TestBox.test_description` asserted a
+  stale 1024-ish limit (model allows 4096); the registration tests assumed
+  registration was open and email not required (now set explicitly in setUp).
+
+**Result:** clean-container run is green — **83 passed on Python 3.12**,
+coverage baseline **22%** across handlers/models/libs.
+
+> Note: 0.4 is a removal, not a rewrite — in-container `git pull` self-update
+> doesn't fit an image-based deploy.
+
+---
+
+## Phase 1 — Backend foundations
+
+Ordered so each step de-risks the next. **1.1 → 1.2 → 1.3 → 1.4a precede the
+SQLAlchemy migration (1.5).**
+
+| # | Work | Why | Risk | Effort |
+|---|------|-----|------|--------|
+| 1.1 | **Strip Python 2 compatibility** — drop `future`/`enum34`, the `python_version<'3.0'` pins, `__future__` imports, and `iteritems`/`has_key`/`xrange`/`basestring`/`unicode()` usages | Dead weight; blocks clean tooling; safe on Py3-only | low | M |
+| 1.2 | **Migrate `nose` → `pytest`** — port `tests/`, replace `nose.run(...)` in `rootthebox.py`, wire into the 0.5 CI job, enable `pytest --cov` for a real baseline | `nose` is abandoned; unblocks reliable regression testing + coverage measurement for everything below | low | M |
+| 1.3 | **Modern packaging + pinned deps** — `pyproject.toml` + lockfile (uv or pip-tools). Pin Tornado. Drop `mysqlclient`/`PyMySQL` given SQLite-only | Reproducible builds; stops silent breaking upgrades; shrinks the SQLAlchemy-2 surface | low | M |
+| **1.4a** | **Characterization tests for critical untested flows** (gate before 1.5) — priority by ROI: (1) XML import/export round-trip, (2) flag submission end-to-end (rebuild `TestMissionHandlers`), (3) admin game-object CRUD round-trip, (4) market/banking + scoreboard ranking if used | Pins current behavior so the SQLAlchemy migration is provably behavior-preserving where the existing suite is blind | low | M–L |
+| 1.5 | **SQLAlchemy 1.x → 2.x** — the big one. `select()` query API, `Session` semantics, relationship loading. Lean on 1.2 + 1.4a as the safety net | Current major; unblocks long-term Py version support | **high** | **L** |
+| 1.6 | **Tornado async cleanup** — replace deprecated `IOLoop.instance()`; decide whether to keep sync handlers (fine at CTF scale) or move hot paths async | Removes deprecation warnings; optional perf | med | M |
+| 1.7 | **Adopt `ruff`** (lint + format), retire `.flake8`; add pre-commit + CI check | One tool replaces flake8/black/isort; enforces the PEP8 rules CONTRIBUTING already claims | none | S |
+
+> Dropped: previous item 1.4 (password-hashing library migration). Instances are
+> short-lived and password resets are handled manually — not worth the auth risk.
+> Bank-password MD5/SHA is an intentional CTF mechanic — left alone.
+
+---
+
+## Phase 2 — Frontend refresh
+
+Biggest surface, lowest urgency. Staged: patch-bump for CVE relief first, then
+decide on a real framework migration as a separate initiative.
+
+| # | Work | Why | Risk | Effort |
+|---|------|-----|------|--------|
+| 2.1 | **Patch-bump vendored libs to final releases** — jQuery 2.2.4 → 3.7.x, jQuery UI, Bootstrap **2.x** → 3.4.1 or 5.x, review Backbone/Underscore | Immediate known-CVE relief, features unchanged | med — jQuery 3 / Bootstrap majors have breaking markup changes | M–L |
+| 2.2 | **Introduce a build pipeline** — npm as the version manager for vendored libraries (no bundler; see the 2.2 entry in the progress log) | Future updates become `npm update`, not manual re-vendoring | med | L |
+| 2.3 | **(Optional, separate project) Framework modernization** — evaluate replacing Backbone/jQuery UI patterns. Scope only after 2.1/2.2 | Long-term maintainability; out of scope for "features unchanged" unless desired | high | XL |
+
+---
+
+## Known issues surfaced (deferred)
+
+Bugs found while doing the modernization work that are **out of scope** for the
+phase that surfaced them and were intentionally left for a dedicated fix:
+
+- **`GameLevel.__eq__` is always False** (found during 1.5). Its `__cmp__`
+  returns `-1` when `self.number < other.number` and `1` otherwise — never `0`
+  — so `__eq__` (which checks `__cmp__() == 0`) never holds, and a `GameLevel`
+  never compares equal to anything, including itself. It works in practice only
+  because Python's `in`/`list.remove` short-circuit on identity before calling
+  `==`. Affects any `==`/`sorted()` on levels. Fix is small (return `0` when
+  `number`s are equal) but changes comparison/sort semantics app-wide, so it
+  wants its own change + test, not a migration side effect. `tests/
+  testRelationships.py` works around it by comparing `uuid`.
+- **`setup/xmlsetup.py` ElementTree deprecations** (visible under 2.0): uses
+  `defusedxml.cElementTree` and truth-tests elements (`if parent and box:`),
+  both deprecated. Candidate for the 1.7 (ruff) / general-cleanup pass.
+- **Content Security Policy is switched off** (found during 2.2).
+  `BaseHandler` builds a CSP (`default-src 'self'`, etc.), but the line that
+  sends it, `handlers/BaseHandlers.py` `_refresh_csp()`, is commented out
+  ("Disabled until i can figure out the bug"). So the app has no CSP
+  protection against injected scripts. Re-enabling it needs the original bug
+  found, inline `<script>` blocks and `style=` attributes audited (`style-src`
+  already allows `'unsafe-inline'`), and every page checked for violations.
+  Its own branch; 2.2's self-hosted fonts keep `font-src 'self'` workable.
+
+## Progress log
+
+_(Update as branches land.)_
+
+- [x] 0.1 Fix CodeQL workflow
+- [x] 0.2 Python 3.8 → 3.12
+- [x] 0.3 Persist cookie secret
+- [x] 0.4 Remove admin self-update RCE
+- [x] 0.5 Remove Travis; add pytest CI (+coverage)
+- [x] 1.2 nose → pytest (+ coverage baseline) — pulled into Phase 0
+- [x] 1.1 Strip Python 2 compatibility (branch `feature/phase1.1-strip-py2`) —
+      dropped `future`/`past` shims (`from builtins import …`, `from past.builtins
+      import basestring`, `from past.utils import old_div`), the two `__future__`
+      imports, and the `python_version<'3.0'` requirement pins + `future` dep.
+      Replaced `basestring`→`str`, `old_div(a,b)`→`a // b` (int coords) or `a / b`
+      (float), and renamed the Py2-named `unicode()` helper in `StringCoding` to
+      `_to_unicode` (behavior unchanged). enum34 was already removed in Phase 0.
+      Verified: image builds, **83 passed** (unchanged from baseline).
+- [x] 1.3 Modern packaging + pinned deps (uv) — added `pyproject.toml` +
+      `uv.lock` (hashed); Docker installs via `uv sync --frozen` from the lock;
+      pinned tornado `>=6.4,<7` (6.5.7) and held sqlalchemy `>=1.4,<2` (1.4.54);
+      dropped `mysqlclient`/`PyMySQL` (SQLite-only) and `setuptools-rust` (build
+      tool, not a runtime dep); removed `setup/requirements.txt` +
+      `setup/depends.sh`. Verified: image builds, **83 passed**.
+- [x] 1.4a Characterization tests (gate before 1.5) — 4 flows pinned across
+      testMissionScoring / testXmlSetup / testAdminGameObjects /
+      testMarketScoreboard; suite 83 → 104, coverage 21% → 28%. Handler methods
+      driven below the auth layer (no memcached under `--tests`).
+- [x] 1.5 SQLAlchemy 1.x → 2.x — **compatibility migration** (2.0.51). Scope
+      decision: the legacy `Session.query()` API (149 calls, 0 `Query.get()`)
+      is still supported in 2.x, so a full `select()` rewrite was **deferred**
+      as gratuitous/high-risk; the goal was to run cleanly on 2.0. Two steps:
+      **1.5A** (future mode on 1.4 — declarative import move, `BotManager`
+      autocommit→commit, alembic raw-SQL `text()` wrap, `future=True`) then
+      **1.5B** (bump pin `>=2,<3` + relock). The flip surfaced 5 mapper
+      warnings where a `@property` collided with a same-named backref
+      (`Box.corporation`/`game_level`/`category`, `Flag.box`, `Hint.flag`) —
+      fixed by dropping those 5 backrefs (the read-only `@property` remains the
+      accessor; relationships/cascades preserved, and pinned by a new
+      `tests/testRelationships.py` — accessor + FK-management + cascade-delete
+      characterization). Verified: **113 passed** on
+      2.0 with no new warnings, a clean-container app boot (setup + alembic +
+      server start, 0 tracebacks), and — against a **real populated DB** — the
+      production deploy path (boot + `upgrade head` no-op) plus a forced re-run
+      of the `ffe623ae412` data migration over real `team_to_flag` rows. That
+      real-data run surfaced one more raw `conn.execute(f"INSERT …")` in the
+      migration's `add_history()` helper (missed by the literal-string grep;
+      silently no-ops on 2.0) — fixed with a parameterized `sa.text()` (also
+      removes the f-string injection risk); the conversion then processed all
+      rows correctly. Also replaced deprecated `Inspector.from_engine(conn)`
+      with `sa.inspect(conn)` across all 9 migrations that used it (deprecated
+      since 1.4, slated for removal), so the migrations are fully 2.0-clean.
+      Added `tests/testMigrations.py` guarding the migration paths that exist
+      under RTB's create_all+stamp architecture: production DB lifecycle, the
+      `ffe623` data conversion on real rows (regression guard for the
+      `add_history` bug), chain integrity, and a models↔created-schema no-drift
+      tripwire. Suite now **117 passed**.
+- [x] 1.6 Tornado async cleanup — replaced the 4 deprecated
+      `IOLoop.instance()` calls with `IOLoop.current()` (EventManager,
+      BaseHandlers ×2, handlers/__init__). Added an asyncio event-loop setup at
+      the `rootthebox.py` entry point to silence the Python 3.12 "no current
+      event loop" DeprecationWarning that Tornado's import-time `IOLoop.current()`
+      triggers. **Kept handlers sync** (no async rewrite — fine at CTF scale;
+      there were no old-style `@gen.coroutine`/`yield` coroutines, and the 6
+      `PeriodicCallback` uses are fine on Tornado 6). Verified: 117 passed
+      (warnings 14 → 13), clean-container boot.
+- [x] 1.7 Adopt ruff — replaced `.flake8` with `[tool.ruff]` in
+      `pyproject.toml` (select E/W/F/I; bugbear/complexity deferred until the
+      pre-existing violations they'd flag are burned down — they were selected
+      in `.flake8` but never CI-enforced). Ran `ruff check --fix` + `ruff
+      format` (104 files reformatted, ~cosmetic). Fixed the two real issues the
+      lint surfaced: an F821 Py2 dead branch in `bot/BotMonitor.py`
+      (`isinstance(data, unicode)` under `sys.version_info.major == 2`) and a
+      dead `admin` var in `UserHandlers`. Added `.pre-commit-config.yaml` and
+      `.github/workflows/lint.yml` (ruff check + format --check), both pinned to
+      ruff 0.15.22 to match the uv.lock dev group. Suite still 117 passed.
+- [x] 2.1 Patch-bump vendored frontend libs — **split into 2.1a (JS libs) and
+      2.1b (Bootstrap)** once the survey showed one line item bundled four
+      upgrades of wildly different risk. Bootstrap was deeply coupled to markup
+      (129 `spanN` grids, 72 `btn-mini/small`, 19 `row-fluid`, 16 Bootswatch v2
+      theme CSS files, BS-JS modals ×59 / dropdowns ×14), so the BS2→5 migration
+      was a template-wide rewrite, not a patch-bump.
+  - [x] 2.1a JS library bumps (branch `feature/phase2.1a-js-libs`) — removed
+        **dead** Backbone 1.0.0 + Underscore 1.6.0 (zero app usage — the only
+        `_(...)` hits are i18n gettext; clears Underscore CVE-2021-23358),
+        jQuery **2.2.4 → 3.7.1**, jQuery UI **1.12.1 → 1.13.3** (base theme,
+        reuses the existing `ui-icons_*` sprites), and added **jQuery Migrate
+        3.5.2** as a compat shim. Kept Bootstrap 2. Static analysis first
+        confirmed the bump was safe: BS2's JS uses no jQuery-3-removed APIs (its
+        one `.load(` is the retained AJAX `.load(url)`), and our own page JS uses
+        none either (1 deprecated `.bind()` in notifier.js, covered by Migrate).
+        Verified live (dev stack + headless Chromium via Playwright): jQuery
+        3.7.1 / Migrate 3.5.2 / jQuery UI 1.13.3 all load, Bootstrap
+        modal/dropdown/tooltip + jQuery-UI datepicker plugins all present,
+        Backbone/Underscore gone, removed files 404, and a real Bootstrap modal
+        show/hide works on `/scoreboard`. (Surfaced a pre-existing admin-home
+        SQLAlchemy-2.0 500 — `Notification.admin()` returned a `Query`, negative-
+        sliced in `admin/home.html`; fixed separately on branch
+        `fix/admin-home-notification-slice`, out of scope for this frontend branch.)
+  - [x] 2.1b Bootstrap 2 → **5.3.3** (branch `feature/phase2.1b-bootstrap5`, off
+        develop). Theme decision: **curate to the 8 Bootswatch-5 themes + default**,
+        drop the 4 with no BS5 equivalent (amelia/readable/spruce/geocities →
+        existing users on them reassigned to default via migration), port 386 +
+        cyberpunk as custom. Commits:
+    - [x] (1) Scaffold — vendor BS5.3.3 bundle (Popper incl.) + BS5 default/Cyborg
+          themes; remove BS2 `bootstrap.min.js` + `bootstrap-responsive.css`; add
+          `libs/bs5-jquery-bridge.js` re-exposing `$.fn.modal/popover/tooltip/…`
+          on BS5's native API (BS5 dropped the jQuery plugin API; ~88 imperative
+          call sites depend on it).
+    - [x] (2) Mechanical codemod (`tools/bs2to5_codemod.py`, committed, idempotent,
+          template-tag-safe) across 67 templates: `spanN→col-md-N`,
+          `offsetN→offset-md-N`, `row-fluid→row`, `btn-mini/small→btn-sm`,
+          `btn-inverse→btn-dark`, `well→card card-body`, `pull-*→float-*`, BS2
+          glyphicons→FA4, `data-toggle/dismiss/target/…→data-bs-*`.
+    - [x] (3) Navbar rewrite — the 3 `Menu` templates to BS5 `navbar-expand-lg` +
+          `navbar-collapse`/`nav-link`; dark bar via `bg-dark`+`data-bs-theme`;
+          the 2 `dropdown-submenu`s flattened to `dropdown-header` groups (BS5 has
+          no native submenu). Menu JS ids preserved.
+    - [x] (4) Alerts — `alert-error→alert-danger`; dismissible alerts →
+          `.btn-close` + `.alert-dismissible`; `.alert{align-self:flex-start}` to
+          stop column-alerts stretching under BS5 flex rows.
+    - [x] (5) Forms — codemod form pass over 38 templates: `control-group→row mb-3`,
+          `control-label→col-sm-3 col-form-label`, `controls→col-sm-9`, and a
+          type-aware tag pass adding `form-control`/`form-select`/`form-check-input`
+          (skips hidden/submit/etc., idempotent). Verified: Create Box, the 46-field
+          Configuration form, and login all render as clean BS5 horizontal forms.
+    - [x] (6) Modals — codemod adds bare `.btn`→`btn btn-secondary` (107) and
+          modal `.close`→`.btn-close`; a structure-aware pass
+          (`tools/bs2to5_modals.py`) balances `<div>`/`</div>` to wrap all 53 modals
+          in `.modal-dialog > .modal-content`, drops `.hide`, adds `tabindex`
+          (0 skips). CSS orders the header close-button right. Caught+fixed a regex
+          bug where a template tag containing `>` in a modal's style attr split the
+          opening tag. Verified: Edit Category modal opens with full BS5 structure.
+    - [x] (7) Per-page layout fix — `admin/home.html`'s outer `.row` held a tall
+          `col-md-3` sidebar plus 6 `col-md-8` sibling panels (warnings/
+          notifications/failed-logins/banned-IPs); under BS5 flex (unlike BS2
+          floats) each `col-md-8` sibling wraps once the row's cumulative width
+          passes 100%, dropping every panel below the sidebar and leaving a big
+          empty gap. Wrapped the siblings in one `col-md-9` column. Audited
+          scoreboard/user/admin-view/missions pages for the same shape — no
+          others had it (their multi-column rows are avatar/box-selector grids
+          that intentionally wrap in threes, or already summed to ≤12 columns).
+    - [x] (8) Dynamic grid vars — `{% set wellspan="spanN" %}` in
+          `scoreboard/summary.html` / `projector.html` (skipped by the codemod
+          since it only rewrites plain-text class values, not template-tag string
+          literals) converted to `col-md-N` directly in the `{% set %}`.
+    - [x] (9) Leftover BS2 class/component cleanup — grepped the whole tree;
+          several were real regressions, not just cosmetic drift: `.hide`→`.d-none`
+          (BS5 dropped `.hide`, so a multi-choice-flag JS template row was
+          rendering visible by default instead of staying hidden until cloned);
+          `.pagination` div>ul>li>a → BS5 `ul.pagination>li.page-item>a.page-link`
+          (was a bare bullet list, zero styling); `.label label-warning`→
+          `.badge.text-bg-warning`; BS2 `.accordion-group/-heading/-toggle/-inner`→
+          BS5 `.accordion-item`/`<h2 class="accordion-header">`/`.accordion-button
+          collapsed`/`.accordion-body` in the file-share list; 4 decorative
+          "mini navbar" headers (pastebin fragments + scoreboard/history, not the
+          real site nav already rewritten in commit 3) → the same navbar/
+          navbar-nav/nav-item/nav-link pattern — the history.html one was a real
+          bug: `.nav-collapse collapse` is plain `.collapse` under BS5, which
+          defaults to `display:none`, so its view-toggle buttons were fully
+          invisible; `scoreboard/projector.html`'s page-local dark-theme
+          `<style>` override targeted stale `.navbar-fixed-top`/`.well` selectors
+          post-codemod, so the projector page had stopped hiding the nav bar and
+          applying its dark theme — fixed to `.fixed-top`/`.card-body`.
+    - [x] (10)+(11) Theme curation — vendored the 8 Bootswatch 5.3.3 themes from
+          the CDN (cyborg + default were already done in commit 1); deleted the 4
+          dropped themes' CSS; ported 386 and cyberpunk to BS5 as thin skins
+          layered on the vendored `bootstrap.min.css` base (`@import`) rather than
+          re-implementing Bootstrap 2's grid/component CSS — only each theme's
+          distinctive color/font/shadow rules were carried over, re-targeted at
+          BS5 selectors. (386's actual palette is a DOS "blue screen" look — navy
+          background, grey/yellow/cyan/magenta accents — not literally
+          green-on-black despite the "retro green terminal" shorthand; preserved
+          faithfully.) Updated `setup/bootstrap.py`'s `css_files`. Fixed
+          `User.theme_id`'s hardcoded `default=3` (relied on Cyborg landing at
+          Theme id 3 via insertion order, which the Amelia removal silently
+          breaks) to resolve `Theme.by_name(options.default_theme)` at
+          insert time instead. **DB migration** `b2c3d4e5f6a7`: reassigns any
+          user on a dropped theme to Cyborg, then deletes the 4 dropped
+          Theme/theme_file rows; also updates 386's theme_file rows from the old
+          386.css/386.responsive.css to the new consolidated 386.min.css.
+          Verified against a real populated dev DB (clean upgrade, idempotent
+          re-run, correct end state); no downgrade (irreversible data migration,
+          same convention as `ffe623ae412`).
+    - Verified throughout via headless Chromium screenshots + 0 console errors;
+      full test suite 119 passed unaffected.
+    - [x] (12) Parity audit (WIP commit `65d9c3cf`). This was an attempt to match
+          Bootstrap 2's pixel-level look on the player pages and admin dashboard.
+          **Abandoned (decision 2026-10-09).** Recreating Bootstrap 2's
+          fixed-width float grid on top of Bootstrap 5 needed hard-coded pixel
+          corrections that were only right at one window width, `!important`
+          overrides, and a hand-written override section inside the minified
+          vendor theme. The roadmap goal was "features unchanged", not "pixels
+          unchanged". 2.1b closes as **functionally complete**; the visual work
+          moves to 2.1c.
+    - Also on this branch: Keycloak/OIDC single sign-on (`210cb22e`). It is an
+      unrelated feature that was built on top of this branch and ships with it.
+  - [x] 2.1c Visual refresh (branch `feature/phase2.1c-visual-refresh`, off
+        develop). **Done; merged to develop 2026-10-13.** The goal is a clean, standard Bootstrap 5 design, not a copy
+        of Bootstrap 2. Decisions made:
+    - **Ship a single theme for now.** Drop the curated Bootswatch, 386 and
+      cyberpunk themes. Keep the Theme model and table so more themes can be
+      added later, and hide the theme picker while only one theme exists.
+      Near the end of the upgrade, add themes inspired by the originals'
+      colors, layouts, fonts and design principles. These will not be
+      pixel-for-pixel remakes.
+    - The default stays dark, keeping the CTF "hacker" feel. There is no
+      company branding or logo.
+    - Strip the 2.1b(12) parity overrides: the Bootstrap 2 recreation section
+      in `cyborg.min.css`, the pixel hacks in `pages/admin/home.css`, the
+      `BS5-*-PARITY.md` notes and `dev-tools/bs-parity`. Keep the genuine bug
+      fixes in that commit, such as the missing `col-md-11` that caused
+      horizontal scrolling.
+    - Put the design values (colors, type, spacing, radius) in one place using
+      Bootstrap 5.3 CSS variables and `data-bs-theme`. No build pipeline is
+      needed for this.
+    - Rework pages the standard Bootstrap 5 way, most-used first. Players:
+      login/onboarding, missions/box, scoreboard, user home. Admins: dashboard,
+      game objects. Everything else only needs to look acceptable.
+    - Done when pages work at any window width, look consistent, and nothing
+      is broken. Matching old screenshots is not a goal.
+    - Steps: (1) single theme + strip parity CSS; (2) design layer
+      `rtb.css`; (3) pilot pages, reviewed; (4) rollout tier 1 (player
+      pages), tier 2 (admin pages), tier 3 (everything else, "acceptable");
+      (5) **polish pass**, which collects page-specific visual feedback
+      deferred during the rollout. Theme-level or broken items are fixed
+      straight away instead of waiting; (6) wrap-up (docs, memory, merge).
+    - Progress:
+      - [x] (1) `a9ac99ea`: single Default theme, migration `d4e5f6a7b8c9`,
+            parity CSS stripped, Font Awesome 4.0.3 -> 4.7.0.
+      - [x] (2) `ef549f38`: `rtb.css` design layer (tokens + components).
+      - [x] (3) `f7f27021`: pilot pages (auth, player home with capture map,
+            admin dashboard), reviewed by the user; page CSS now loads after
+            the theme. `0797f91b`: feedback fixes (level pills, scoreboard
+            spacing, briefing label).
+      - [x] (4) Tier 1 `f238acba` (missions, box, scoreboard, teams,
+            settings); tier 2 `7ee682e2` (target management, users, game
+            levels, statistics; legacy `.card.card-body` back to block flow;
+            admin navbar collapses below xl); tier 3 `fafa8e16` (overflow
+            fixes, CTFtime feed crash, story-mode pages). Every checked page is
+            free of horizontal overflow from 375 to 1920px.
+      - [x] (5) Polish pass: `dc78db1e` (projector scoreboard rebuilt
+            without navbar/footer via new `navbar`/`site_footer` blocks; no
+            podium colours or lock icons; green scoreboard bars on a visible
+            grey track) and `81be7cfb` (multiple choice rows as BS5 input
+            groups, broken remove-choice button fixed, create-flag pages
+            widened). Later visual nitpicks go on small branches off develop.
+      - [x] (6) Wrap-up: CLAUDE.md "Frontend Theme" section, this entry,
+            merge to develop.
+    - Not visually reviewed, because those features are off in the dev config:
+      black market / upgrade pages, botnets, wall of sheep, password reset.
+- [x] 2.2 Frontend build pipeline (branch `feature/phase2.2-build-pipeline`, off
+      develop). **Done; merged to develop 2026-10-14.** Decisions made (2026-10-13):
+    - **npm manages versions; no bundler.** Options weighed: npm + bundler
+      (Vite/esbuild), npm as a version manager only, Python-only vendoring,
+      CDN + import maps. A bundler only pays off once page scripts are ES
+      modules (a 2.3-sized rewrite of ~44 scripts), and would make Docker and
+      source installs need Node. Python-only vendoring loses Dependabot /
+      `npm audit`; a CDN breaks isolated event networks.
+    - `package.json` pins **exact** versions (`.npmrc` `save-exact=true`) with a
+      committed `package-lock.json`. `npm run vendor` (`npm ci` + a copy script)
+      writes each library's built files, plus its licence, into
+      `static/vendor/<lib>/`, which **is committed**. Running the app still
+      needs only Python + uv; Node is for maintainers and CI.
+    - CI fails if `static/vendor/` does not match the lockfile. Dependabot
+      watches npm.
+    - Templates load static files through `static_url()` so each URL carries a
+      content hash (`?v=`): browsers pick up new files after an upgrade instead
+      of serving stale cached copies.
+    - Self-host Inter and JetBrains Mono (`@fontsource`) instead of Google
+      Fonts: works on isolated networks, no player IPs sent to Google, fits a
+      `font-src 'self'` CSP.
+    - Remove html5shiv (IE < 9 only). Highcharts is gone already: the Charts
+      page and skills chart were removed instead of upgraded
+      (`feature/remove-charts`, merged `9bcb249c`).
+    - Libraries with no usable npm package stay hand-maintained in
+      `static/js/libs/`: Animator, countdown, notifier, markdown-toolbar,
+      the BS5 jQuery bridge, and the clipboard helper scripts. (terminal-wrap
+      was on this list but went in step 2: jQuery Terminal 2's `keepWords`
+      replaces it.)
+    - Steps:
+      - [x] (0) `9b096bbf` Plan.
+      - [x] (1) `fdb35bc2` npm scaffolding + `tools/vendor.mjs`; the libraries
+            whose current version is on npm moved to `static/vendor/`, unchanged.
+      - [x] (2) `2917ebb6` The outdated libraries with no matching npm version
+            (jQuery Terminal 0.7.12, jsTree, mousewheel, commonmark,
+            animate.css, clipboard) upgraded to current releases and checked
+            page by page.
+      - [x] (3) `ae6fdd3c` Self-hosted Inter and JetBrains Mono.
+      - [x] (4) `5fd539e1` `static_url()` cache-busting: every template
+            reference carries a content hash (`?v=`).
+      - [x] (5) `8872bd6d` Bootstrap's CSS moved out of the theme to
+            `static/vendor/bootstrap/` (added during 2.2, see below).
+      - [x] (6) `c859ab25` CI drift check (`.github/workflows/vendor.yml`) +
+            Dependabot (`.github/dependabot.yml`).
+      - [x] (7) Wrap-up: CLAUDE.md "Vendored libraries" section, this entry,
+            merge to develop.
+    - **Plan change: Bootstrap left the theme (step 5).** Theme files are bare
+      file names in the database, served from `static/css/themes/`, so
+      Bootstrap's CSS had to live there, the one vendored file outside
+      `static/vendor/`. Bootstrap is the base every theme sits on, so
+      `main.html` now loads it directly (same cascade position) and migration
+      `e5f6a7b8c9d0` drops its ThemeFile row. Everything vendored is now under
+      one directory, which keeps the drift check and Dependabot steps simple.
+    - **The drift check** is inline in the workflow (no helper script): it runs
+      `npm ci --ignore-scripts && npm run vendor` and fails if
+      `git status --porcelain -- static/vendor` is not empty, i.e. a version
+      bump that was not re-vendored, a hand-edited library file, or a
+      `vendor.mjs` change that was not re-run.
+    - **Dependabot** opens one weekly PR against develop for npm minor/patch
+      bumps (each major separately) and a monthly one for GitHub Actions. Its
+      PRs only touch `package.json` + the lockfile, so they fail the drift
+      check until re-vendored by hand on the branch (steps in the
+      `dependabot.yml` header). Re-vendor right before merging: once the branch
+      has a non-Dependabot commit, Dependabot stops rebasing it.
+      **Manual setting:** Dependabot alerts and security updates are switched
+      on in the repo's Settings → Code security, not by the config file.
+    - **Follow-up (not done):** have CI re-vendor Dependabot PRs automatically,
+      at least the minor/patch group. Needs a workflow with write access to
+      PR branches, so the security side needs care.
+    - Found while wrapping up, fixed separately on develop (`510feb50`): CI had
+      been red since `41c03435`. The SSO tests needed memcached, which the
+      Tests workflow does not run (now `tests/FakeMemcached.py`), and 7 files
+      had skipped `ruff format` (the pre-commit hook was not installed).
+- [ ] 2.3 (Optional) framework modernization

@@ -19,13 +19,11 @@ Created on Mar 12, 2012
     limitations under the License.
 """
 
-
 import xml.etree.cElementTree as ET
-from builtins import str
 from uuid import uuid4
 
 from sqlalchemy import Column, ForeignKey, asc
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import relationship
 from sqlalchemy.types import Boolean, Integer, String, Unicode
 
 from libs.ValidationError import ValidationError
@@ -35,7 +33,6 @@ from models.Relationships import team_to_game_level
 
 
 class GameLevel(DatabaseObject):
-
     """Game Level definition"""
 
     uuid = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid4()))
@@ -52,9 +49,10 @@ class GameLevel(DatabaseObject):
     _locked = Column(Boolean, default=False, nullable=False)
     _review_mode = Column(Boolean, default=False, nullable=False)
 
+    # Box.game_level is provided by a read-only @property (by_id lookup); no
+    # backref, which would collide with it (an error under SQLAlchemy 2.x).
     boxes = relationship(
         "Box",
-        backref=backref("game_level", lazy="select"),
         cascade="all,delete,delete-orphan",
     )
 

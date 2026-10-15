@@ -3,13 +3,15 @@
 {% block title %}{{ _("S.W.A.T.") }}{% end %}
 
 {% block header %}
-<script src="/static/js/pages/admin/upgrades/swat.js"></script>
+<script src="{{ static_url('js/pages/admin/upgrades/swat.js') }}"></script>
 {% end %}
 
 {% block modals %}
-<div id="accept-bribe-modal" class="modal hide fade" style="display: none;">
+<div id="accept-bribe-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>{{ _("Accept Bribe?") }}</h3>
     </div>
     <div class="modal-body">
@@ -23,15 +25,19 @@
         <br />
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="accept-bribe-submit" class="btn btn-primary" type="button">
             {{ _("Confirm") }}
         </button>
     </div>
-</div>
-<div id="decline-bribe-modal" class="modal hide fade" style="display: none;">
+
+    </div>
+    </div></div>
+<div id="decline-bribe-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>{{ _("Decline Bribe?") }}</h3>
     </div>
     <div class="modal-body">
@@ -45,15 +51,19 @@
         <br />
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="decline-bribe-submit" class="btn btn-primary" type="button">
             {{ _("Confirm") }}
         </button>
     </div>
-</div>
-<div id="complete-bribe-modal" class="modal hide fade" style="display: none;">
+
+    </div>
+    </div></div>
+<div id="complete-bribe-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         <h3>{{ _("Complete Bribe") }}</h3>
     </div>
     <div class="modal-body">
@@ -67,12 +77,14 @@
         <br />
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">{{ _("Close") }}</a>
+        <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
         <button id="complete-bribe-submit" class="btn btn-primary" type="button">
             {{ _("Confirm") }}
         </button>
     </div>
-</div>
+
+    </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -85,14 +97,14 @@
     <br />
     {% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
-        <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <h4 class="alert-heading">{{ _("ERROR") }}</h4>
             {{ error }}
         </div>
         {% end %}
     {% end %}
-    <div class="well">
+    <div class="card card-body">
         <h3>{{ _("Pending Bribes") }}</h3>
         <hr>
         {% if len(pending_bribes) != 0 %}
@@ -119,12 +131,12 @@
                         <td>${{ swat.paid }}</td>
                         <td>{{ Swat.count_completed_by_target_id(swat.target.id) }}</td>
                         <td>
-                            <a id="accept-bribe-button{{ index }}" class="btn btn-mini btn-success" data-toggle="modal" href="#accept-bribe-modal" data-uuid="{{ swat.uuid }}">
+                            <a id="accept-bribe-button{{ index }}" class="btn btn-sm btn-success" data-bs-toggle="modal" href="#accept-bribe-modal" data-uuid="{{ swat.uuid }}">
                                 {{ _("Accept") }}
                             </a>
                         </td>
                         <td>
-                            <a id="decline-bribe-button{{ index }}" class="btn btn-mini btn-danger" data-toggle="modal" href="#decline-bribe-modal" data-uuid="{{ swat.uuid }}">
+                            <a id="decline-bribe-button{{ index }}" class="btn btn-sm btn-danger" data-bs-toggle="modal" href="#decline-bribe-modal" data-uuid="{{ swat.uuid }}">
                                 {{ _("Decline") }}
                             </a>
                         </td>
@@ -137,7 +149,7 @@
         {% end %}
     </div>
     <br />
-    <div class="well">
+    <div class="card card-body">
         <h3>{{ _("Bribes in Progress") }}</h3>
         <hr>
         {% if len(in_progress_bribes) != 0 %}
@@ -161,7 +173,7 @@
                         <td>{{ swat.target.handle }}</td>
                         <td>${{ swat.paid }}</td>
                         <td>
-                            <a id="complete-bribe-button{{ index }}" class="btn btn-mini" data-toggle="modal" href="#complete-bribe-modal" data-uuid="{{ swat.uuid }}">
+                            <a id="complete-bribe-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#complete-bribe-modal" data-uuid="{{ swat.uuid }}">
                                 {{ _("Complete") }}
                             </a>
                         </td>
@@ -174,7 +186,7 @@
         {% end %}
     </div>
     <br />
-    <div class="well">
+    <div class="card card-body">
         <h3>{{ _("Completed Bribes") }}</h3>
         <hr>
         {% if len(completed_bribes) != 0 %}

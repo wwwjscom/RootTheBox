@@ -20,7 +20,6 @@ Created on Sep 20, 2012
 """
 
 import logging
-from builtins import object, str
 
 from tornado.ioloop import IOLoop
 from tornado.options import options
@@ -37,7 +36,6 @@ from models.User import User
 
 @Singleton
 class EventManager(object):
-
     """
     All event callbacks go here!
     This class holds refs to all open web sockets
@@ -47,7 +45,7 @@ class EventManager(object):
     auth_connections = {}
 
     def __init__(self):
-        self.io_loop = IOLoop.instance()
+        self.io_loop = IOLoop.current()
 
     # [ Connection Methods ] -----------------------------------------------
     def add_connection(self, connection):
@@ -154,11 +152,6 @@ class EventManager(object):
         admin changes so clients never have to poll for the value.
         """
         msg = {"countdown": seconds}
-        for connection in self.all_connections:
-            self.safe_write_message(connection, msg)
-
-    def push_history(self, *args):
-        msg = {"update": ["history"]}
         for connection in self.all_connections:
             self.safe_write_message(connection, msg)
 

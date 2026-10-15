@@ -18,7 +18,6 @@ Created on Mar 13, 2012
     limitations under the License.
 """
 
-
 import functools
 import logging
 
@@ -54,7 +53,10 @@ def authenticated(method):
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         if self.session is not None:
-            if self.session.ip_address == self.request.remote_ip or options.disable_hijack_protection:
+            if (
+                self.session.ip_address == self.request.remote_ip
+                or options.disable_hijack_protection
+            ):
                 if (
                     self.request.remote_ip
                     not in self.application.settings["blacklisted_ips"]

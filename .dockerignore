@@ -13,3 +13,7 @@ files/*.state
 files/*.key
 files/*.log
 files/data/*-*
+
+.venv/
+
+node_modules/

@@ -20,16 +20,14 @@ Created on Mar 12, 2012
 """
 
 import re
-from builtins import object
 from datetime import datetime
 
 from sqlalchemy import Column
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.orm import declarative_base, declared_attr
 from sqlalchemy.types import DateTime, Integer
 
 
 class _DatabaseObject(object):
-
     """All game objects inherit from this object"""
 
     @declared_attr

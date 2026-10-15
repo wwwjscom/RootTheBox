@@ -31,7 +31,6 @@ from models.BaseModels import DatabaseObject
 
 
 class Penalty(DatabaseObject):
-
     """Penalty definition"""
 
     team_id = Column(Integer, ForeignKey("team.id", ondelete="CASCADE"))

@@ -19,9 +19,7 @@ Created on Mar 12, 2012
     limitations under the License.
 """
 
-
 import json
-from builtins import str
 from uuid import uuid4
 
 from sqlalchemy import Column

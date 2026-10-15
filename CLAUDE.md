@@ -19,7 +19,7 @@ docker compose up
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
-# Run tests inside the container (correct SQLAlchemy version)
+# Run tests inside the container (pinned Python 3.12 + dependencies)
 docker compose exec webapp python3 /opt/rtb/rootthebox.py --tests
 
 # Run a single test class
@@ -30,13 +30,14 @@ Default admin credentials (created by bootstrap): `admin` / `rootthebox`
 
 `docker-compose.dev.yml` overlays source volume mounts and sets `DEBUG=True` (fixed cookie secret, no template cache) and `AUTORELOAD_SOURCE=True`. Never use the dev overlay in production.
 
-**Do not run tests with the host Python** — SQLAlchemy 2.x is installed there but the app requires 1.x. Always run tests inside the container.
+**Do not run tests with the host Python** — the app needs Python 3.12+ and the exact dependencies in `uv.lock`, which the image provides. Always run tests inside the container.
 
 ## Database & Migrations
 
-- SQLite is used for local/Docker dev; MySQL in production (set via `sql_dialect` config).
+- Docker deployments use SQLite (`files/rootthebox.db`); the image ships no MySQL or Postgres driver. MySQL/Postgres only work on non-Docker installs that add a driver (set via `sql_dialect` config).
 - Schema migrations use Alembic. Migration files live in `alembic/versions/`.
 - Migrations run automatically on every startup via `update_db()` in `handlers/__init__.py`.
+- When migrations are pending, `update_db()` first copies a SQLite DB to `files/backups/<name>-<old revision>-<timestamp>.db` (`libs/DatabaseBackup.py`). If the backup fails, startup stops before migrating. Other dialects only log a warning.
 - When adding a column to a model, also create an Alembic migration. Use the pattern in `alembic/versions/d3b1c5f8a901_add_level_submission_timer.py` as a template — it guards against running twice with `_table_has_column()`.
 - Set `down_revision` to the most recent file in `alembic/versions/` before yours.
 
@@ -72,6 +73,19 @@ Applied to handler methods:
 - `@authorized(permission)` — requires a specific admin permission
 - `@dangerous` — marks model query methods that do unscoped lookups (by id/uuid without team scoping); these should only be called from admin handlers
 
+### Authentication Modes (`options.auth`)
+
+- `db` (default): password login and registration (`LoginHandler`, `RegistrationHandler`).
+- `azuread`: legacy Azure AD flow via MSAL (`CodeFlowHandler`, `JoinTeamHandler`).
+- `oidc`: generic OpenID Connect SSO, e.g. Keycloak (`handlers/OIDCHandlers.py`, `libs/OIDCClient.py`).
+  - `/login` redirects to the IdP. `/oidc/callback` validates the ID token.
+  - Users are linked by `User.oidc_subject` (the `sub` claim), never by email.
+  - First-time users, and players without a team, finish at `/onboarding` before any session exists.
+  - Name, email and the admin role (`oidc_admin_role`) are re-synced from the IdP on every login.
+  - Dev realm and setup: `setup/keycloak/README.md`. Tests: `tests/testOIDC.py`.
+- Routes for each mode are added conditionally at the bottom of the URL table in `handlers/__init__.py`. `oidc_urls` shadows `/login`.
+- `BaseHandler.start_user_session(user)` is the shared "user is now logged in" helper.
+
 ### Real-time Events
 
 `libs/EventManager.py` is a singleton that pushes score updates, flag captures, and notifications to connected clients over WebSockets. Call `self.event_manager.flag_capture(user, flag, reward)` (and similar methods) from handlers after DB writes, not before.
@@ -79,6 +93,40 @@ Applied to handler methods:
 ### Templates
 
 Tornado's template engine is used (similar to Jinja2 but not identical). Templates inherit from `templates/main.html` using `{% extends %}` and `{% block %}`. The `{% block modals %}` block renders **outside** `<body>` in `main.html` — content placed there becomes a direct child of `<body>` before the `<div class="container-fluid animated fadeIn">` wrapper, which matters for `position: fixed` CSS elements (the animation on that div breaks fixed positioning for children inside it).
+
+The navbar and footer sit in `{% block navbar %}` and `{% block site_footer %}`. A full-screen page (e.g. `scoreboard/projector.html`) overrides both with empty blocks and removes the navbar's `body` padding in its page CSS.
+
+### Frontend Theme (Bootstrap 5.3)
+
+- **One theme, "Default":** the design layer `static/css/themes/rtb.css`, over vendor Bootstrap (`static/vendor/bootstrap/bootstrap.min.css`), which `main.html` loads on every page and is not a theme file. Dark mode comes from `<html data-bs-theme="dark">` in `main.html`.
+- **`rtb.css` is the single source of design values.** It holds the colour, type, radius and surface tokens (`--rtb-*` plus Bootstrap's `--bs-*`), Inter and JetBrains Mono (self-hosted, imported from `static/vendor/`), and component styling done by re-declaring Bootstrap's component variables. Don't use `!important` or pixel-calibrated layout.
+- **Shared components in `rtb.css`:**
+  - `.page-title`, `.card-heading`
+  - `.level-title` + `.level-pill` (level name with progress)
+  - `.object-toolbar` / `.object-title` / `.object-actions` (admin title + actions)
+  - `.page-index` (sticky in-page nav)
+  - `.briefing-label` / `.briefing-text`
+  - `tr.locked` (red-tinted rows)
+  - muted Enable/Disable toggle pairs (`.btn-group > .btn:has(> .fa-square-o)`)
+- **Load order in `main.html`:** Font Awesome 4.7 → `main.css` → Bootstrap → theme (`{% module Theme() %}`) → page CSS (`{% block header %}`). Page CSS comes last so it can override the theme.
+- **Page CSS** lives in `static/css/pages/<area>/<page>.css`, scoped under a page wrapper class (e.g. `.user-home`, `.missions-box`).
+- **Legacy panels:** the BS2→5 codemod turned every `.well` into `.card.card-body`. `rtb.css` gives that combined form `display: block`, because a flex card stretches loose buttons into full-width rows. New markup should use `.card > .card-body`.
+- **Adding a theme later:**
+  - Add the CSS under `static/css/themes/`.
+  - Add a `Theme` + `ThemeFile` row via an Alembic migration, and in `setup/bootstrap.py` for fresh installs.
+  - The settings-page theme picker appears automatically once more than one theme exists.
+  - `Theme.default()` falls back to the first theme when `options.default_theme` names a theme that no longer exists.
+- **Story-mode terminal text:** echo it with `term.echo(text, {keepWords: true})`, otherwise jQuery Terminal splits lines mid-word.
+
+### Vendored libraries (npm, no bundler)
+
+- **npm only manages versions.** `package.json` pins exact versions (`.npmrc` `save-exact=true`) with a committed `package-lock.json`. There is no bundler; page scripts are plain `<script>` tags.
+- **`npm ci && npm run vendor`** runs `tools/vendor.mjs`, which copies each library's built files and licence into `static/vendor/<lib>/`. That directory **is committed**, so running the app needs only Python; Node is for maintainers and CI.
+- **To upgrade a library:** change its version in `package.json`, run `npm install` then `npm run vendor`, check the affected pages, and commit `package.json`, the lockfile and `static/vendor/` together. Never hand-edit files under `static/vendor/`.
+- **To add a library:** add it to `package.json` and to the `LIBRARIES` list in `tools/vendor.mjs`. Every destination stays under `static/vendor/`.
+- **Not on npm:** a few small scripts stay hand-maintained in `static/js/libs/` (Animator, countdown, notifier, markdown-toolbar, the BS5 jQuery bridge, the clipboard helpers).
+- **CI drift check** (`.github/workflows/vendor.yml`): re-vendors and fails if `static/vendor/` changes. **Dependabot** (`.github/dependabot.yml`) opens weekly npm and uv (Python) PRs and monthly GitHub Actions PRs against `develop`. npm PRs fail the drift check until someone re-vendors on the PR branch (steps in that file's header); uv and Actions PRs need only review and green CI.
+- **Static URLs:** templates reference static files with `{{ static_url('path/under/static') }}`, never a literal `/static/...` path. The URL carries a content hash (`?v=`), so browsers fetch the new file after an upgrade.
 
 ### Admin Toggle Pattern
 
@@ -97,3 +145,12 @@ When adding a boolean toggle to a game object (e.g., `locked`, `review_mode`):
 - Never use `{% raw %}` in templates with user-controlled data.
 - Use single quotes `'` in Python but use `&#x27;` (not `'`) inside HTML template attributes to prevent contextual encoding issues.
 - WebSocket handlers must implement `check_origin` (provided by `BaseWebSocketHandler`).
+
+## Git Workflow
+
+This project follows Gitflow (see CONTRIBUTING.md for the full description):
+
+- `main` is production — every commit is a tagged release; never commit to it directly. `develop` is the integration branch and the default branch for PRs.
+- Everyday work goes on `feature/*` branches off `develop`, merged back into `develop` with `--no-ff`.
+- Releases use a `release/*` branch off `develop`: bump `setup/__init__.py`, merge into `main` and `develop`, then tag `main` `vYYYY.MM.DD[.N]` (CalVer) — the `v*` tag triggers the Docker publish. Urgent fixes use `hotfix/*` off `main`, merged into both `main` and `develop`.
+- GitHub release notes are hand-written bullets grouped by category (New Features, Bug Fixes, etc.).

@@ -24,11 +24,9 @@ Not gonna sugar code it, this shit gets a bit complicated.
 """
 # pylint: disable=no-member
 
-
 import logging
 import os
 import re
-from builtins import str
 from datetime import datetime
 from tempfile import NamedTemporaryFile
 
@@ -118,8 +116,12 @@ class BotManager(object):
             logging.debug("Removing old botnet database file")
         self.db_path = "sqlite:///%s" % options.botnet_db
         logging.debug("Created botnet database at: %s" % self.db_path)
-        self.sqlite_engine = create_engine(self.db_path, echo=options.log_sql)
-        Session = sessionmaker(bind=self.sqlite_engine, autocommit=True)
+        self.sqlite_engine = create_engine(
+            self.db_path, echo=options.log_sql, future=True
+        )
+        # autocommit session mode was removed in SQLAlchemy 2.0; the write
+        # sites below commit explicitly instead.
+        Session = sessionmaker(bind=self.sqlite_engine, future=True)
         self.botdb = Session(autoflush=True)
         BotDatabaseObject.metadata.create_all(self.sqlite_engine)
         self.dbsession = dbsession
@@ -167,7 +169,7 @@ class BotManager(object):
             team = Team.by_uuid(bot.team_uuid)
             bot.dbsession = self.dbsession
             self.botdb.add(bot)
-            self.botdb.flush()
+            self.botdb.commit()
             self.botnet[bot_wsocket.uuid] = bot_wsocket
 
             team.set_bot(self.count_by_team_uuid(team.uuid))
@@ -179,7 +181,7 @@ class BotManager(object):
     def save_bot(self, bot):
         """Save changes to a bot and flush"""
         self.botdb.add(bot)
-        self.botdb.flush()
+        self.botdb.commit()
 
     def remove_bot(self, bot_wsocket):
         bot = self.botdb.query(Bot).filter_by(wsock_uuid=str(bot_wsocket.uuid)).first()
@@ -190,7 +192,7 @@ class BotManager(object):
             logging.debug("Removing bot '%s' at %s" % (bot.team_uuid, bot.remote_ip))
             self.botnet.pop(bot_wsocket.uuid, None)
             self.botdb.delete(bot)
-            self.botdb.flush()
+            self.botdb.commit()
             team.set_bot(self.count_by_team_uuid(team.uuid))
             self.notify_monitors(team.name)
         else:
@@ -252,7 +254,7 @@ class BotManager(object):
         for bot in bots:
             bot.total_reward += reward
             self.botdb.add(bot)
-            self.botdb.flush()
+            self.botdb.commit()
 
     def __del__(self):
         if os.path.exists(options.botnet_db):

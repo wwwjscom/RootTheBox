@@ -3,15 +3,17 @@
 {% block title %}{{ _("Black Market") }}{% end %}
 
 {% block header %}
-<script src="/static/js/pages/market/view.js"></script>
+<script src="{{ static_url('js/pages/market/view.js') }}"></script>
 {% from tornado.options import options %}
 {% end %}
 
 {% block modals %}
     <!-- Hidden Download Form -->
-    <div id="buy-market-item-modal" class="modal hide fade" style="display: none;">
+    <div id="buy-market-item-modal" class="modal fade" style="display: none;" tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>
                 {{ _("Details") }}
             </h3>
@@ -20,16 +22,16 @@
             <h4 id="name"></h4>
             <hr>
             <div class="row">
-                <div class="span4">
+                <div class="col-md-4">
                     <img id="image" class="img-polaroid" src=""></img>
                 </div>
-                <div class="span2">
+                <div class="col-md-2">
                     <p>
-                        <i class="icon-bookmark"></i>
+                        <i class="fa fa-bookmark"></i>
                         {% if options.banking %}{{ _("Price") }}: {{ _("$") }}{% else %}{{ _("Cost") }}:{% end %} <span id="price"></span>
                     </p>
                     <p>
-                        <i class="icon-book"></i>
+                        <i class="fa fa-book"></i>
                         {{ _("Description") }}:
                     </p>
                     <blockquote>
@@ -43,12 +45,14 @@
             <input id="buy-market-item-uuid" type="hidden" id="uuid" name="uuid" />
         </form>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="buy-market-item-submit" type="button" class="btn btn-primary">
                 {{ _("Buy Upgrade") }}
             </button>
         </div>
+    
     </div>
+    </div></div>
 {% end %}
 
 {% block content %}
@@ -61,14 +65,14 @@
     <br />
     {% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
-        <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <h4 class="alert-heading">{{ _("ERROR") }}</h4>
             {{ error }}
         </div>
         {% end %}
     {% end %}
-    <div class="well">
+    <div class="card card-body">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -91,7 +95,7 @@
 						<td>{% if options.banking %}{{ _("$") }}{% end %}{{ item.price }}</td>
 						<td>
 							{% if not user.has_item(item.name) %}
-							<a id="item-details-button{{ index }}" class="btn btn-mini" data-toggle="modal" href="#buy-market-item-modal" data-uuid="{{ item.uuid }}">
+							<a id="item-details-button{{ index }}" class="btn btn-sm btn-secondary" data-bs-toggle="modal" href="#buy-market-item-modal" data-uuid="{{ item.uuid }}">
 								{{ _("Details") }}
 							</a>
 							{% else %}

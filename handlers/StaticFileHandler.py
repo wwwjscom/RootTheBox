@@ -23,15 +23,30 @@ Modification of the tornado web StaticFileHandler
 
 """
 
-
 import logging
 
 from tornado.options import options
 from tornado.web import StaticFileHandler as DefaultStaticHandler
 
+# Served by the /static/ route in handlers/__init__.py.
+STATIC_ROOT = "static/"
+
+
+def versioned_static_url(path):
+    """
+    URL for a file under static/ with its content hash appended (?v=...), so
+    browsers fetch the new file after an upgrade instead of a stale cached
+    copy; versioned URLs are cached for a long time. This replaces Tornado's
+    RequestHandler.static_url, which needs the `static_path` setting; that
+    setting would also add Tornado's own /static/ route and bypass our
+    file-extension allow-list. Hashes are cached per process (reset on every
+    request in debug mode), and a missing file gets a URL without a hash.
+    """
+    settings = {"static_path": STATIC_ROOT, "static_url_prefix": "/static/"}
+    return DefaultStaticHandler.make_static_url(settings, path)
+
 
 class StaticFileHandler(DefaultStaticHandler):
-
     """
     Same as the normal Tornado StaticFileHandler with a
     couple overloaded methods.
@@ -58,6 +73,10 @@ class StaticFileHandler(DefaultStaticHandler):
         self.add_header("X-Content-Type-Options", "nosniff")
         if self.config.ssl:
             self.add_header("Strict-Transport-Security", "max-age=31536000;")
+
+    def static_url(self, path, include_host=None, **kwargs):
+        """Error pages rendered here use static_url() too"""
+        return versioned_static_url(path)
 
     def write_error(self, status_code, **kwargs):
         """Render a generic error page"""

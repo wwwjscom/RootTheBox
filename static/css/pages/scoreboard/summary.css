@@ -1,0 +1,82 @@
+/* Scoreboard summary (templates/scoreboard/summary.html + summary_table.html). */
+.scoreboard-summary {
+    max-width: 1320px;
+    margin: 0 auto;
+}
+.scoreboard-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.scoreboard-paging {
+    order: 3;
+    margin-left: auto;
+}
+.scoreboard-paging .page-item select {
+    border-radius: 0 var(--bs-border-radius-sm) var(--bs-border-radius-sm) 0;
+}
+.scoreboard-header h1 > .fa {
+    color: var(--rtb-accent);
+}
+
+#summary_table .rank-cell {
+    width: 3.5rem;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
+}
+#summary_table .team-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+}
+#summary_table .team-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+}
+#summary_table .admin-player-name,
+#summary_table .team-meta {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--bs-secondary-color);
+}
+/* Spacing lives on the row content, not the cells: rankingTableUpdate.js
+   zeroes cell padding while animating. */
+#summary_table .team-line {
+    margin-top: 0.4rem;
+}
+#summary_table .team-progress {
+    display: flex;
+    gap: 6px;
+    margin: 0.5rem 0 0.85rem;
+    min-width: 160px;
+}
+#summary_table .progress-segment {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+#summary_table .progress-segment .progress {
+    flex: 1;
+    --bs-progress-height: 6px;
+    --bs-progress-bar-bg: var(--bs-success);
+}
+#summary_table .stat-cell {
+    width: 5rem;
+    text-align: center;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+#summary_table .stat-cell.is-rank-metric {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--bs-emphasis-color);
+}

@@ -6,7 +6,7 @@
         {{ _("About") }} v{{ handler.application.settings["version"] }}
     </h2>
     <br />
-    <div class="well">
+    <div class="card card-body">
         <div style="text-align: center;">
             
                 <!-- Firefox fix -->
@@ -22,7 +22,7 @@
                 </h3>
                 <br />
                 <h2>{{ _("With contributions from") }}</h2>
-                <table style="width:100%; text-align: center;">
+                <div class="table-responsive"><table style="width:100%; text-align: center;">
                     <tbody>
                         <tr>
                             <td><h3>AnarKyx01</h3></td>
@@ -70,7 +70,7 @@
                             <td><h3>simon-hoegl</h3></td>
                         </tr>
                     </tbody>
-                </table>
+                </table></div>
                 <br />
                 <!-- Special Thanks -->
                 <hr>
@@ -78,11 +78,11 @@
                 <hr>
                 <a href="http://www.blackhartfilms.com/" target="_blank">
                     <!-- Morris Image (https://pixabay.com/photos/moody-lighting-dark-grunge-719229/) / Free for commercial use - No attribution required -->
-                    <img src="/static/images/blackheart.png" />
+                    <img class="img-fluid" src="{{ static_url('images/blackheart.png') }}" alt="Blackhart Films" />
                 </a>
                 <br /><br />
                 <a href="https://www.bishopfox.com/" target="_blank">
-                    <img src="/static/images/bf.png" />
+                    <img class="img-fluid" src="{{ static_url('images/bf.png') }}" alt="Bishop Fox" />
                 </a>
                 <br /><br />
         </div>

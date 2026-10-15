@@ -52,7 +52,7 @@
 	var cssColorToHex = function(colorStr){
 		var hex = '#';
 		$.each(colorStr.substring(4).split(','), function(i, str){
-			var h = ($.trim(str.replace(')',''))*1).toString(16);
+			var h = (str.replace(')','').trim()*1).toString(16);
 			hex += (h.length == 1) ? "0" + h : h;
 		});
 		return hex;
@@ -70,7 +70,7 @@
 	var defaultOptions = {
 		onComplete: function(){ /*do nothing*/ },
 		duration: [1000, 0, 700, 0, 500], //The milliseconds to do each phase and the delay between them
-		extractIdFromCell: function(td){ return $.trim($(td).html()); }, //the function to use to extract the id value from a cell in the id column.
+		extractIdFromCell: function(td){ return $(td).html().trim(); }, //the function to use to extract the id value from a cell in the id column.
 		animationSettings: {
 			up: {
 				left: -25, // Move left

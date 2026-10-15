@@ -25,34 +25,30 @@ from these base classes.
 """
 # pylint: disable=unused-wildcard-import,no-member
 
-
 import datetime
 import logging
 import time
 import traceback
-from builtins import str
+from urllib.parse import urlparse
 
-from libs import GameState
-from libs.EventManager import EventManager
-from libs.SecurityDecorators import *
-from libs.Sessions import MemcachedConnect, MemcachedSession
-from libs.WebhookHelpers import *
-from models import chatsession, dbsession
-from models.User import User
-
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
 from tornado import locale
 from tornado.ioloop import IOLoop
 from tornado.options import options
 from tornado.web import RequestHandler
 from tornado.websocket import WebSocketHandler
 
+from handlers.StaticFileHandler import versioned_static_url
+from libs import GameState
+from libs.EventManager import EventManager
+from libs.SecurityDecorators import *
+from libs.Sessions import MemcachedConnect, MemcachedSession
+from libs.WebhookHelpers import *
+from models import chatsession, dbsession
+from models.Theme import Theme
+from models.User import User
+
 
 class BaseHandler(RequestHandler):
-
     """User handlers extend this class"""
 
     csp = {
@@ -71,7 +67,7 @@ class BaseHandler(RequestHandler):
     chatsession = chatsession
     _memcached = None
     new_events = []
-    io_loop = IOLoop.instance()
+    io_loop = IOLoop.current()
     event_manager = EventManager.instance()
     config = options  # backward compatibility
     RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify"
@@ -83,6 +79,10 @@ class BaseHandler(RequestHandler):
         # present too much of a security risk - TODO: no longer require
         # inline styles
         self.add_content_policy("style-src", "'unsafe-inline'")
+
+    def static_url(self, path, include_host=None, **kwargs):
+        """Content-hashed URL for a file under static/ (see versioned_static_url)"""
+        return versioned_static_url(path)
 
     def get_current_user(self):
         """Get current user object from database"""
@@ -102,6 +102,24 @@ class BaseHandler(RequestHandler):
         if self.config.ssl:
             flags["Secure"] = True
         self.set_secure_cookie("session_id", self.session.session_id, **flags)
+
+    def start_user_session(self, user):
+        """Record the login and start an authenticated session for user"""
+        user.last_login = datetime.datetime.now()
+        user.logins = (user.logins or 0) + 1
+        self.dbsession.add(user)
+        self.dbsession.commit()
+        self.start_session()
+        theme = Theme.by_id(user.theme_id)
+        if user.team is not None:
+            self.session["team_id"] = int(user.team.id)
+        self.session["user_id"] = int(user.id)
+        self.session["user_uuid"] = user.uuid
+        self.session["handle"] = user.handle
+        self.session["theme"] = [str(f) for f in theme.files]
+        self.session["theme_id"] = int(theme.id)
+        self.session["menu"] = "admin" if user.is_admin() else "user"
+        self.session.save()
 
     def add_content_policy(self, src, policy):
         """Add to the existing CSP header"""
@@ -129,7 +147,7 @@ class BaseHandler(RequestHandler):
         for src, policies in list(self.csp.items()):
             if len(policies):
                 _csp.append("%s %s; " % (src, " ".join(policies)))
-        csp = "".join(_csp)
+        csp = "".join(_csp)  # noqa: F841  (kept for the disabled header below)
         # Disabled until i can figure out the bug
         # self.set_header("Content-Security-Policy", csp)
 
@@ -282,12 +300,11 @@ class BaseHandler(RequestHandler):
 
 
 class BaseWebSocketHandler(WebSocketHandler):
-
     """Handles websocket connections"""
 
     _session = None
     _memcached = None
-    io_loop = IOLoop.instance()
+    io_loop = IOLoop.current()
     manager = EventManager.instance()
     config = options  # backward compatibility
 

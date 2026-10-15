@@ -48,15 +48,8 @@ import sys
 import threading
 import time
 import uuid
-from builtins import chr, object, range, str
-
-from past.utils import old_div
-
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
 from datetime import datetime
+from urllib.parse import urlparse
 
 from libs.StringCoding import encode
 
@@ -348,10 +341,7 @@ class ABNF(object):
 
         opcode: operation code. please see OPCODE_XXX.
         """
-        if sys.version_info.major == 2:
-            instance = isinstance(data, unicode)
-        else:
-            instance = isinstance(data, str)
+        instance = isinstance(data, str)
         if opcode == ABNF.OPCODE_TEXT and instance:
             data = encode(data, "utf-8")
         # mask must be set if send data from client
@@ -1043,8 +1033,8 @@ class BotMonitor(object):
         connecting = curses.newwin(
             3,
             len(prompt) + 2,
-            (old_div(self.max_y, 2)) - 1,
-            (old_div((self.max_x - len(prompt)), 2)),
+            (self.max_y // 2) - 1,
+            ((self.max_x - len(prompt)) // 2),
         )
         connecting.clear()
         connecting.addstr(1, 1, prompt, curses.A_BOLD | curses.color_pair(self.CYAN))
@@ -1067,8 +1057,8 @@ class BotMonitor(object):
         self.loading_bar = curses.newwin(
             3,
             len(self.load_message) + 2,
-            (old_div(self.max_y, 2)) - 1,
-            (old_div((self.max_x - len(self.load_message)), 2)),
+            (self.max_y // 2) - 1,
+            ((self.max_x - len(self.load_message)) // 2),
         )
         self.loading_bar.border(0)
         self.loading_bar.addstr(1, 1, self.load_message, curses.A_BOLD)
@@ -1089,7 +1079,7 @@ class BotMonitor(object):
     def __title__(self):
         """Create title and footer"""
         title = " Root the Box: Botnet Monitor "
-        start_x = old_div((self.max_x - len(title)), 2)
+        start_x = (self.max_x - len(title)) // 2
         self.screen.addstr(
             0, start_x, title, curses.A_BOLD | curses.color_pair(self.BLUE)
         )
@@ -1144,7 +1134,7 @@ class BotMonitor(object):
             )
             self.screen.addstr(start_row + index, self.start_name_pos, box[1])
             if 0 < float(update_income):
-                percent = (old_div(float(box[2]), float(update_income))) * 100.0
+                percent = (float(box[2]) / float(update_income)) * 100.0
                 income_string = "$%d  (%.02d%s)" % (box[2], percent, "%")
             else:
                 income_string = "$%d" % (box[2],)
@@ -1195,8 +1185,8 @@ class BotMonitor(object):
         self.agent_prompt = curses.newwin(
             3,
             len(self.load_message) + 2,
-            (old_div(self.max_y, 2)) - 1,
-            (old_div((self.max_x - len(self.load_message)), 2)),
+            (self.max_y // 2) - 1,
+            ((self.max_x - len(self.load_message)) // 2),
         )
         self.agent_prompt.clear()
         self.agent_prompt.border(0)
@@ -1212,8 +1202,8 @@ class BotMonitor(object):
         self.agent_prompt = curses.newwin(
             3,  # Height
             len(self.load_message) + 24,  # Width
-            (old_div(self.max_y, 2)) - 1,  # Start Y
-            (old_div((self.max_x - len(self.load_message)), 2)) - 12,  # Start X
+            (self.max_y // 2) - 1,  # Start Y
+            ((self.max_x - len(self.load_message)) // 2) - 12,  # Start X
         )
         self.agent_prompt.border(0)
         self.agent_prompt.addstr(1, 1, prompt, curses.A_BOLD)
@@ -1307,8 +1297,8 @@ class BotMonitor(object):
         access_denied = curses.newwin(
             3,
             len(prompt) + 2,
-            (old_div(self.max_y, 2)) - 1,
-            (old_div((self.max_x - len(prompt)), 2)),
+            (self.max_y // 2) - 1,
+            ((self.max_x - len(prompt)) // 2),
         )
         access_denied.addstr(1, 1, prompt, curses.A_BOLD | curses.color_pair(self.RED))
         access_denied.refresh()

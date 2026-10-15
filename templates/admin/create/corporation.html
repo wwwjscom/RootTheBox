@@ -3,7 +3,7 @@
 {% block title %}{{_("Create Corporation")}}{% end %}
 
 {% block header %}
-    <script src="/static/js/pages/admin/create/corporation.js"></script>
+    <script src="{{ static_url('js/pages/admin/create/corporation.js') }}"></script>
 {% end %}
 
 {% block content %}
@@ -14,35 +14,35 @@
     </h1>
     <br />{% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
-        <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <h4 class="alert-heading">{{_("ERROR")}}</h4>
             {{ error }}
         </div>
         {% end %}
     {% end %}
-    <div class="well">
+    <div class="card card-body">
         <form class="form-horizontal" action="/admin/create/corporation" method="post">
             {% raw xsrf_form_html() %}
-            <div class="control-group">
-                <label class="control-label" for="corporation_name">{{_("Corporation Name")}}</label>
-                <div class="controls">
-                    <input autofocus id="corporation-name" name="corporation_name" maxlength="32" type="text" placeholder="{{_('Corporation Name')}}"
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="corporation_name">{{_("Corporation Name")}}</label>
+                <div class="col-sm-9">
+                    <input class="form-control" autofocus id="corporation-name" name="corporation_name" maxlength="32" type="text" placeholder="{{_('Corporation Name')}}"
                            rel="popover"
-                           data-original-title="{{_('Corporation Name')}}"
-                           data-content="{{_('What is your Corporation Name?  If you do not plan to use Corporations, just create one with no name.')}} [0-32 {{_('Characters')}}]">
+                           data-bs-title="{{_('Corporation Name')}}"
+                           data-bs-content="{{_('What is your Corporation Name?  If you do not plan to use Corporations, just create one with no name.')}} [0-32 {{_('Characters')}}]">
                 </div>
             </div>
-            <div class="control-group">
-                <label class="control-label" for="corporation_description">{{_("Description")}}</label>
-                <div class="controls">
-                    <textarea autofocus id="corporation-description" name="corporation_description" maxlength="512" type="text" placeholder="{{_('Optional')}} {{_('Description')}}"
-                           data-original-title="{{_('Description')}}">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label" for="corporation_description">{{_("Description")}}</label>
+                <div class="col-sm-9">
+                    <textarea class="form-control" autofocus id="corporation-description" name="corporation_description" maxlength="512" type="text" placeholder="{{_('Optional')}} {{_('Description')}}"
+                           data-bs-title="{{_('Description')}}">
                     </textarea>
                 </div>
             </div>
-            <div class="control-group">
-                <div class="controls">
+            <div class="row mb-3">
+                <div class="col-sm-9">
                     <button class="btn btn-primary" type="submit">{{_("Create Corporation")}}</button>
                 </div>
             </div>

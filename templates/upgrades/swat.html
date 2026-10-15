@@ -3,14 +3,16 @@
 {% block title %}S.W.A.T.{% end %}
 
 {% block header %}
-<script src="/static/js/pages/upgrades/swat.js"></script>
+<script src="{{ static_url('js/pages/upgrades/swat.js') }}"></script>
 {% end %}
 
 {% block modals %}
     <!-- Swat Player Modal -->
-    <div id="swat-player-modal" class="modal hide fade" style="display: none; ">
+    <div id="swat-player-modal" class="modal fade" style="display: none; " tabindex="-1">
+    <div class="modal-dialog">
+    <div class="modal-content">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             <h3>S.W.A.T. {{ _("Bribe") }}</h3>
         </div>
         <div class="modal-body">
@@ -23,12 +25,14 @@
             <br />
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{ _("Close") }}</a>
+            <a href="#" class="btn btn-secondary" data-bs-dismiss="modal">{{ _("Close") }}</a>
             <button id="swat-player-submit" class="btn btn-primary" type="button">
                 {{ _("Submit Bribe") }}
             </button>
         </div>
-    </div><!-- End Modal -->
+    
+    </div>
+    </div></div><!-- End Modal -->
 {% end %}
 
 {% block content %}
@@ -41,14 +45,14 @@
         <br />
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
-                <div class="alert alert-error">
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("ERROR") }}</h4>
                     {{ error }}
                 </div>
             {% end %}
         {% end %}
-        <div class="well">
+        <div class="card card-body">
             <h3>{{ _("Submit Bribes") }}</h3>
             <hr>
             <table class="table table-striped">
@@ -81,7 +85,7 @@
                                     <td>{{ _("Accepted / In Jail") }}</td>
                                 {% else %}
                                     <td>
-                                        <a id="swat-player-button{{ index }}" class="btn btn-danger btn-mini" data-toggle="modal" href="#swat-player-modal" data-uuid="{{ target.uuid}}" data-price="{{ Swat.get_price(target) }}">
+                                        <a id="swat-player-button{{ index }}" class="btn btn-danger btn-sm" data-bs-toggle="modal" href="#swat-player-modal" data-uuid="{{ target.uuid}}" data-price="{{ Swat.get_price(target) }}">
                                             {{ _("Arrest Player") }}
                                         </a>
                                     </td>
@@ -93,7 +97,7 @@
             </table>
         </div>
         <br />
-        <div class="well">
+        <div class="card card-body">
             <h3>{{ _("Bribe History") }}</h3>
             <hr>
             {% if len(user_bribes) != 0 %}

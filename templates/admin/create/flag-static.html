@@ -3,10 +3,10 @@
 {% block title %}{{_("Create Flag")}}{% end %}
 
 {% block header %}
-<link rel="stylesheet" href="/static/css/markdown-toolbar.css" type="text/css" />
-<script src="/static/js/libs/commonmark.min.js"></script>
-<script src="/static/js/libs/markdown-toolbar.js"></script>
-<script src="/static/js/pages/admin/create/flags.js"></script>
+<link rel="stylesheet" href="{{ static_url('css/markdown-toolbar.css') }}" type="text/css" />
+<script src="{{ static_url('vendor/commonmark/commonmark.min.js') }}"></script>
+<script src="{{ static_url('js/libs/markdown-toolbar.js') }}"></script>
+<script src="{{ static_url('js/pages/admin/create/flags.js') }}"></script>
 {% end %}
 
 {% block content %}
@@ -20,35 +20,35 @@
     <br />
     {% if errors is not None and len(errors) != 0 %}
         {% for error in errors %}
-        <div class="alert alert-error">
-            <a class="close" data-dismiss="alert" href="#">&times;</a>
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             <h4 class="alert-heading">{{_("ERROR")}}</h4>
             {{ error }}
         </div>
         {% end %}
     {% end %}
-    <div class="well">
-        <div class="row">
-            <div class="span4">
+    <div class="card card-body">
+        <div class="row g-4">
+            <div class="col-lg-8">
                 <form class="form-horizontal" action="/admin/create/flag/static" method="post">
                     {% raw xsrf_form_html() %}
                     <input id="flagtype" type="hidden" value="static" />
-                    <div class="control-group">
-                        <label class="control-label" for="flag_name">{{_("Flag Name")}}</label>
-                        <div class="controls">
-                            <input autofocus id="flag-name" maxlength="64" name="flag_name" type="text" placeholder="({{_('Optional')}})"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="flag_name">{{_("Flag Name")}}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" autofocus id="flag-name" maxlength="64" name="flag_name" type="text" placeholder="({{_('Optional')}})"
                                     rel="popover"
-                                    data-original-title="{{_('Flag Name')}}"
-                                    data-content="{{_('This is what you want the flag to be displayed as.  Leave blank to be named automatically by order #.')}}" />
+                                    data-bs-title="{{_('Flag Name')}}"
+                                    data-bs-content="{{_('This is what you want the flag to be displayed as.  Leave blank to be named automatically by order #.')}}" />
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="box_uuid">{{_("Box")}}</label>
-                        <div class="controls">
-                            <select id="box-uuid" name="box_uuid"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="box_uuid">{{_("Box")}}</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" id="box-uuid" name="box_uuid"
                                     rel="popover"
-                                    data-original-title="{{_('Box')}}"
-                                    data-content="{{_('This is the box the flag is located on.')}}">
+                                    data-bs-title="{{_('Box')}}"
+                                    data-bs-content="{{_('This is the box the flag is located on.')}}">
                                 <option value=""></option>
                                 {% for thebox in sorted(Box.all()) %}
                                 <option value="{{ thebox.uuid }}"{% if box and box.uuid == thebox.uuid %} selected{% end %}>
@@ -58,34 +58,34 @@
                             </select>
                         </div>
                     </div>
-                     <div class="control-group">
-                        <label class="control-label" for="reward">{% if options.banking %}{{_("Reward")}}{% else %}{{_("Points")}}{% end %}</label>
-                        <div class="controls">
-                            <input required id="reward" name="reward" type="number" pattern="[0-9]+" placeholder="{% if options.banking %}{{_('$')}} {{_('Reward')}}{% else %}{{_('Points')}}{% end %}"
+                     <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="reward">{% if options.banking %}{{_("Reward")}}{% else %}{{_("Points")}}{% end %}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" required id="reward" name="reward" type="number" pattern="[0-9]+" placeholder="{% if options.banking %}{{_('$')}} {{_('Reward')}}{% else %}{{_('Points')}}{% end %}"
                                    rel="popover"
-                                   data-original-title="{% if options.banking %}{{_('Reward')}}{% else %}{{_('Points')}}{% end %}"
-                                   data-content="{{_('This is the amount awarded for capturing the flag.')}}">
+                                   data-bs-title="{% if options.banking %}{{_('Reward')}}{% else %}{{_('Points')}}{% end %}"
+                                   data-bs-content="{{_('This is the amount awarded for capturing the flag.')}}">
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="description">{{_("Description")}}</label>
-                        <div class="controls">
-                            <textarea required class="toolbar" id="description" maxlength="4096" rows="5" name="description" type="text" placeholder="{{_('Description')}}"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="description">{{_("Description")}}</label>
+                        <div class="col-sm-9">
+                            <textarea required class="toolbar form-control" id="description" maxlength="4096" rows="5" name="description" type="text" placeholder="{{_('Description')}}"
                                     rel="popover"
-                                    data-original-title="Description"
-                                    data-html="true"
-                                    data-content="{{_('This is the description')}} [Max: 4096 {{_('Characters')}}].<br/><br/>{{_('Supports')}} Markdown (GitHub Style)">
+                                    data-bs-title="Description"
+                                    data-bs-html="true"
+                                    data-bs-content="{{_('This is the description')}} [Max: 4096 {{_('Characters')}}].<br/><br/>{{_('Supports')}} Markdown (GitHub Style)">
                             </textarea>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="case-sensitive">{{_("Case-Sensitive")}}</label>
-                        <div class="controls">
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="case-sensitive">{{_("Case-Sensitive")}}</label>
+                        <div class="col-sm-9">
                             <input id="case-sensitive" name="case-sensitive" type="hidden" value=0 />
-                            <div id="case-button" class="btn-group" data-toggle="buttons-radio"
+                            <div id="case-button" class="btn-group" data-bs-toggle="buttons-radio"
                                 rel="popover"
-                                data-original-title="{{_('Case-Sensitive')}}"
-                                data-content="{{_('Enabling this option will set the token to be case sensitive.  If this option is disabled, the answer token is case-insensitive.')}}">
+                                data-bs-title="{{_('Case-Sensitive')}}"
+                                data-bs-content="{{_('Enabling this option will set the token to be case sensitive.  If this option is disabled, the answer token is case-insensitive.')}}">
                                 <button id="case-enable" type="button" class="btn btn-success">
                                     <i id="case-enable-icon" class="fa fa-fw fa-square-o"></i>
                                     {{_("Enable")}}
@@ -97,51 +97,51 @@
                             </div>
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="token">{{_("Token")}}</label>
-                        <div class="controls">
-                            <input required id="token" name="token" maxlength="256" type="text" placeholder="{{_('Static Token')}}" autocomplete="off">
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="token">{{_("Token")}}</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" required id="token" name="token" maxlength="256" type="text" placeholder="{{_('Static Token')}}" autocomplete="off">
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="test_token">{{_("Test Flag")}}</label>
-                        <div class="controls" style="position:relative;">
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="test_token">{{_("Test Flag")}}</label>
+                        <div class="col-sm-9" style="position:relative;">
                             <span style="position: absolute; left: 230px; top: 3px; font-size: 175%;">
                                 <i id="testtrue" class="fa fa-check" style="color: green; display: none;"></i>
                                 <i id="testfalse" class="fa fa-times" style="color: red; display: none;"></i>
                             </span>
-                                <input id="test-token" name="test_token" type="text" placeholder="{{_('Enter a Matching Flag')}}" autocomplete="off"
+                                <input class="form-control" id="test-token" name="test_token" type="text" placeholder="{{_('Enter a Matching Flag')}}" autocomplete="off"
                                     rel="popover"
-                                    data-original-title="{{_('Token')}}"
-                                    data-content="{{_('This is a test flag/string the user could input for credit.')}}" />
+                                    data-bs-title="{{_('Token')}}"
+                                    data-bs-content="{{_('This is a test flag/string the user could input for credit.')}}" />
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" for="edit-flag-lock">{{_("Dependent Flag")}}</label>
-                        <div class="controls">
-                            <select id="edit-flag-lock" name="lock_uuid"></select>
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="edit-flag-lock">{{_("Dependent Flag")}}</label>
+                        <div class="col-sm-9">
+                            <select class="form-select" id="edit-flag-lock" name="lock_uuid"></select>
                         </div>
                     </div>
                     {% if options.story_mode %}
-                    <div class="control-group">
-                        <label class="control-label" for="capture-message">{{_("Capture Message")}}</label>
-                        <div class="controls">
-                            <textarea id="capture-message" name="capture_message" type="text" placeholder="({{_('Optional')}})"
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="capture-message">{{_("Capture Message")}}</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" id="capture-message" name="capture_message" type="text" placeholder="({{_('Optional')}})"
                                     rel="popover"
-                                    data-original-title="{{_('Capture Message')}}"
-                                    data-content="{{_('This is the message displayed to the user once the flag is captured.')}}" >
+                                    data-bs-title="{{_('Capture Message')}}"
+                                    data-bs-content="{{_('This is the message displayed to the user once the flag is captured.')}}" >
                             </textarea>
                         </div>
                     </div>
                     {% end %}
-                    <div class="control-group">
-                        <div class="controls">
+                    <div class="row mb-3">
+                        <div class="offset-sm-3 col-sm-9">
                             <button class="btn btn-primary" type="submit">{{_("Create Flag")}}</button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="offset3 span4">
+            <div class="col-lg-4">
                 <p>
                     <blockquote>
                         <small>

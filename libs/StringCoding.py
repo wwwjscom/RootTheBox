@@ -20,7 +20,6 @@ Created on Jul 14, 2018
 """
 # pylint: disable=unused-variable
 
-
 import codecs
 import sys
 from base64 import b64decode, b64encode
@@ -60,8 +59,8 @@ def decode(s, name="utf-8", *args, **kwargs):
     return rv
 
 
-def unicode(s, name="utf-8", *args, **kwargs):
-    # used in python2 to return a unicode type from string
+def _to_unicode(s, name="utf-8", *args, **kwargs):
+    # decode bytes into a str using the named codec
     codec = codecs.lookup(name)
     rv, length = codec.decode(s, *args, **kwargs)
     return rv
@@ -79,8 +78,8 @@ def set_type(value, basevalue):
             return False
     elif isinstance(basevalue, int):
         return int(value)
-    elif type(unicode(value)) == basetype:
-        return unicode(value)
+    elif type(_to_unicode(value)) == basetype:
+        return _to_unicode(value)
     elif type(str(value)) == basetype:
         return str(value)
     elif type(bytes(value)) == basetype:

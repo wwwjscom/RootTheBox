@@ -1,0 +1,117 @@
+/* Teams / players scoreboard (templates/scoreboard/teams.html). */
+.scoreboard-teams {
+    max-width: 1320px;
+    margin: 0 auto;
+}
+.teams-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.teams-header h1 > .fa {
+    color: var(--rtb-accent);
+}
+.teams-paging {
+    margin-left: auto;
+}
+
+/* Team cards */
+.team-card {
+    scroll-margin-top: 5rem;
+}
+.team-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+.team-avatar {
+    width: 120px;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+    border-radius: var(--bs-border-radius);
+    border: 1px solid var(--bs-border-color);
+}
+.team-card-title {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+.team-card-title h2 {
+    font-size: 1.35rem;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+.team-rank {
+    color: var(--bs-secondary-color);
+    font-variant-numeric: tabular-nums;
+}
+.team-motto {
+    margin: 0.2rem 0 0;
+    color: var(--bs-secondary-color);
+    font-style: italic;
+}
+.team-stats {
+    display: flex;
+    gap: 1.75rem;
+    margin: 0;
+}
+.team-stats dt {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+.team-stats dd {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+    font-variant-numeric: tabular-nums;
+}
+.team-members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+.team-member {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+    border-radius: 999px;
+    background: var(--rtb-surface-overlay);
+    border: 1px solid var(--bs-border-color);
+    color: var(--bs-body-color);
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+.team-member:hover {
+    border-color: var(--rtb-accent);
+    color: var(--bs-emphasis-color);
+    text-decoration: none;
+}
+.team-member img {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.team-levels {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+.team-level {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex: 1;
+}
+.team-level .progress {
+    flex: 1;
+    --bs-progress-height: 6px;
+    --bs-progress-bar-bg: var(--bs-success);
+}

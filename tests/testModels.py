@@ -3,13 +3,13 @@
 Unit tests for everything in models/
 """
 
-
 import unittest
 from collections import OrderedDict
 from datetime import datetime, timedelta
 
+from sqlalchemy.exc import IntegrityError
+
 from libs.StringCoding import encode
-from models.Penalty import Penalty
 from libs.ValidationError import ValidationError
 from models import dbsession
 from models.Box import Box
@@ -23,6 +23,8 @@ from models.Flag import (
     Flag,
 )
 from models.GameLevel import GameLevel
+from models.Notification import Notification
+from models.Penalty import Penalty
 from models.Team import Team
 from models.User import User
 from models.UserLevelTimer import UserLevelTimer
@@ -149,7 +151,7 @@ class TestBox(unittest.TestCase):
 
     def test_description(self):
         with self.assertRaises(ValidationError):
-            self.box.description = "A" * 1030
+            self.box.description = "A" * 4097
 
 
 class TestFlag(unittest.TestCase):
@@ -163,6 +165,7 @@ class TestFlag(unittest.TestCase):
             description="A static test token",
             value=100,
         )
+        dbsession.add(self.static_flag)
         self.regex_flag = Flag.create_flag(
             _type=FLAG_REGEX,
             box=self.box,
@@ -171,6 +174,7 @@ class TestFlag(unittest.TestCase):
             description="A regex test token",
             value=200,
         )
+        dbsession.add(self.regex_flag)
         self.file_flag = Flag.create_flag(
             _type=FLAG_FILE,
             box=self.box,
@@ -179,6 +183,7 @@ class TestFlag(unittest.TestCase):
             description="A file test token",
             value=300,
         )
+        dbsession.add(self.file_flag)
         self.choice_flag = Flag.create_flag(
             _type=FLAG_CHOICE,
             box=self.box,
@@ -187,6 +192,7 @@ class TestFlag(unittest.TestCase):
             description="A choice test token",
             value=400,
         )
+        dbsession.add(self.choice_flag)
         self.datetime_flag = Flag.create_flag(
             _type=FLAG_DATETIME,
             box=self.box,
@@ -195,12 +201,8 @@ class TestFlag(unittest.TestCase):
             description="A datetime test token",
             value=500,
         )
-
-        dbsession.add(self.static_flag)
-        dbsession.add(self.regex_flag)
-        dbsession.add(self.file_flag)
-        dbsession.add(self.choice_flag)
         dbsession.add(self.datetime_flag)
+
         dbsession.commit()
 
     def tearDown(self):
@@ -210,6 +212,30 @@ class TestFlag(unittest.TestCase):
     def test_name(self):
         with self.assertRaises(ValidationError):
             self.static_flag.name = "A" * 65
+
+    def test_new_flags_are_numbered_in_creation_order(self):
+        flags = [
+            self.static_flag,
+            self.regex_flag,
+            self.file_flag,
+            self.choice_flag,
+            self.datetime_flag,
+        ]
+        self.assertEqual([flag.order for flag in flags], [1, 2, 3, 4, 5])
+
+    def test_new_flag_order_counts_locked_flags(self):
+        # Box.flags hides locked flags; numbering from it gave a new flag the
+        # same order as a locked one.
+        self.datetime_flag.locked = True
+        dbsession.commit()
+        flag = Flag.create_flag(FLAG_STATIC, self.box, "New", "tok", "new", 10)
+        self.assertEqual(flag.order, 6)
+
+    def test_order_is_required(self):
+        self.regex_flag._order = None
+        with self.assertRaises(IntegrityError):
+            dbsession.commit()
+        dbsession.rollback()
 
     def test_static_capture(self):
         assert self.static_flag.capture("statictoken")
@@ -267,18 +293,29 @@ class TestScoreboardTopX(unittest.TestCase):
         teams = OrderedDict()
         for i in range(n):
             teams["Team%d" % (i + 1)] = {"uuid": "uuid-%d" % i, "money": 1000 - i * 100}
-        return {"teams": teams, "users": {}, "levels": {}, "boxes": {},
-                "hint_count": 0, "flag_count": 0, "box_count": 0, "level_count": 0}
+        return {
+            "teams": teams,
+            "users": {},
+            "levels": {},
+            "boxes": {},
+            "hint_count": 0,
+            "flag_count": 0,
+            "box_count": 0,
+            "level_count": 0,
+        }
 
     def _handler(self, n):
         from handlers.ScoreboardHandlers import ScoreboardAjaxHandler
+
         state = self._make_state(n)
 
         class Stub:
             settings = {"scoreboard_state": state}
 
         stub = Stub()
-        stub.summary_page = lambda *a, **kw: ScoreboardAjaxHandler.summary_page(stub, *a, **kw)
+        stub.summary_page = lambda *a, **kw: ScoreboardAjaxHandler.summary_page(
+            stub, *a, **kw
+        )
         return stub
 
     def test_no_limit_returns_all(self):
@@ -318,6 +355,7 @@ class TestScoreboardTopX(unittest.TestCase):
     def test_projector_default_when_unconfigured(self):
         # When scoreboard_top is 0 (unset), the projector falls back to 25.
         from handlers.ScoreboardHandlers import ScoreboardProjectorHandler
+
         top = options.scoreboard_top if options.scoreboard_top > 0 else 25
         assert top == 25
 
@@ -451,3 +489,43 @@ class TestReviewMode(unittest.TestCase):
         if not level.review_mode:
             Penalty.create_attempt(user=self.user, flag=self.flag, submission="wrong")
         assert Penalty.by_count(self.flag, self.team) == 1
+
+
+class TestNotification(unittest.TestCase):
+    """Pins Notification.admin() (used by the admin home + notifications pages)."""
+
+    def setUp(self):
+        self.notifications = []
+        for i in range(8):
+            notify = Notification()
+            notify.title = "Title %d" % i
+            notify.message = "Message %d" % i
+            notify.icon_url = None
+            dbsession.add(notify)
+            self.notifications.append(notify)
+        dbsession.commit()
+
+    def tearDown(self):
+        for notify in self.notifications:
+            dbsession.delete(notify)
+        dbsession.commit()
+
+    def test_admin_returns_list(self):
+        """admin() must return a materialized list, per its docstring/siblings."""
+        assert isinstance(Notification.admin(), list)
+
+    def test_admin_negative_slice(self):
+        """Regression: admin/home.html slices Notification.admin()[-6:].
+
+        On a SQLAlchemy Query a negative index raises IndexError under
+        SQLAlchemy 2.0 (it silently worked in 1.x), which 500'd the admin
+        home page. The template op below must succeed and stay Row-accessible.
+        """
+        recent = Notification.admin()[-6:]
+        assert len(recent) == 6
+        for notify in reversed(list(recent)):
+            assert notify.title is not None
+            assert notify.message is not None
+            # attributes the template reads
+            _ = notify.created
+            _ = notify.icon_url

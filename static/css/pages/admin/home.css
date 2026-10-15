@@ -1,32 +1,111 @@
-.game_button {
-    padding: 8px 12px;
-    margin-right: 12px;
+/* Admin dashboard (templates/admin/home.html). */
+.game-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
 }
-.game_button_area {
-    margin: 18px 10px;
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+    background: var(--rtb-surface-overlay);
+    border: 1px solid var(--bs-border-color);
 }
-.game_button_text {
-    display: inline; 
-    vertical-align: middle;
+.status-pill::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--bs-danger);
 }
-.gitstatus {
-    padding-left: 15px; 
-    font-size: 150%; 
+.status-pill.is-on::before {
+    background: var(--bs-success);
+}
+.game-action {
+    text-align: left;
 }
 
-.gitstatus.info {
-    color: #4d9ecb;
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+    gap: 0.75rem;
+}
+.metric {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.5rem;
+    align-items: center;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--bs-border-radius);
+    background: var(--rtb-surface-overlay);
+}
+.metric > .fa {
+    grid-row: span 2;
+    color: var(--rtb-accent);
+}
+.metric-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+    line-height: 1.2;
+}
+.metric-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--bs-secondary-color);
 }
 
-.gitstatus.ok {
-    color: #adff2f;
+.kv-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+.kv-list dt {
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+.kv-list dd {
+    margin: 0;
 }
 
-.gitstatus.warn {
-    color: #eff834;
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.notification-list > li {
+    display: flex;
+    gap: 0.85rem;
+    padding: 0.75rem 0;
+}
+.notification-list > li + li {
+    border-top: 1px solid var(--bs-border-color);
+}
+.notification-list img,
+.notification-icon-placeholder {
+    flex: none;
+    width: 28px;
+    height: 28px;
+}
+.notification-time {
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+    margin-left: 0.25rem;
+}
+.notification-message {
+    color: var(--bs-body-color);
+    overflow-wrap: anywhere;
 }
 
-.gitform {
-    padding-top: 15px; 
-    padding-left: 15px;
+.admin-dashboard .row > [class*="col-"] > .card:last-child {
+    margin-bottom: 0;
 }

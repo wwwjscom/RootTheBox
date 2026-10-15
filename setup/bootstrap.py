@@ -21,11 +21,9 @@ fills the database with some startup data.
 """
 # pylint: disable=unused-wildcard-import
 
-
 import getpass
 import os
 import sys
-from builtins import input, str
 
 from tornado.options import options
 
@@ -44,7 +42,7 @@ if (
     options.setup.lower().startswith("dev")
     or options.setup.lower().startswith("docker")
     or options.tests
-    or options.auth.lower() == "azuread"
+    or options.auth.lower() in ("azuread", "oidc")
 ):
     admin_handle = "admin"
     password = "rootthebox"
@@ -67,22 +65,10 @@ else:
         os._exit(1)
 
 # Theme objects
+# One theme for now: the RootTheBox design layer. Bootstrap itself loads from
+# static/vendor/ on every page (main.html), so it is not a theme file.
 css_files = [
-    ("Bootstrap", ["bootstrap.min.css"]),
-    ("Amelia", ["amelia.min.css"]),
-    ("Cyborg", ["cyborg.min.css"]),
-    ("Readable", ["readable.min.css"]),
-    ("Slate", ["slate.min.css"]),
-    ("Spruce", ["spruce.min.css"]),
-    ("United", ["united.min.css"]),
-    ("Cerulean", ["cerulean.min.css"]),
-    ("Journal", ["journal.min.css"]),
-    ("Simplex", ["simplex.min.css"]),
-    ("Spacelab", ["spacelab.min.css"]),
-    ("Superhero", ["superhero.min.css"]),
-    ("Geocities", ["geocities.min.css"]),
-    ("386", ["386.css", "386.js", "386.responsive.css"]),
-    ("cyberpunk", ["cyberpunk.min.css"]),
+    ("Default", ["rtb.css"]),
 ]
 for css in css_files:
     theme = Theme(name=css[0])

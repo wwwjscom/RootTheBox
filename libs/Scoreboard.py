@@ -21,11 +21,9 @@ Created on Oct 04, 2012
 """
 # pylint: disable=no-member
 
-
 import json
 import logging
 import time
-from builtins import object, str
 from collections import OrderedDict
 from threading import Thread
 

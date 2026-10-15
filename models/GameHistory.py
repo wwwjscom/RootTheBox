@@ -21,7 +21,6 @@ Created on Mar 3, 2023
 # pylint: disable=no-member
 
 import json
-from builtins import str
 
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.types import Integer, String, Unicode
@@ -32,7 +31,6 @@ from models.BaseModels import DatabaseObject
 
 
 class GameHistory(DatabaseObject):
-
     """Game History definition"""
 
     team_id = Column(Integer, ForeignKey("team.id"), nullable=False)

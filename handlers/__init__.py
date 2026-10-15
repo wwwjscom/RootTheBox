@@ -24,15 +24,15 @@ This is the main file the defines what URLs get routed to what handlers
 """
 # pylint: disable=no-member,unsupported-assignment-operation
 
-
-import sys
 import logging
+import sys
 import time
-from builtins import str
 from os import _exit, urandom
 from os import path as os_path
+from urllib.parse import unquote
 
 import tornado.locale
+from alembic.config import Config, command
 from sqlalchemy.exc import OperationalError
 from tornado import locale, netutil
 from tornado.httpserver import HTTPServer
@@ -40,7 +40,6 @@ from tornado.ioloop import IOLoop, PeriodicCallback
 from tornado.options import options
 from tornado.web import Application
 
-from alembic.config import Config, command
 from handlers.AdminHandlers import *
 from handlers.APIHanders import *
 from handlers.BotnetHandlers import *
@@ -51,6 +50,11 @@ from handlers.MarketHandlers import *
 from handlers.MaterialsHandler import *
 from handlers.MissionsHandler import *
 from handlers.NotificationHandlers import *
+from handlers.OIDCHandlers import (
+    OIDCCallbackHandler,
+    OIDCLoginHandler,
+    OnboardingHandler,
+)
 from handlers.PastebinHandlers import *
 from handlers.PublicHandlers import *
 from handlers.ScoreboardHandlers import *
@@ -58,30 +62,44 @@ from handlers.StaticFileHandler import StaticFileHandler
 from handlers.UpgradeHandlers import *
 from handlers.UserHandlers import *
 from libs import GameState
+from libs.ConfigHelpers import save_config
 from libs.ConsoleColors import *
+from libs.DatabaseBackup import upgrade_with_backup
 from libs.DatabaseConnection import DatabaseConnection
 from libs.Scoreboard import Scoreboard, score_bots
-from libs.StringCoding import encode
 from libs.UpdateCheckHelpers import check_for_updates
 from modules.AppTheme import AppTheme
 from modules.Menu import Menu
 from modules.Recaptcha import Recaptcha
 from setup import __version__
 
-try:
-    from urllib.parse import unquote
-except ImportError:
-    from urllib import unquote
-
 # Singletons
-io_loop = IOLoop.instance()
+io_loop = IOLoop.current()
 
 
 def get_cookie_secret():
+    """
+    Return the secret used to sign secure cookies / XSRF tokens.
+
+    An explicit ``cookie_secret`` (from the config file or the ``COOKIE_SECRET``
+    env var) is always honored. In debug mode we fall back to a fixed value for
+    convenience. Otherwise we generate one once and persist it to the config
+    file so sessions survive restarts and stay valid across multiple processes.
+    """
+    if options.cookie_secret:
+        return options.cookie_secret
     if options.debug:
         return "Don't use this in production"
-    else:
-        return encode(urandom(32), "hex")
+    secret = urandom(32).hex()
+    options.cookie_secret = secret
+    try:
+        save_config()
+        logging.info(
+            "Generated and persisted a new cookie_secret to %s", options.config
+        )
+    except Exception as error:
+        logging.error("Failed to persist generated cookie_secret: %s", error)
+    return secret
 
 
 # Main URL Configuration
@@ -96,11 +114,9 @@ urls = [
     (r"/status", StatusHandler),
     # Scoreboard Handlers - ScoreboardHandlers.py
     (r"/scoreboard", ScoreboardHandler),
-    (r"/scoreboard/history", ScoreboardHistoryHandler),
     (r"/scoreboard/feed", ScoreboardFeedHandler),
     (r"/scoreboard/ajax/(.*)", ScoreboardAjaxHandler),
     (r"/scoreboard/wsocket/game_data", ScoreboardDataSocketHandler),
-    (r"/scoreboard/wsocket/game_history", ScoreboardHistorySocketHandler),
     (r"/scoreboard/wsocket/pause_score", ScoreboardPauseHandler),
     (r"/scoreboard/projector", ScoreboardProjectorHandler),
     (r"/teams", TeamsHandler),
@@ -152,7 +168,7 @@ urls = [
     (r"/connect/notifications/updates", NotifySocketHandler),
     # Static Handlers - StaticFileHandler.py
     (
-        r"/static/(.*\.(jpg|png|gif|css|js|ico|mp3|eot|svg|ttf|woff|otf))",
+        r"/static/(.*\.(jpg|png|gif|css|js|ico|mp3|eot|svg|ttf|woff2?|otf))",
         StaticFileHandler,
         {"path": "static/"},
     ),
@@ -193,7 +209,6 @@ urls = [
     (r"/admin/ajax/(user|team)", AdminAjaxUserHandler),
     (r"/admin/lock/(level|corp|user|box|flag|review_mode)", AdminLockHandler),
     (r"/admin/configuration", AdminConfigurationHandler),
-    (r"/admin/gitstatus", AdminGitStatusHandler),
     (r"/admin/updatecheck", AdminUpdateCheckHandler),
     (r"/admin/export/(.*)", AdminExportHandler),
     (r"/admin/import/xml", AdminImportXmlHandler),
@@ -210,6 +225,14 @@ urls = [
     (r"/administrator(.*)", NoobHandler),
 ]
 
+# Single sign-on via a generic OIDC provider (e.g. Keycloak).  The /login entry
+# shadows the password LoginHandler because Tornado matches the first rule.
+oidc_urls = [
+    (r"/login", OIDCLoginHandler),
+    (r"/oidc/callback", OIDCCallbackHandler),
+    (r"/onboarding", OnboardingHandler),
+]
+
 # These routes should be disabled if we're not using the database for authentication.
 # If database auth is used add them in.
 if options.auth == "db":
@@ -220,6 +243,8 @@ if options.auth == "db":
 # For Azure AD authentication we have a simplified Join Team instead of registration.
 elif options.auth == "azuread":
     urls.insert(2, (r"/jointeam", JoinTeamHandler))
+elif options.auth == "oidc":
+    urls[0:0] = oidc_urls
 
 # This one has to be last
 urls.append((r"/(.*)", NotFoundHandler))
@@ -272,6 +297,7 @@ app = Application(
     autoreload=options.autoreload_source,
 )
 
+
 # Ends the countdown on schedule rather than whenever someone happens to
 # load a scoreboard.  Registered after construction since `app` cannot
 # reference itself in the settings above.
@@ -299,7 +325,7 @@ def update_db(update=True):
     alembic_cfg.attributes["configure_logger"] = False
     alembic_cfg.set_main_option("sqlalchemy.url", unquote(str(db_connection)))
     if update:
-        command.upgrade(alembic_cfg, "head")
+        upgrade_with_backup(alembic_cfg)
     else:
         command.stamp(alembic_cfg, "head")
 

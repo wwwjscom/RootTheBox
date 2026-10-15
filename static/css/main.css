@@ -1,18 +1,65 @@
+/* Site-wide layout and legacy helper classes. Colors, type and component
+   styling live in the theme (static/css/themes/rtb.css). */
+
+/* Room for the fixed-top navbar; the footer sits at the bottom of the page. */
 body {
-    padding-top: 60px;
-    padding-bottom: 40px;
+    padding-top: 4.5rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+body > .container-fluid {
+    flex: 1 0 auto;
+}
+/* Page fade-in on load ("animated fadeIn"; these were the only animate.css
+   classes in use). */
+.animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+.fadeIn {
+    animation-name: fadeIn;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .animated {
+        animation: none;
+    }
 }
 footer {
-    font-size: 75%;
-    position: fixed;
-    bottom: -30px;
-    width: 100%;
+    font-size: 0.8125rem;
+    padding: 1rem 1.5rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--bs-border-color);
+    color: var(--bs-secondary-color);
 }
-.footernav {
-    padding: 5px 20px;
+footer .footer-extra {
+    float: right;
+}
+/* Grid rows are flex: an alert that is also a column should size to its
+   content rather than stretch to the row's height. */
+.alert {
+    align-self: flex-start;
+}
+/* Many modal headers put the close button before the title; keep it right. */
+.modal-header .btn-close {
+    order: 1;
+    margin: -0.5rem -0.5rem -0.5rem auto;
+}
+.modal-header > h1,
+.modal-header > h2,
+.modal-header > h3,
+.modal-header > h4,
+.modal-header > h5 {
+    margin: 0;
 }
 .img-polaroid {
     width: 500px;
+    max-width: 100%;
+    height: auto;
 }
 .shortcolumn {
     width: 1px;
@@ -20,7 +67,7 @@ footer {
 }
 .descriptioncol {
     white-space: pre-wrap;
-    word-wrap: break-word; 
+    word-wrap: break-word;
     max-width: 350px;
 }
 .levelheader {
@@ -28,65 +75,47 @@ footer {
     vertical-align: middle;
 }
 .statcolumn {
-    text-align: center !important;
-    vertical-align: middle  !important;
+    text-align: center;
+    vertical-align: middle;
     width: 100px;
 }
 .centercolumn {
-    text-align: center !important;
-    vertical-align: middle  !important;
+    text-align: center;
+    vertical-align: middle;
 }
 .wordbreak {
-    word-wrap: break-word; 
+    word-wrap: break-word;
 }
 .successtext {
     font-size: 225%;
-    color: green;
+    color: var(--bs-success);
 }
 .disabledtext {
     font-size: 275%;
 }
 .avatarused {
-    color: white; 
-    font-size: 23pt; 
-    position: absolute; 
-    top: -11px; 
+    color: #fff;
+    font-size: 1.75rem;
+    position: absolute;
+    top: -11px;
     right: -5px;
 }
 .avatarused-top {
-    font-size: 16pt; 
-    position: absolute; 
-    top: -6px; 
+    font-size: 1.25rem;
+    position: absolute;
+    top: -6px;
     right: -1px;
 }
-
 .preformatted {
-    font-family: monospace;
+    font-family: var(--bs-font-monospace);
     font-size: 95%;
     white-space: pre-wrap;
     display: block;
     margin: 1em 0;
 }
-
 .markdown p {
     display: inline;
 }
-
 .markdown ul {
-    margin-bottom: 0px;
-}
-
-code,
-pre {
-    background-color: #000 !important;
-    font-family: unset !important;
-    font-size: unset !important;
-    padding: 0px 6px 1px 5px !important;
-    white-space: pre-wrap !important;
-
-}
-
-code {
-    color: #f52323 !important;
-    border: 1px solid #979797 !important;
+    margin-bottom: 0;
 }

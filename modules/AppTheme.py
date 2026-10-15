@@ -19,7 +19,6 @@ Created on Mar 14, 2012
     limitations under the License.
 """
 
-
 from tornado.options import options
 from tornado.web import UIModule
 
@@ -27,19 +26,14 @@ from models.Theme import Theme
 
 
 class AppTheme(UIModule):
-
-    theme = Theme.by_name(options.default_theme)
-
     def render(self, *args, **kwargs):
         """Includes different CSS themes based on user prefs"""
-
-        if (
-            options.allow_user_to_change_theme
-            and self.handler.session is not None
-            and self.handler.session["theme"] is not None
-        ):
-            return self.render_string(
-                "theme/theme.html", theme_files=self.handler.session["theme"]
-            )
-        else:
-            return self.render_string("theme/theme.html", theme_files=self.theme)
+        theme = None
+        session = self.handler.session
+        if options.allow_user_to_change_theme and session is not None:
+            # Resolve from the DB by id: a session's stored file list can name
+            # a theme that has since been removed.
+            theme = Theme.by_id(session.get("theme_id"))
+        if theme is None:
+            theme = Theme.default()
+        return self.render_string("theme/theme.html", theme_files=theme)

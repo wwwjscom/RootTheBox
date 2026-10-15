@@ -1,30 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
     <head>
         <meta charset="utf-8">
         <title>{% block title %} handler.application.settings['game_name'] {% end %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Hacker War Game">
         <meta name="author" content="moloch, eljeffe">
-        <link href="/static/images/favicon.ico" rel="shortcut icon" />
-        <link href="/static/css/bootstrap-responsive.css" rel="stylesheet" />
-        <link href="/static/css/font-awesome.min.css" rel="stylesheet" />
-        <link href="/static/css/animate.css" rel="stylesheet" />
-        <link href="/static/css/notifier.css" rel="stylesheet" />
-        <link href="/static/css/main.css" rel="stylesheet" />
-        <!--[if lt IE 9]>
-            <script src="/static/js/libs/html5.js"></script>
-        <![endif]-->
-        <script src="/static/js/jquery.min.js" type="text/javascript"></script>
-        <script src="/static/js/jquery-ui.min.js"></script> <!-- load before bootstrap -->
-        <script src="/static/js/underscore.min.js" type="text/javascript"></script>
-        <script src="/static/js/backbone.min.js" type="text/javascript"></script>
-        <script src="/static/js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="/static/js/pages/main.js" type="text/javascript"></script>
-        <script src="/static/js/libs/countdown.js" type="text/javascript"></script>
-        <script src="/static/js/libs/notifier.js" type="text/javascript"></script>
-        {% block header %}{% end %}
+        <link href="{{ static_url('images/favicon.ico') }}" rel="shortcut icon" />
+        <link href="{{ static_url('vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" />
+        <link href="{{ static_url('css/notifier.css') }}" rel="stylesheet" />
+        <link href="{{ static_url('css/main.css') }}" rel="stylesheet" />
+        <script src="{{ static_url('vendor/jquery/jquery.min.js') }}" type="text/javascript"></script>
+        <script src="{{ static_url('vendor/jquery-ui/jquery-ui.min.js') }}"></script>
+        <script src="{{ static_url('vendor/bootstrap/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
+        <script src="{{ static_url('js/libs/bs5-jquery-bridge.js') }}" type="text/javascript"></script>
+        <script src="{{ static_url('js/pages/main.js') }}" type="text/javascript"></script>
+        <script src="{{ static_url('js/libs/countdown.js') }}" type="text/javascript"></script>
+        <script src="{{ static_url('js/libs/notifier.js') }}" type="text/javascript"></script>
+        <link href="{{ static_url('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet" />
         {% module Theme() %}
+        {% block header %}{% end %}
     </head>
     {% block modals %}{% end %}
     <!--
@@ -35,19 +30,18 @@
         or data to non-admins in the first place.
     -->
     <body data-is-admin="{% if handler.current_user and handler.current_user.is_admin() %}true{% else %}false{% end %}">
-        {% module Menu() %}
+        {% block navbar %}{% module Menu() %}{% end %}
         <div class="container-fluid animated fadeIn">
             {% block content %} {{ _("Content Missing") }} {% end %}
            
         </div><!--/.fluid-container-->
+        {% block site_footer %}
         <footer>
             {% from tornado.options import options %}
-            <hr style="margin-bottom: -1px;">
-            <div class="navbar-inner footernav">
-                Powered by <a href="https://github.com/wwwjscom/RootTheBox" target="_blank">Root the Box</a> &copy; {{ datetime.date.today().year }}{% if options.privacy_policy_link %} • <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a>{% end %} • <a href="https://github.com/moloch--/RootTheBox" target="_blank">{{ _("Original Repo") }}</a>
-                <span style="float:right; padding-right: 5px;">{% raw options.org_footer %}</span>
-            </div>
+            Powered by <a href="https://github.com/wwwjscom/RootTheBox" target="_blank">Root the Box</a> &copy; {{ datetime.date.today().year }}{% if options.privacy_policy_link %} • <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a>{% end %} • <a href="https://github.com/moloch--/RootTheBox" target="_blank">{{ _("Original Repo") }}</a>
+            <span class="footer-extra">{% raw options.org_footer %}</span>
          </footer>
+        {% end %}
    
     </body>
 </html>

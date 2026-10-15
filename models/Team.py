@@ -20,10 +20,8 @@ Created on Mar 12, 2012
 """
 # pylint: disable=no-member
 
-
 import os
 import xml.etree.cElementTree as ET
-from builtins import str
 from datetime import datetime
 from random import randint
 from uuid import uuid4
@@ -38,8 +36,8 @@ from libs.Identicon import identicon
 from libs.StringCoding import encode
 from libs.ValidationError import ValidationError
 from libs.XSSImageCheck import (
-    get_new_avatar, 
     avatar_validation,
+    get_new_avatar,
     save_avatar,
 )
 from models import dbsession
@@ -57,7 +55,6 @@ from models.User import User
 
 
 class Team(DatabaseObject):
-
     """Team definition"""
 
     uuid = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid4()))
@@ -185,19 +182,6 @@ class Team(DatabaseObject):
         add_flag = GameHistory(type="flag_count", value=len(self.flags))
         self.game_history.append(add_flag)
 
-    def get_history(self, _type=None):
-        history = []
-        for item in self.game_history:
-            if _type == "bots":
-                if item.type == "bot_count":
-                    history.append(item.to_dict())
-            elif _type == "flags":
-                if item.type == "flag_count":
-                    history.append(item.to_dict())
-            elif item.type != "flag_count" and item.type != "bot_count":
-                history.append(item.to_dict())
-        return history
-
     @name.setter
     def name(self, value):
         if not 3 <= len(value) <= 24:
@@ -261,7 +245,9 @@ class Team(DatabaseObject):
     @avatar.setter
     def avatar(self, image_data):
         ext = avatar_validation(image_data)
-        self._avatar = save_avatar(os.path.join("upload", f"{self.uuid}.{ext}"),image_data)                
+        self._avatar = save_avatar(
+            os.path.join("upload", f"{self.uuid}.{ext}"), image_data
+        )
 
     @property
     def levels(self):
@@ -369,4 +355,3 @@ class Team(DatabaseObject):
             self.set_score("start", options.starting_team_money)
         else:
             self.set_score("start", 0)
-

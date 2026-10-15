@@ -83,3 +83,6 @@ __pycache__
 !*README.md
 
 .claude
+
+# Node (maintainer tooling only; built files are committed under static/vendor)
+node_modules/

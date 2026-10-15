@@ -1,0 +1,42 @@
+# npm PRs bump package.json and package-lock.json only. Before merging one,
+# re-vendor on its branch:
+#
+#   gh pr checkout <n>
+#   npm ci && npm run vendor
+#   git add static/vendor
+#   git commit -m 'Re-vendor' && git push
+#
+# Re-vendor right before merging: once the branch has your commit, Dependabot
+# stops rebasing it (`@dependabot recreate` rebuilds it, dropping the commit).
+#
+# uv PRs need nothing extra: the Docker image installs exactly what uv.lock
+# pins, so the PR's Tests run already covers the new versions.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+    # One PR for all minor and patch bumps; each major version gets its own,
+    # since majors need checking page by page.
+    groups:
+      vendor-libs:
+        patterns: ['*']
+        update-types: [minor, patch]
+
+  - package-ecosystem: uv
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+    groups:
+      python-deps:
+        patterns: ['*']
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: monthly

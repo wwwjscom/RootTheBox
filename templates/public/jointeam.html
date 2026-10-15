@@ -3,8 +3,8 @@
 {% block title %}{{ _("Join a Team") }}{% end %}
 
 {% block header %}
-    <link rel="stylesheet" href="/static/css/pages/public/registration.css" type="text/css" />
-    <script src="/static/js/pages/public/registration.js"></script>
+    <link rel="stylesheet" href="{{ static_url('css/pages/public/auth.css') }}" type="text/css" />
+    <script src="{{ static_url('js/pages/public/registration.js') }}"></script>
 {% end %}
 
 {% block content %}
@@ -17,14 +17,14 @@
         <br />
         {% if errors is not None and len(errors) != 0 %}
             {% for error in errors %}
-                <div class="alert alert-error">
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     <h4 class="alert-heading">{{ _("ERROR") }}</h4>
                     {{ error }}
                 </div>
             {% end %}
         {% end %}
-        <div class="span8 offset1 well" style="position: relative;">
+        <div class="col-md-8 offset-md-1 card card-body" style="position: relative;">
         {% if not suspend %}
             <legend>
                 {{ _("Welcome to the Scene") }}
@@ -33,42 +33,42 @@
                 {% raw xsrf_form_html() %}
                 <hr style="margin-right: 400px;">
                 <h5 style="margin-left: 20px; margin-bottom: 15px;">{{ _("Join Existing Team") }}</h5>
-                <div id="teammode-join" class="control-group">
-                    <label class="control-label" for="team-code">{{ _("Team Code") }}</label>
-                    <div class="controls">
-                        <input id="team-code" name="team-code" type="text" placeholder="{{ _('Team Code') }}"
+                <div id="teammode-join" class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="team-code">{{ _("Team Code") }}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" id="team-code" name="team-code" type="text" placeholder="{{ _('Team Code') }}"
                             rel="popover"
-                            data-original-title="{{_('Team Code')}}"
-                            data-content="{{_('Provide the code used to join an existing team.  Visible to other team members on their home page.')}}" >
+                            data-bs-title="{{_('Team Code')}}"
+                            data-bs-content="{{_('Provide the code used to join an existing team.  Visible to other team members on their home page.')}}" >
                     </div>
                 </div>
 
                 <hr style="margin-right: 400px;">
 
                 {% if options.banking %}
-                <div class="control-group">
-                    <label class="control-label" for="bpass1">{{ _("Bank Account Password") }}</label>
-                    <div class="controls">
-                        <input required id="bpass" name="bpass" maxlength="{{ options.max_password_length }}" placeholder="{{ _('Bank Account Password') }}" type="password"
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" for="bpass1">{{ _("Bank Account Password") }}</label>
+                    <div class="col-sm-9">
+                        <input class="form-control" required id="bpass" name="bpass" maxlength="{{ options.max_password_length }}" placeholder="{{ _('Bank Account Password') }}" type="password"
                             autocomplete="off"
                             rel="popover"
-                            data-original-title="{{_('Password')}}"
-                            data-content="{{_('Used to secure your (in-game) bank account.')}} [{{ _('Max') }}: {{ options.max_password_length }} {{_('Characters')}}].  {{_('Please do NOT enter your real bank account password.')}}" />
+                            data-bs-title="{{_('Password')}}"
+                            data-bs-content="{{_('Used to secure your (in-game) bank account.')}} [{{ _('Max') }}: {{ options.max_password_length }} {{_('Characters')}}].  {{_('Please do NOT enter your real bank account password.')}}" />
                     </div>
                 </div>
                 {% end %}
                 {% if options.privacy_policy_link %}
-                    <div class="control-group">
-                        <label class="control-label" for="privacy_policy_accept">{{ _("I accept the") }} <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a></label>
-                        <div class="controls">
-                            <input required id="privacy_policy_accept" name="privacy_policy_accept" type="checkbox" />
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label" for="privacy_policy_accept">{{ _("I accept the") }} <a href="{{ options.privacy_policy_link }}">{{ _("Privacy Policy") }}</a></label>
+                        <div class="col-sm-9">
+                            <input class="form-check-input" required id="privacy_policy_accept" name="privacy_policy_accept" type="checkbox" />
                         </div>
                     </div>
                 {% end %}
                 <br />
                 <input id="login-hint" name="login-hint" type="hidden" value="{{ login_hint }}" />
-                <div class="control-group">
-                    <div class="controls">
+                <div class="row mb-3">
+                    <div class="col-sm-9">
                         <button class="btn btn-primary" type="submit">
                             {{ _("Join") }}
                         </button>

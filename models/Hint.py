@@ -19,9 +19,7 @@ Created on Aug 11, 2013
     limitations under the License.
 """
 
-
 import xml.etree.cElementTree as ET
-from builtins import str
 from uuid import uuid4
 
 from sqlalchemy import Column, ForeignKey
@@ -36,7 +34,6 @@ from models.Relationships import team_to_hint
 
 
 class Hint(DatabaseObject):
-
     """
     Holds the source code for a box which can be purchased from
     the source code market.

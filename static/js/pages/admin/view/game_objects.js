@@ -52,7 +52,7 @@ function getDetails(obj, uuid) {
                 }
             } else if (obj === "flag" && key === "choices") {
                 var token = response["token"];
-                var choices = $.parseJSON(value);
+                var choices = JSON.parse(value);
                 var appendarea = $(".after-add-more");
                 appendarea.nextAll().remove();
                 if (choices.length > 0) {
@@ -77,10 +77,10 @@ function getDetails(obj, uuid) {
                         }
                     }
                     $('input[name=multichoice]').click(function(){
-                        $("#flag-token").val($(this).next('input').val());
+                        $("#flag-token").val($(this).closest('.choice-row').find('input[type=text]').val());
                     });
                     $('input[name^=choice]').change(function(){
-                        $("#flag-token").val($('input[name=multichoice]:checked').next('input').val());
+                        $("#flag-token").val($('input[name=multichoice]:checked').closest('.choice-row').find('input[type=text]').val());
                     });
                 }  
             } else if (obj === "flag" && key === "name") {
@@ -320,7 +320,7 @@ $(document).ready(function() {
     });
 
     $("body").on("click",".remove",function(){ 
-        $(this).parents(".choice-control-group").remove();
+        $(this).closest(".choice-row").remove();
     });
 
     /* Hint */

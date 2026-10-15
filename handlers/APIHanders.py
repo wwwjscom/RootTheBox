@@ -23,7 +23,6 @@ This file contains handlers related to the file sharing functionality
 
 """
 
-
 import json
 import logging
 
@@ -34,7 +33,6 @@ from .BaseHandlers import BaseHandler
 
 
 class APIActionHandler(BaseHandler):
-
     @apikey
     @restrict_ip_address
     def post(self, *args, **kwargs):

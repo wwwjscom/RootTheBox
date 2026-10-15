@@ -20,17 +20,22 @@ command line arguments it calls various components setup/start/etc.
 """
 # pylint: disable=unused-wildcard-import,unused-variable
 
+import asyncio
 
-from __future__ import print_function
+# Tornado grabs IOLoop.current() at import time (e.g. BaseHandler class
+# attributes, EventManager). On Python 3.12 asyncio.get_event_loop() emits a
+# DeprecationWarning ("There is no current event loop") when no loop is set, so
+# create one for the main thread up front — only if none is already running.
+try:
+    asyncio.get_running_loop()
+except RuntimeError:
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
 import logging
 import os
-import random
 import sys
-from builtins import input, str
 from datetime import datetime
 
-import nose
 from tornado.options import define, options
 
 from libs.ConfigHelpers import save_config, save_config_image
@@ -198,14 +203,37 @@ def generate_admins(admin_names):
 
 
 def tests():
-    """Creates a temporary sqlite database and runs the unit tests"""
-    print(INFO + "%s : Running unit tests ..." % current_time())
+    """Creates a temporary sqlite database and runs the unit tests via pytest.
+
+    The database must be provisioned before pytest imports the test modules
+    (and, transitively, the models) so that ``dbsession`` binds to the test
+    database rather than the default one.
+    """
+    from random import randint
+
+    import pytest
+
     from tests import setup_database, teardown_database
 
-    db_name = "test-%04s" % random.randint(0, 9999)
+    print(INFO + "%s : Running unit tests ..." % current_time())
+    # Route tables are built from options.auth at import; tests expect the
+    # default (db) mode and switch to other modes themselves.
+    options.auth = "db"
+    db_name = "test-%04d" % randint(0, 9999)
     setup_database(db_name)
-    nose.run(module="tests", argv=[os.getcwd() + "/tests"])
-    teardown_database(db_name)
+    try:
+        code = pytest.main(
+            [
+                os.path.join(os.getcwd(), "tests"),
+                "--cov=handlers",
+                "--cov=models",
+                "--cov=libs",
+                "--cov-report=term-missing",
+            ]
+        )
+    finally:
+        teardown_database(db_name)
+    raise SystemExit(code)
 
 
 def restart():
@@ -216,11 +244,6 @@ def restart():
     pid = os.getpid()
     print(INFO + "%s : Restarting the service (%i)..." % (current_time(), pid))
     os.execl("./setup/restart.sh", "./setup/restart.sh")
-
-
-def update():
-    """Update RTB to the latest repository code."""
-    os.system("git pull")
 
 
 def version():
@@ -284,7 +307,6 @@ def help():
     help_response.append("\t\t--setup\t\tsetup a database (prod|devel|docker)")
     help_response.append("\t\t--start\t\tstart the server")
     help_response.append("\t\t--tests\t\trun the unit tests")
-    help_response.append("\t\t--update\tpull the latest code via github")
     help_response.append("\t\t--version\tdisplay version information and exit")
     help_response.append("\t\t--xml\t\timport xml file(s)")
     help_response.append(
@@ -326,6 +348,15 @@ define(
     group="server",
     help="max session age (minutes) of inactivity",
     type=int,
+)
+
+define(
+    "cookie_secret",
+    default="",
+    group="server",
+    help="secret used to sign secure cookies / XSRF tokens; if empty one is "
+    "generated and persisted to the config file on first run (set via the "
+    "COOKIE_SECRET env var to keep sessions valid across restarts/processes)",
 )
 
 define(
@@ -450,7 +481,7 @@ define(
     "auth",
     default="db",
     group="application",
-    help="The authentication mechanism, db (default) or Azure AD",
+    help="The authentication mechanism: db (default), azuread, or oidc (e.g. Keycloak)",
 )
 
 define(
@@ -550,6 +581,48 @@ define("tenant_id", default="common", group="azuread")
 define("client_secret", default="", group="azuread")
 define("redirect_url", default="http://localhost:8888/oidc", group="azuread")
 
+# Generic OpenID Connect (e.g. Keycloak) - used when auth = "oidc"
+define(
+    "oidc_issuer",
+    default="http://localhost:8080/realms/rootthebox",
+    group="oidc",
+    help="OIDC issuer URL as seen by browsers (must match the ID token 'iss' claim)",
+)
+define(
+    "oidc_backchannel_url",
+    default="",
+    group="oidc",
+    help="Optional issuer URL the server uses to reach the IdP (e.g. from inside Docker)",
+)
+define("oidc_client_id", default="", group="oidc", help="OIDC client id")
+define("oidc_client_secret", default="", group="oidc", help="OIDC client secret")
+define(
+    "oidc_redirect_url",
+    default="http://localhost:8888/oidc/callback",
+    group="oidc",
+    help="OIDC redirect URI registered with the IdP",
+)
+define("oidc_scopes", default="openid profile email", group="oidc")
+define(
+    "oidc_roles_claim",
+    default="roles",
+    group="oidc",
+    help="ID token claim holding roles; dotted paths like realm_access.roles work",
+)
+define(
+    "oidc_admin_role",
+    default="rtb-admin",
+    group="oidc",
+    help="Role that grants RootTheBox admin rights",
+)
+define(
+    "oidc_logout",
+    default=True,
+    group="oidc",
+    help="Also end the IdP session when a user logs out",
+    type=bool,
+)
+
 # ReCAPTCHA
 define(
     "use_recaptcha",
@@ -627,12 +700,7 @@ define(
 
 
 # Game Settings
-try:
-    # python2
-    game_type = basestring
-except NameError:
-    # python 3
-    game_type = str
+game_type = str
 
 define(
     "game_name",
@@ -1043,7 +1111,7 @@ define(
     type=int,
 )
 
-define("default_theme", default="Cyborg", group="game", help="the default css theme")
+define("default_theme", default="Default", group="game", help="the default css theme")
 
 define(
     "allow_user_to_change_theme",
@@ -1164,8 +1232,6 @@ define(
     type=bool,
 )
 
-define("update", default=False, help="pull the latest code via github", type=bool)
-
 define("version", default=False, help="display version information and exit", type=bool)
 
 define("save", default=False, help="save the current configuration to file", type=bool)
@@ -1176,7 +1242,6 @@ define("tests", default=False, help="runs the unit tests", type=bool)
 
 
 if __name__ == "__main__":
-
     # We need this to pull the --config option
     try:
         options.parse_command_line()
@@ -1240,6 +1305,10 @@ if __name__ == "__main__":
         options.auth = "azuread"  # in-case it wasn't lower-case.
         options.require_email = False
         options.public_teams = False
+    elif options.auth.lower() == "oidc":
+        # The identity provider owns the email address.
+        options.auth = "oidc"
+        options.validate_email = False
 
     if options.generate_teams:
         generate_teams(options.generate_teams)
@@ -1259,8 +1328,6 @@ if __name__ == "__main__":
         restart()
     elif options.recovery:
         recovery()
-    elif options.update:
-        update()
     elif options.xml:
         setup_xml(options.xml)
     elif options.tests:

@@ -19,7 +19,6 @@ Created on Mar 11, 2012
     limitations under the License.
 """
 
-
 import binascii
 import enum
 import os
@@ -35,11 +34,7 @@ from tornado.options import options
 
 from libs.StringCoding import decode, encode
 from libs.ValidationError import ValidationError
-from libs.XSSImageCheck import (
-    get_new_avatar,
-    avatar_validation,
-    save_avatar
-)
+from libs.XSSImageCheck import avatar_validation, get_new_avatar, save_avatar
 from models import dbsession
 from models.BaseModels import DatabaseObject
 from models.Category import Category
@@ -53,11 +48,6 @@ from models.SourceCode import SourceCode
 class FlagsSubmissionType(str, enum.Enum):
     CLASSIC = "CLASSIC"
     SINGLE_SUBMISSION_BOX = "SINGLE_SUBMISSION_BOX"
-
-
-from builtins import (  # noqa: E402
-    str,
-)
 
 
 class Box(DatabaseObject):
@@ -97,9 +87,10 @@ class Box(DatabaseObject):
         cascade="all,delete,delete-orphan",
     )
 
+    # Flag.box is provided by a read-only @property (by_id lookup); no backref,
+    # which would collide with it (an error under SQLAlchemy 2.x).
     _flags = relationship(
         "Flag",
-        backref=backref("box", lazy="select"),
         cascade="all,delete,delete-orphan",
         order_by="desc(-Flag._order)",
     )
@@ -193,6 +184,23 @@ class Box(DatabaseObject):
     @property
     def flags_all(self):
         return self._flags
+
+    def next_flag_order(self):
+        """The order for a flag added to this box: one past its highest,
+        counting locked flags and flags not yet committed."""
+        from models.Flag import Flag
+
+        with dbsession.no_autoflush:
+            orders = [
+                order
+                for (order,) in dbsession.query(Flag._order).filter_by(box_id=self.id)
+            ]
+        orders += [
+            obj._order
+            for obj in dbsession.new
+            if isinstance(obj, Flag) and obj.box_id == self.id
+        ]
+        return max([order for order in orders if order] or [0]) + 1
 
     @property
     def name(self):
@@ -431,7 +439,7 @@ class Box(DatabaseObject):
         if self.avatar and os.path.isfile(avatarfile):
             with open(avatarfile, mode="rb") as _avatar:
                 data = _avatar.read()
-                if not "upload" in self.avatar:
+                if "upload" not in self.avatar:
                     ET.SubElement(box_elem, "avatar_path").text = self.avatar
                 ET.SubElement(box_elem, "avatar").text = encode(data, "base64")
         else:

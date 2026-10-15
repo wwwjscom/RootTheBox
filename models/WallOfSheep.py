@@ -19,7 +19,6 @@ Created on Mar 21, 2012
     limitations under the License.
 """
 
-
 from sqlalchemy import Column, ForeignKey, desc
 from sqlalchemy.types import Integer, Unicode
 
@@ -29,7 +28,6 @@ from models.User import User
 
 
 class WallOfSheep(DatabaseObject):
-
     """
     Stores a record of cracked passwords, and publicly displays
     them for all to see.
