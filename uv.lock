@@ -583,15 +583,14 @@ wheels = [
 
 [[package]]
 name = "python-binary-memcached"
-version = "0.32.0"
+version = "0.33.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "six" },
     { name = "uhashring" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ec/fb/bc3d76fa6ca3adb99d07ad212710f4654e2d0b21d1e2f878a504ca936aec/python_binary_memcached-0.32.0.tar.gz", hash = "sha256:d0572e1db5a61a6c3185ed783b8337d00d65d1eb1521e2302a36e45d5e0fb3b7", size = 101276, upload-time = "2026-04-28T19:07:30.179Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a6/2c/d84d61605b1db1a347ea180dae0642efe7729941982391d199fb0ee8cd3c/python_binary_memcached-0.33.0.tar.gz", hash = "sha256:032241550a64f1d1b668cd858ccb4d78a471b936eee8cdf0718af15811ae7036", size = 109566, upload-time = "2026-10-12T10:21:52.051Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ab/89/de544a214febd4c38042b7855a47c295ec9e42a252ade31f8dd20cea645d/python_binary_memcached-0.32.0-py3-none-any.whl", hash = "sha256:1c98c59621becd7f9a9cb4d271466bface38ac99e45597705ee53d532e4752d8", size = 21066, upload-time = "2026-04-28T19:07:28.768Z" },
+    { url = "https://files.pythonhosted.org/packages/87/dc/b839c5f2f4a8201bf22675ea61733cc4db58606549f1c8a302ec246110e4/python_binary_memcached-0.33.0-py3-none-any.whl", hash = "sha256:c2a3477b935f45cdd6b71a8e1a07b315aa51b25cccf03f08a545fd35515c5e6d", size = 22737, upload-time = "2026-10-12T10:21:50.5Z" },
 ]
 
 [[package]]
